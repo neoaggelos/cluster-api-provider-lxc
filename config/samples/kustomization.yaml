@@ -1,0 +1,7 @@
+## Append samples of your project ##
+resources:
+- infrastructure_v1alpha1_lxccluster.yaml
+- infrastructure_v1alpha1_lxcclustertemplate.yaml
+- infrastructure_v1alpha1_lxcmachinetemplate.yaml
+- infrastructure_v1alpha1_lxcmachine.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

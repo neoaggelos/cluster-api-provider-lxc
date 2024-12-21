@@ -1,0 +1,23 @@
+# permissions for end users to view lxcclustertemplates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: test
+    app.kubernetes.io/managed-by: kustomize
+  name: lxcclustertemplate-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates/status
+  verbs:
+  - get

@@ -1,0 +1,23 @@
+# permissions for end users to view lxcmachinetemplates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: test
+    app.kubernetes.io/managed-by: kustomize
+  name: lxcmachinetemplate-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates/status
+  verbs:
+  - get

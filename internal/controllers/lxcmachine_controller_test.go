@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controller
+package controllers
 
 import (
 	"context"
@@ -30,7 +30,7 @@ import (
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
-var _ = Describe("LXCCluster Controller", func() {
+var _ = Describe("LXCMachine Controller", func() {
 	Context("When reconciling a resource", func() {
 		const resourceName = "test-resource"
 
@@ -40,13 +40,13 @@ var _ = Describe("LXCCluster Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		lxccluster := &infrav1.LXCCluster{}
+		lxcmachine := &infrav1.LXCMachine{}
 
 		BeforeEach(func() {
-			By("creating the custom resource for the Kind LXCCluster")
-			err := k8sClient.Get(ctx, typeNamespacedName, lxccluster)
+			By("creating the custom resource for the Kind LXCMachine")
+			err := k8sClient.Get(ctx, typeNamespacedName, lxcmachine)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &infrav1.LXCCluster{
+				resource := &infrav1.LXCMachine{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,18 +59,17 @@ var _ = Describe("LXCCluster Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &infrav1.LXCCluster{}
+			resource := &infrav1.LXCMachine{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
-			By("Cleanup the specific resource instance LXCCluster")
+			By("Cleanup the specific resource instance LXCMachine")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
-			controllerReconciler := &LXCClusterReconciler{
+			controllerReconciler := &LXCMachineReconciler{
 				Client: k8sClient,
-				Scheme: k8sClient.Scheme(),
 			}
 
 			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{

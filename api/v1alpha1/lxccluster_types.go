@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
@@ -32,6 +33,9 @@ const (
 type LXCClusterSpec struct {
 	// ControlPlaneEndpoint represents the endpoint to communicate with the control plane.
 	ControlPlaneEndpoint clusterv1.APIEndpoint `json:"controlPlaneEndpoint,omitempty"`
+
+	// SecretRef is a reference to a secret with credentials to access LXC (e.g. Incus, LXD) server.
+	SecretRef corev1.SecretReference
 
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`

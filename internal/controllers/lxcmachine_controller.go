@@ -31,8 +31,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
 // LXCMachineReconciler reconciles a LXCMachine object
@@ -113,7 +114,6 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 // LXCClusterToLXCMachines is a handler.ToRequestsFunc to be used to enqueue
 // requests for reconciliation of LXCMachines.
 func (r *LXCMachineReconciler) LXCClusterToLXCMachines(ctx context.Context, o client.Object) []ctrl.Request {
-	result := []ctrl.Request{}
 	c, ok := o.(*infrav1.LXCCluster)
 	if !ok {
 		panic(fmt.Sprintf("Expected a LXCCluster but got a %T", o))
@@ -122,9 +122,9 @@ func (r *LXCMachineReconciler) LXCClusterToLXCMachines(ctx context.Context, o cl
 	cluster, err := util.GetOwnerCluster(ctx, r.Client, c.ObjectMeta)
 	switch {
 	case apierrors.IsNotFound(err) || cluster == nil:
-		return result
+		return nil
 	case err != nil:
-		return result
+		return nil
 	}
 
 	labels := map[string]string{clusterv1.ClusterNameLabel: cluster.Name}
@@ -132,12 +132,15 @@ func (r *LXCMachineReconciler) LXCClusterToLXCMachines(ctx context.Context, o cl
 	if err := r.Client.List(ctx, machineList, client.InNamespace(c.Namespace), client.MatchingLabels(labels)); err != nil {
 		return nil
 	}
+	result := make([]ctrl.Request, 0, len(machineList.Items))
 	for _, m := range machineList.Items {
 		if m.Spec.InfrastructureRef.Name == "" {
 			continue
 		}
-		name := client.ObjectKey{Namespace: m.Namespace, Name: m.Name}
-		result = append(result, ctrl.Request{NamespacedName: name})
+		result = append(result, ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: m.Namespace,
+			Name:      m.Spec.InfrastructureRef.Name,
+		}})
 	}
 
 	return result

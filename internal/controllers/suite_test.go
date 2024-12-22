@@ -26,12 +26,15 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	// +kubebuilder:scaffold:imports
@@ -79,6 +82,9 @@ var _ = BeforeSuite(func() {
 
 	err = infrav1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
+	// TODO(neoaggelos): clusterv1 should be added here
+	// err = clusterv1.AddToScheme(scheme.Scheme)
+	// Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
 
@@ -94,3 +100,9 @@ var _ = AfterSuite(func() {
 	err := testEnv.Stop()
 	Expect(err).NotTo(HaveOccurred())
 })
+
+// TODO(neoaggelos): these should be instead done in the BeforeSuite setup above
+func init() {
+	utilruntime.Must(clusterv1.AddToScheme(scheme.Scheme))
+	utilruntime.Must(infrav1.AddToScheme(scheme.Scheme))
+}

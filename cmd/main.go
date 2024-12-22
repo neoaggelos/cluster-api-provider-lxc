@@ -326,6 +326,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 
 	if err := (&controllers.LXCClusterReconciler{
 		Client:           mgr.GetClient(),
+		CachingClient:    secretCachingClient,
 		WatchFilterValue: watchFilterValue,
 	}).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LXCCluster")
@@ -333,6 +334,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 	}
 	if err := (&controllers.LXCMachineReconciler{
 		Client:           mgr.GetClient(),
+		CachingClient:    secretCachingClient,
 		ClusterCache:     clusterCache,
 		WatchFilterValue: watchFilterValue,
 	}).SetupWithManager(ctx, mgr, controller.Options{

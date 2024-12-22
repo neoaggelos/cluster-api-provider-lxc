@@ -31,16 +31,16 @@ import (
 )
 
 // namespace where the project is deployed in
-const namespace = "test-system"
+const namespace = "capl-system"
 
 // serviceAccountName created for the project
-const serviceAccountName = "test-controller-manager"
+const serviceAccountName = "capl-controller-manager"
 
 // metricsServiceName is the name of the metrics service of the project
-const metricsServiceName = "test-controller-manager-metrics-service"
+const metricsServiceName = "capl-controller-manager-metrics-service"
 
 // metricsRoleBindingName is the name of the RBAC that will be created to allow get the metrics data
-const metricsRoleBindingName = "test-metrics-binding"
+const metricsRoleBindingName = "capl-metrics-binding"
 
 var _ = Describe("Manager", Ordered, func() {
 	var controllerPodName string

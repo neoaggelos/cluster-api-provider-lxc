@@ -18,6 +18,8 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 )
 
 const (
@@ -26,26 +28,30 @@ const (
 	ClusterFinalizer = "lxccluster.infrastructure.cluster.x-k8s.io"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // LXCClusterSpec defines the desired state of LXCCluster.
 type LXCClusterSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// ControlPlaneEndpoint represents the endpoint to communicate with the control plane.
+	ControlPlaneEndpoint clusterv1.APIEndpoint `json:"controlPlaneEndpoint,omitempty"`
 
-	// Foo is an example field of LXCCluster. Edit lxccluster_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// TODO(neoaggelos): enable failure domains
+	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`
 }
 
 // LXCClusterStatus defines the observed state of LXCCluster.
 type LXCClusterStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Ready denotes that the LXC cluster (infrastructure) is ready.
+	Ready bool `json:"ready"`
+
+	// Conditions defines current service state of the LXCCluster.
+	// +optional
+	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".metadata.labels.cluster\\.x-k8s\\.io/cluster-name",description="Cluster"
+// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="Cluster infrastructure is ready"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCCluster"
 
 // LXCCluster is the Schema for the lxcclusters API.
 type LXCCluster struct {

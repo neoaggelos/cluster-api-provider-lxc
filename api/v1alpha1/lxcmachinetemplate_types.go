@@ -18,36 +18,24 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+)
 
 // LXCMachineTemplateSpec defines the desired state of LXCMachineTemplate.
 type LXCMachineTemplateSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of LXCMachineTemplate. Edit lxcmachinetemplate_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
-}
-
-// LXCMachineTemplateStatus defines the observed state of LXCMachineTemplate.
-type LXCMachineTemplateStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	Template LXCMachineTemplateResource `json:"template"`
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCMachineTemplate"
 
 // LXCMachineTemplate is the Schema for the lxcmachinetemplates API.
 type LXCMachineTemplate struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   LXCMachineTemplateSpec   `json:"spec,omitempty"`
-	Status LXCMachineTemplateStatus `json:"status,omitempty"`
+	Spec LXCMachineTemplateSpec `json:"spec,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -61,4 +49,14 @@ type LXCMachineTemplateList struct {
 
 func init() {
 	SchemeBuilder.Register(&LXCMachineTemplate{}, &LXCMachineTemplateList{})
+}
+
+// LXCMachineTemplateResource describes the data needed to create a LXCMachine from a template.
+type LXCMachineTemplateResource struct {
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	ObjectMeta clusterv1.ObjectMeta `json:"metadata,omitempty"`
+	// Spec is the specification of the desired behavior of the machine.
+	Spec LXCMachineSpec `json:"spec"`
 }

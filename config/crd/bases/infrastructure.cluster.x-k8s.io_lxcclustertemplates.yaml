@@ -14,7 +14,12 @@ spec:
     singular: lxcclustertemplate
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - description: Time duration since creation of LXCClusterTemplate
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: LXCClusterTemplate is the Schema for the lxcclustertemplates
@@ -40,16 +45,60 @@ spec:
           spec:
             description: LXCClusterTemplateSpec defines the desired state of LXCClusterTemplate.
             properties:
-              foo:
-                description: Foo is an example field of LXCClusterTemplate. Edit lxcclustertemplate_types.go
-                  to remove/update
-                type: string
-            type: object
-          status:
-            description: LXCClusterTemplateStatus defines the observed state of LXCClusterTemplate.
+              template:
+                description: LXCClusterTemplateResource describes the data needed
+                  to create a LXCCluster from a template.
+                properties:
+                  metadata:
+                    description: |-
+                      Standard object's metadata.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          annotations is an unstructured key value map stored with a resource that may be
+                          set by external tools to store and retrieve arbitrary metadata. They are not
+                          queryable and should be preserved when modifying objects.
+                          More info: http://kubernetes.io/docs/user-guide/annotations
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          Map of string keys and values that can be used to organize and categorize
+                          (scope and select) objects. May match selectors of replication controllers
+                          and services.
+                          More info: http://kubernetes.io/docs/user-guide/labels
+                        type: object
+                    type: object
+                  spec:
+                    description: LXCClusterSpec defines the desired state of LXCCluster.
+                    properties:
+                      controlPlaneEndpoint:
+                        description: ControlPlaneEndpoint represents the endpoint
+                          to communicate with the control plane.
+                        properties:
+                          host:
+                            description: The hostname on which the API server is serving.
+                            type: string
+                          port:
+                            description: The port on which the API server is serving.
+                            format: int32
+                            type: integer
+                        required:
+                        - host
+                        - port
+                        type: object
+                    type: object
+                required:
+                - spec
+                type: object
+            required:
+            - template
             type: object
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}
+    subresources: {}

@@ -18,36 +18,24 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+)
 
 // LXCClusterTemplateSpec defines the desired state of LXCClusterTemplate.
 type LXCClusterTemplateSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of LXCClusterTemplate. Edit lxcclustertemplate_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
-}
-
-// LXCClusterTemplateStatus defines the observed state of LXCClusterTemplate.
-type LXCClusterTemplateStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	Template LXCClusterTemplateResource `json:"template"`
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCClusterTemplate"
 
 // LXCClusterTemplate is the Schema for the lxcclustertemplates API.
 type LXCClusterTemplate struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   LXCClusterTemplateSpec   `json:"spec,omitempty"`
-	Status LXCClusterTemplateStatus `json:"status,omitempty"`
+	Spec LXCClusterTemplateSpec `json:"spec,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -61,4 +49,13 @@ type LXCClusterTemplateList struct {
 
 func init() {
 	SchemeBuilder.Register(&LXCClusterTemplate{}, &LXCClusterTemplateList{})
+}
+
+// LXCClusterTemplateResource describes the data needed to create a LXCCluster from a template.
+type LXCClusterTemplateResource struct {
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	ObjectMeta clusterv1.ObjectMeta `json:"metadata,omitempty"`
+	Spec       LXCClusterSpec       `json:"spec"`
 }

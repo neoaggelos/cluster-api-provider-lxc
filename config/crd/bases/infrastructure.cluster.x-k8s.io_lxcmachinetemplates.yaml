@@ -14,7 +14,12 @@ spec:
     singular: lxcmachinetemplate
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - description: Time duration since creation of LXCMachineTemplate
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: LXCMachineTemplate is the Schema for the lxcmachinetemplates
@@ -40,16 +45,63 @@ spec:
           spec:
             description: LXCMachineTemplateSpec defines the desired state of LXCMachineTemplate.
             properties:
-              foo:
-                description: Foo is an example field of LXCMachineTemplate. Edit lxcmachinetemplate_types.go
-                  to remove/update
-                type: string
-            type: object
-          status:
-            description: LXCMachineTemplateStatus defines the observed state of LXCMachineTemplate.
+              template:
+                description: LXCMachineTemplateResource describes the data needed
+                  to create a LXCMachine from a template.
+                properties:
+                  metadata:
+                    description: |-
+                      Standard object's metadata.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          annotations is an unstructured key value map stored with a resource that may be
+                          set by external tools to store and retrieve arbitrary metadata. They are not
+                          queryable and should be preserved when modifying objects.
+                          More info: http://kubernetes.io/docs/user-guide/annotations
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          Map of string keys and values that can be used to organize and categorize
+                          (scope and select) objects. May match selectors of replication controllers
+                          and services.
+                          More info: http://kubernetes.io/docs/user-guide/labels
+                        type: object
+                    type: object
+                  spec:
+                    description: Spec is the specification of the desired behavior
+                      of the machine.
+                    properties:
+                      profiles:
+                        description: Profiles is a list of profiles to attach to the
+                          instance.
+                        items:
+                          type: string
+                        type: array
+                      providerID:
+                        description: ProviderID is the container name in ProviderID
+                          format (lxc:///<containername>)
+                        type: string
+                      type:
+                        description: Type is the type of instance to create (container
+                          or virtual machine).
+                        enum:
+                        - container
+                        - virtual-machine
+                        type: string
+                    type: object
+                required:
+                - spec
+                type: object
+            required:
+            - template
             type: object
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}
+    subresources: {}

@@ -91,6 +91,20 @@ spec:
                         - host
                         - port
                         type: object
+                      secretRef:
+                        description: SecretRef is a reference to a secret with credentials
+                          to access LXC (e.g. Incus, LXD) server.
+                        properties:
+                          name:
+                            description: name is unique within a namespace to reference
+                              a secret resource.
+                            type: string
+                          namespace:
+                            description: namespace defines the space within which
+                              the secret name must be unique.
+                            type: string
+                        type: object
+                        x-kubernetes-map-type: atomic
                     type: object
                 required:
                 - spec

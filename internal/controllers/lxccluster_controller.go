@@ -20,18 +20,24 @@ import (
 	"context"
 	"fmt"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/klog/v2"
 	"sigs.k8s.io/cluster-api/util"
+	"sigs.k8s.io/cluster-api/util/finalizers"
+	"sigs.k8s.io/cluster-api/util/patch"
+	"sigs.k8s.io/cluster-api/util/paused"
 	"sigs.k8s.io/cluster-api/util/predicates"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	corev1 "k8s.io/api/core/v1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
 
 // LXCClusterReconciler reconciles a LXCCluster object
@@ -58,12 +64,73 @@ type LXCClusterReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.1/pkg/reconcile
-func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (_ ctrl.Result, rerr error) {
+	log := ctrl.LoggerFrom(ctx)
 
-	// TODO(user): your logic here
+	// Fetch the lxcCluster instance
+	lxcCluster := &infrav1.LXCCluster{}
+	if err := r.Client.Get(ctx, req.NamespacedName, lxcCluster); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
 
-	return ctrl.Result{}, nil
+	// Fetch the lxcSecret before adding any finalizers, so that clusters without a valid secretRef do not get stuck
+	lxcSecret := &corev1.Secret{}
+	if err := r.Client.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
+		log.WithValues("secret", lxcCluster.GetLXCSecretNamespacedName()).Error(err, "Failed to fetch LXC credentials secret")
+		return ctrl.Result{}, fmt.Errorf("failed to fetch LXC credentials: %w", err)
+	}
+	lxcClient, err := incus.New(ctx, incus.NewOptionsFromSecret(lxcSecret))
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to create incus client")
+	}
+
+	// Add finalizer first if not set to avoid the race condition between init and delete.
+	if finalizerAdded, err := finalizers.EnsureFinalizer(ctx, r.Client, lxcCluster, infrav1.ClusterFinalizer); err != nil || finalizerAdded {
+		return ctrl.Result{}, err
+	}
+
+	// Fetch the Cluster.
+	cluster, err := util.GetOwnerCluster(ctx, r.Client, lxcCluster.ObjectMeta)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if cluster == nil {
+		log.Info("Waiting for Cluster Controller to set OwnerRef on LXCCluster")
+		return ctrl.Result{}, nil
+	}
+
+	if isPaused, conditionChanged, err := paused.EnsurePausedCondition(ctx, r.Client, cluster, lxcCluster); err != nil || isPaused || conditionChanged {
+		return ctrl.Result{}, err
+	}
+
+	log = log.WithValues("Cluster", klog.KObj(cluster))
+	ctx = ctrl.LoggerInto(ctx, log)
+
+	// Initialize the patch helper
+	patchHelper, err := patch.NewHelper(lxcCluster, r.Client)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	// Always attempt to Patch the LXCCluster object and status after each reconciliation.
+	defer func() {
+		if err := patchLXCCluster(ctx, patchHelper, lxcCluster); err != nil {
+			log.Error(err, "Failed to patch LXCCluster")
+			if rerr == nil {
+				rerr = err
+			}
+		}
+	}()
+
+	// Handle deleted clusters
+	if !lxcCluster.DeletionTimestamp.IsZero() {
+		return ctrl.Result{}, r.reconcileDelete(ctx, lxcCluster, lxcClient)
+	}
+
+	// Handle non-deleted clusters
+	return ctrl.Result{}, r.reconcileNormal(ctx, lxcCluster, lxcClient)
 }
 
 // SetupWithManager sets up the controller with the Manager.

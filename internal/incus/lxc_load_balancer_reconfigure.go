@@ -15,16 +15,16 @@ import (
 
 // ReconfigureLoadBalancer updates the haproxy configuration based on the list of running control plane instances
 // and reloads haproxy.
-func (c *Client) ReconfigureLoadBalancer(ctx context.Context, cluster *infrav1.LXCCluster) error {
+func (c *Client) ReconfigureLoadBalancer(ctx context.Context, lxcCluster *infrav1.LXCCluster) error {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerReconfigureTimeout)
 	defer cancel()
 
-	name := fmt.Sprintf("%s-%s-lb", cluster.Namespace, cluster.Name)
+	name := lxcCluster.GetLoadBalancerInstanceName()
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name))
 
 	instances, err := c.getInstancesWithFilter(ctx, api.InstanceTypeAny, map[string]string{
-		configClusterNameKey:      cluster.Name,
-		configClusterNamespaceKey: cluster.Namespace,
+		configClusterNameKey:      lxcCluster.Name,
+		configClusterNamespaceKey: lxcCluster.Namespace,
 		configInstanceRoleKey:     "control-plane",
 	})
 	if err != nil {
@@ -37,7 +37,7 @@ func (c *Client) ReconfigureLoadBalancer(ctx context.Context, cluster *infrav1.L
 		BackendServers:           make(map[string]loadbalancer.BackendServer, len(instances)),
 	}
 	for _, instance := range instances {
-		if address := c.getAnyInstanceAddress(instance.State); address != "" {
+		if address := c.GetAddressIfExists(instance.State); address != "" {
 			// TODO(neoaggelos): care about the instance weight (e.g. for deleted machines)
 			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: address, Weight: 100}
 		}

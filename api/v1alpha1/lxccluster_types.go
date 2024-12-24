@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -124,6 +126,11 @@ func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
 		key.Namespace = c.Namespace
 	}
 	return key
+}
+
+// GetLoadBalancerInstanceName returns the instance name for the cluster load balancer.
+func (c *LXCCluster) GetLoadBalancerInstanceName() string {
+	return fmt.Sprintf("%s-%s-lb", c.Namespace, c.Name)
 }
 
 // +kubebuilder:object:root=true

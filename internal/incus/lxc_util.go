@@ -27,7 +27,7 @@ func (c *Client) waitForInstanceAddress(ctx context.Context, name string) (strin
 		log.FromContext(ctx).V(4).Info("Checking for instance address")
 		if state, _, err := c.Client.GetInstanceState(name); err != nil {
 			return "", fmt.Errorf("failed to GetInstanceState: %w", err)
-		} else if address := c.getAnyInstanceAddress(state); address != "" {
+		} else if address := c.GetAddressIfExists(state); address != "" {
 			return address, nil
 		}
 
@@ -137,25 +137,6 @@ nextInstance:
 	return instances, nil
 }
 
-func (c *Client) getAnyInstanceAddress(state *api.InstanceState) string {
-	if state == nil {
-		return ""
-	}
-	for _, network := range state.Network {
-		if network.Type == "loopback" {
-			continue
-		}
-
-		for _, addr := range network.Addresses {
-			// TODO(neoaggelos): care for addr.Family ipv4 vs ipv6
-			if addr.Scope == "global" {
-				return addr.Address
-			}
-		}
-	}
-
-	return ""
-}
 
 func (c *Client) killInstance(ctx context.Context, name string, signal string) error {
 	log.FromContext(ctx).V(4).WithValues("instance", name, "signal", signal).Info("Kill instance")

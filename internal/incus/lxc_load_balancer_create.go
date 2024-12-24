@@ -10,7 +10,7 @@ import (
 )
 
 // CreateLoadBalancer creates the LoadBalancer container and returns the instance address.
-func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *infrav1.LXCCluster) (string, error) {
+func (c *Client) CreateLoadBalancer(ctx context.Context, lxcCluster *infrav1.LXCCluster) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
@@ -18,7 +18,7 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *infrav1.LXCClu
 		// TODO(neoaggelos): find an alternative for LXD or Incus without OCI support
 		return "", fmt.Errorf("server missing required 'instance_oci' extension, cannot create loadbalancer container")
 	}
-	name := fmt.Sprintf("%s-%s-lb", cluster.Namespace, cluster.Name)
+	name := lxcCluster.GetLoadBalancerInstanceName()
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name))
 	if err := c.createInstanceIfNotExists(ctx, name, api.InstancesPost{
 		Name: name,
@@ -32,8 +32,8 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *infrav1.LXCClu
 		},
 		InstancePut: api.InstancePut{
 			Config: map[string]string{
-				configClusterNameKey:      cluster.Name,
-				configClusterNamespaceKey: cluster.Namespace,
+				configClusterNameKey:      lxcCluster.Name,
+				configClusterNamespaceKey: lxcCluster.Namespace,
 				configInstanceRoleKey:     "loadbalancer",
 			},
 		},

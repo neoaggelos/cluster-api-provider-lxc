@@ -96,6 +96,9 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *infrav1.LXCClu
 		return "", fmt.Errorf("failed to start loadbalancer instance: %w", err)
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
 	for {
 		log.FromContext(ctx).V(4).Info("Waiting for loadbalancer instance address")
 		if state, _, err := c.Client.GetInstanceState(name); err != nil {

@@ -20,6 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/cluster-api/util/paused"
 )
 
 const (
@@ -41,6 +42,12 @@ type LXCMachineSpec struct {
 	// +kubebuilder:validation:Enum:=container;virtual-machine
 	Type string `json:"type,omitempty"`
 
+	// InstanceType is configuration for the instance size (e.g. t3.micro, or c2-m4)
+	// Examples:
+	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
+	//   - `c2-m4` -- 2 cores, 4 GB RAM
+	InstanceType string `json:"instanceType,omitempty"`
+
 	// Profiles is a list of profiles to attach to the instance.
 	Profiles []string `json:"profiles,omitempty"`
 }
@@ -56,9 +63,24 @@ type LXCMachineStatus struct {
 	// Addresses is the list of addresses of the LXC machine.
 	Addresses []clusterv1.MachineAddress `json:"addresses"`
 
-	// Conditions defines current service state of the DockerMachine.
+	// Conditions defines current service state of the LXCMachine.
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
+
+	// V1Beta2 groups all status fields that will be added in LXCMachine's status with the v1beta2 version.
+	V1Beta2 *LXCMachineV1Beta2Status `json:"v1beta2,omitempty"`
+}
+
+// LXCMachineV1Beta2Status groups all the fields that will be added or modified in LXCMachine with the V1Beta2 version.
+// See https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md for more context.
+type LXCMachineV1Beta2Status struct {
+	// conditions represents the observations of a LXCMachine's current state.
+	// Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
+	// +optional
+	// +listType=map
+	// +listMapKey=type
+	// +kubebuilder:validation:MaxItems=32
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -78,6 +100,32 @@ type LXCMachine struct {
 	Status LXCMachineStatus `json:"status,omitempty"`
 }
 
+// GetConditions returns the set of conditions for this object.
+func (c *LXCMachine) GetConditions() clusterv1.Conditions {
+	return c.Status.Conditions
+}
+
+// SetConditions sets the conditions on this object.
+func (c *LXCMachine) SetConditions(conditions clusterv1.Conditions) {
+	c.Status.Conditions = conditions
+}
+
+// GetV1Beta2Conditions returns the set of conditions for this object.
+func (c *LXCMachine) GetV1Beta2Conditions() []metav1.Condition {
+	if c.Status.V1Beta2 == nil {
+		return nil
+	}
+	return c.Status.V1Beta2.Conditions
+}
+
+// SetV1Beta2Conditions sets conditions for an API object.
+func (c *LXCMachine) SetV1Beta2Conditions(conditions []metav1.Condition) {
+	if c.Status.V1Beta2 == nil {
+		c.Status.V1Beta2 = &LXCMachineV1Beta2Status{}
+	}
+	c.Status.V1Beta2.Conditions = conditions
+}
+
 // +kubebuilder:object:root=true
 
 // LXCMachineList contains a list of LXCMachine.
@@ -90,3 +138,7 @@ type LXCMachineList struct {
 func init() {
 	SchemeBuilder.Register(&LXCMachine{}, &LXCMachineList{})
 }
+
+var (
+	_ paused.ConditionSetter = &LXCMachine{}
+)

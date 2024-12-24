@@ -144,7 +144,7 @@ spec:
                 properties:
                   conditions:
                     description: |-
-                      conditions represents the observations of a DockerCluster's current state.
+                      conditions represents the observations of a LXCCluster's current state.
                       Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
                     items:
                       description: Condition contains details for one aspect of the

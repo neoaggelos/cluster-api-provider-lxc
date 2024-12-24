@@ -59,10 +59,10 @@ type LXCClusterStatus struct {
 	V1Beta2 *LXCClusterV1Beta2Status `json:"v1beta2,omitempty"`
 }
 
-// LXCClusterV1Beta2Status groups all the fields that will be added or modified in DockerCluster with the V1Beta2 version.
+// LXCClusterV1Beta2Status groups all the fields that will be added or modified in LXCCluster with the V1Beta2 version.
 // See https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md for more context.
 type LXCClusterV1Beta2Status struct {
-	// conditions represents the observations of a DockerCluster's current state.
+	// conditions represents the observations of a LXCCluster's current state.
 	// Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
 	// +optional
 	// +listType=map

@@ -32,9 +32,9 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, cluster *infrav1.LXCClu
 		},
 		InstancePut: api.InstancePut{
 			Config: map[string]string{
-				"user.capi.name":      cluster.Name,
-				"user.capi.namespace": cluster.Namespace,
-				"user.capi.role":      "loadbalancer",
+				configClusterNameKey:      cluster.Name,
+				configClusterNamespaceKey: cluster.Namespace,
+				configInstanceRoleKey:     "loadbalancer",
 			},
 		},
 	}); err != nil {

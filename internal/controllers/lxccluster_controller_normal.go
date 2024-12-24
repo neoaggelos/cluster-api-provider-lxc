@@ -16,8 +16,9 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	// Create the container hosting the load balancer.
 	lbIP, err := lxcClient.CreateLoadBalancer(ctx, lxcCluster)
 	if err != nil {
+		err = fmt.Errorf("failed to create load balancer: %w", err)
 		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
-		return fmt.Errorf("failed to create load balancer: %w", err)
+		return err
 	}
 
 	// Surface the control plane endpoint

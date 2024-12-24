@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	incus "github.com/lxc/incus/v6/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	corev1 "k8s.io/api/core/v1"
 )
@@ -58,6 +59,8 @@ func NewOptionsFromSecret(secret *corev1.Secret) Options {
 }
 
 func New(ctx context.Context, opts Options) (*Client, error) {
+	log := log.FromContext(ctx).WithValues("server", opts.ServerURL)
+
 	client, err := incus.ConnectIncusWithContext(ctx, opts.ServerURL, &incus.ConnectionArgs{
 		TLSServerCert:      opts.ServerCert,
 		TLSClientCert:      opts.ClientCert,
@@ -70,8 +73,11 @@ func New(ctx context.Context, opts Options) (*Client, error) {
 	}
 
 	if opts.Project != "" {
+		log = log.WithValues("project", opts.Project)
 		client = client.UseProject(opts.Project)
 	}
+
+	log.V(4).Info("Initialized new incus client")
 
 	return &Client{Client: client}, nil
 }

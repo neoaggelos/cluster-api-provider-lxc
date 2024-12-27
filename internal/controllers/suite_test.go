@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -62,7 +63,9 @@ var _ = BeforeSuite(func() {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
+		CRDDirectoryPaths: []string{
+			filepath.Join("..", "..", "config", "crd", "bases"),
+		},
 		ErrorIfCRDPathMissing: true,
 
 		// The BinaryAssetsDirectory is only required if you want to run the tests directly
@@ -74,6 +77,10 @@ var _ = BeforeSuite(func() {
 			fmt.Sprintf("1.31.0-%s-%s", runtime.GOOS, runtime.GOARCH)),
 	}
 
+	if v := os.Getenv("CLUSTERAPI_CRD_PATHS"); v != "" {
+		testEnv.CRDDirectoryPaths = append(testEnv.CRDDirectoryPaths, v)
+	}
+
 	var err error
 	// cfg is defined in this file globally.
 	cfg, err = testEnv.Start()
@@ -82,9 +89,8 @@ var _ = BeforeSuite(func() {
 
 	err = infrav1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
-	// TODO(neoaggelos): clusterv1 should be added here
-	// err = clusterv1.AddToScheme(scheme.Scheme)
-	// Expect(err).NotTo(HaveOccurred())
+	err = clusterv1.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
 

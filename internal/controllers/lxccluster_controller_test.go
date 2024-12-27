@@ -21,11 +21,11 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
@@ -52,22 +52,7 @@ var _ = Describe("LXCCluster Controller", func() {
 						Name:      resourceName,
 						Namespace: "default",
 					},
-					Spec: infrav1.LXCClusterSpec{
-						SecretRef: corev1.SecretReference{
-							Name: typeNamespacedName.Name,
-						},
-					},
-				}
-				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
-			}
-
-			By("creating related LXC credential")
-			if err := k8sClient.Get(ctx, types.NamespacedName{Name: "lxc-secret", Namespace: "default"}, &corev1.Secret{}); err != nil && errors.IsNotFound(err) {
-				resource := &corev1.Secret{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      resourceName,
-						Namespace: "default",
-					},
+					// TODO(user): Specify other spec details if needed.
 				}
 				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}
@@ -81,9 +66,6 @@ var _ = Describe("LXCCluster Controller", func() {
 
 			By("Cleanup the specific resource instance LXCCluster")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
-
-			By("Cleanup the LXC secret")
-			Expect(k8sClient.Delete(ctx, &corev1.Secret{ObjectMeta: metav1.ObjectMeta{Name: resourceName, Namespace: "default"}})).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")

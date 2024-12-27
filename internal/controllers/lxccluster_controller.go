@@ -76,6 +76,16 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
+	// Fetch the Cluster.
+	cluster, err := util.GetOwnerCluster(ctx, r.Client, lxcCluster.ObjectMeta)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if cluster == nil {
+		log.Info("Waiting for Cluster Controller to set OwnerRef on LXCCluster")
+		return ctrl.Result{}, nil
+	}
+
 	// Fetch the lxcSecret before adding any finalizers, so that clusters without a valid secretRef do not get stuck
 	lxcSecret := &corev1.Secret{}
 	if err := r.Client.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
@@ -90,16 +100,6 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	// Add finalizer first if not set to avoid the race condition between init and delete.
 	if finalizerAdded, err := finalizers.EnsureFinalizer(ctx, r.Client, lxcCluster, infrav1.ClusterFinalizer); err != nil || finalizerAdded {
 		return ctrl.Result{}, err
-	}
-
-	// Fetch the Cluster.
-	cluster, err := util.GetOwnerCluster(ctx, r.Client, lxcCluster.ObjectMeta)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	if cluster == nil {
-		log.Info("Waiting for Cluster Controller to set OwnerRef on LXCCluster")
-		return ctrl.Result{}, nil
 	}
 
 	if isPaused, conditionChanged, err := paused.EnsurePausedCondition(ctx, r.Client, cluster, lxcCluster); err != nil || isPaused || conditionChanged {

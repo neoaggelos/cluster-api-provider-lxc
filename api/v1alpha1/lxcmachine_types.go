@@ -36,31 +36,60 @@ const (
 type LXCMachineSpec struct {
 	// ProviderID is the container name in ProviderID format (lxc:///<containername>)
 	// +optional
-	ProviderID string `json:"providerID,omitempty"`
+	ProviderID *string `json:"providerID,omitempty"`
 
 	// Type is the type of instance to create (container or virtual machine).
 	// +kubebuilder:validation:Enum:=container;virtual-machine
 	Type string `json:"type,omitempty"`
 
-	// InstanceType is configuration for the instance size (e.g. t3.micro, or c2-m4)
+	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
 	// Examples:
 	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
 	//   - `c2-m4` -- 2 cores, 4 GB RAM
-	InstanceType string `json:"instanceType,omitempty"`
+	Flavor string `json:"instanceType,omitempty"`
 
 	// Profiles is a list of profiles to attach to the instance.
 	Profiles []string `json:"profiles,omitempty"`
+
+	// Image is the image to use for provisioning the machine.
+	Image LXCMachineImageSource `json:"image"`
+}
+
+type LXCMachineImageSource struct {
+	// Name is the image name or alias.
+	Name string `json:"name"`
+
+	// Fingerprint is the image fingerprint.
+	Fingerprint string `json:"fingerprint"`
+
+	// Server is the remote server, e.g. "https://images.linuxcontainers.org"
+	// +optional
+	Server string `json:"server,omitempty"`
+
+	// Protocol is the protocol to use for fetching the image, e.g. "simplestreams".
+	// +optional
+	Protocol string `json:"protocol,omitempty"`
+
+	// Snapshot is the snapshot to use for launching the instance. It should be in the form "instance/snapshot".
+	Snapshot string `json:"snapshot,omitempty"`
 }
 
 // LXCMachineStatus defines the observed state of LXCMachine.
 type LXCMachineStatus struct {
 	// Ready denotes that the LXC machine is ready.
+	// +optional
 	Ready bool `json:"ready,omitempty"`
 
 	// State is the LXC machine state.
+	// +optional
 	State string `json:"state,omitempty"`
 
+	// LoadBalancerConfigured will be set to true once for each control plane node, after the load balancer instance is reconfigured.
+	// +optional
+	LoadBalancerConfigured bool `json:"loadBalancerConfigured,omitempty"`
+
 	// Addresses is the list of addresses of the LXC machine.
+	// +optional
 	Addresses []clusterv1.MachineAddress `json:"addresses"`
 
 	// Conditions defines current service state of the LXCMachine.
@@ -68,6 +97,7 @@ type LXCMachineStatus struct {
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 
 	// V1Beta2 groups all status fields that will be added in LXCMachine's status with the v1beta2 version.
+	// +optional
 	V1Beta2 *LXCMachineV1Beta2Status `json:"v1beta2,omitempty"`
 }
 
@@ -75,7 +105,7 @@ type LXCMachineStatus struct {
 // See https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md for more context.
 type LXCMachineV1Beta2Status struct {
 	// conditions represents the observations of a LXCMachine's current state.
-	// Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
+	// Known condition types are Ready, InstanceProvisioned, BootstrapSucceeded, Deleting, Paused.
 	// +optional
 	// +listType=map
 	// +listMapKey=type
@@ -124,6 +154,10 @@ func (c *LXCMachine) SetV1Beta2Conditions(conditions []metav1.Condition) {
 		c.Status.V1Beta2 = &LXCMachineV1Beta2Status{}
 	}
 	c.Status.V1Beta2.Conditions = conditions
+}
+
+func (c *LXCMachine) GetInstanceName() string {
+	return c.Name
 }
 
 // +kubebuilder:object:root=true

@@ -1,0 +1,48 @@
+package controllers
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"sigs.k8s.io/cluster-api/util"
+	"sigs.k8s.io/cluster-api/util/conditions"
+	"sigs.k8s.io/cluster-api/util/patch"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+)
+
+func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, _ *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) error {
+	// Set the InstanceProvisionedCondition reporting delete is started, and issue a patch in order to make
+	// this visible to the users.
+	// NB. The operation in LXC is fast, so there is the chance the user will not notice the status change;
+	// nevertheless we are issuing a patch so we can test a pattern that will be used by other providers as well
+	patchHelper, err := patch.NewHelper(lxcMachine, r.Client)
+	if err != nil {
+		return err
+	}
+	conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, clusterv1.DeletingReason, clusterv1.ConditionSeverityInfo, "")
+	if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
+		return fmt.Errorf("failed to patch LXCMachine: %w", err)
+	}
+
+	// Delete the machine
+	if err := lxcClient.DeleteInstance(ctx, lxcMachine); err != nil {
+		return fmt.Errorf("failed to delete the instance: %w", err)
+	}
+
+	// If the deleted machine is a control-plane node, remove it from the load balancer configuration
+	if util.IsControlPlaneMachine(machine) {
+		if err := lxcClient.ReconfigureLoadBalancer(ctx, lxcCluster); err != nil {
+			return fmt.Errorf("failed to reconfigure load balancer after removing control plane node: %w", err)
+		}
+	}
+
+	// Machine is deleted so remove the finalizer.
+	controllerutil.RemoveFinalizer(lxcMachine, infrav1.MachineFinalizer)
+
+	return nil
+}

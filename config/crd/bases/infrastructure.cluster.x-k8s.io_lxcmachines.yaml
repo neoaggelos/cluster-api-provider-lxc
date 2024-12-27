@@ -60,9 +60,33 @@ spec:
           spec:
             description: LXCMachineSpec defines the desired state of LXCMachine.
             properties:
+              image:
+                description: Image is the image to use for provisioning the machine.
+                properties:
+                  fingerprint:
+                    description: Fingerprint is the image fingerprint.
+                    type: string
+                  name:
+                    description: Name is the image name or alias.
+                    type: string
+                  protocol:
+                    description: Protocol is the protocol to use for fetching the
+                      image, e.g. "simplestreams".
+                    type: string
+                  server:
+                    description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
+                    type: string
+                  snapshot:
+                    description: Snapshot is the snapshot to use for launching the
+                      instance. It should be in the form "instance/snapshot".
+                    type: string
+                required:
+                - fingerprint
+                - name
+                type: object
               instanceType:
                 description: |-
-                  InstanceType is configuration for the instance size (e.g. t3.micro, or c2-m4)
+                  Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
                   Examples:
                     - `t3.micro` -- match specs of an EC2 t3.micro instance
                     - `c2-m4` -- 2 cores, 4 GB RAM
@@ -83,6 +107,8 @@ spec:
                 - container
                 - virtual-machine
                 type: string
+            required:
+            - image
             type: object
           status:
             description: LXCMachineStatus defines the observed state of LXCMachine.
@@ -150,6 +176,10 @@ spec:
                   - type
                   type: object
                 type: array
+              loadBalancerConfigured:
+                description: LoadBalancerConfigured will be set to true once for each
+                  control plane node, after the load balancer instance is reconfigured.
+                type: boolean
               ready:
                 description: Ready denotes that the LXC machine is ready.
                 type: boolean
@@ -163,7 +193,7 @@ spec:
                   conditions:
                     description: |-
                       conditions represents the observations of a LXCMachine's current state.
-                      Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
+                      Known condition types are Ready, InstanceProvisioned, BootstrapSucceeded, Deleting, Paused.
                     items:
                       description: Condition contains details for one aspect of the
                         current state of this API Resource.
@@ -225,8 +255,6 @@ spec:
                     - type
                     x-kubernetes-list-type: map
                 type: object
-            required:
-            - addresses
             type: object
         type: object
     served: true

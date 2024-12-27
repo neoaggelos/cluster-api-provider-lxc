@@ -33,11 +33,11 @@ func (c *Client) ReconfigureLoadBalancer(ctx context.Context, lxcCluster *infrav
 
 	config := &loadbalancer.ConfigData{
 		FrontendControlPlanePort: "6443",
-		BackendControlPlanePort:  "80",
+		BackendControlPlanePort:  "6443",
 		BackendServers:           make(map[string]loadbalancer.BackendServer, len(instances)),
 	}
 	for _, instance := range instances {
-		if address := c.GetAddressIfExists(instance.State); address != "" {
+		if address := c.ParseMachineAddressIfExists(instance.State); address != "" {
 			// TODO(neoaggelos): care about the instance weight (e.g. for deleted machines)
 			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: address, Weight: 100}
 		}

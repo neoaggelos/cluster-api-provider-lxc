@@ -9,6 +9,8 @@ import (
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
 // wait executes an Incus API call that returns an Operation, and waits for the operation to complete.
@@ -27,7 +29,7 @@ func (c *Client) waitForInstanceAddress(ctx context.Context, name string) (strin
 		log.FromContext(ctx).V(4).Info("Checking for instance address")
 		if state, _, err := c.Client.GetInstanceState(name); err != nil {
 			return "", fmt.Errorf("failed to GetInstanceState: %w", err)
-		} else if address := c.GetAddressIfExists(state); address != "" {
+		} else if address := c.ParseMachineAddressIfExists(state); address != "" {
 			return address, nil
 		}
 
@@ -137,11 +139,23 @@ nextInstance:
 	return instances, nil
 }
 
-
 func (c *Client) killInstance(ctx context.Context, name string, signal string) error {
 	log.FromContext(ctx).V(4).WithValues("instance", name, "signal", signal).Info("Kill instance")
 
 	return c.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
 		return c.Client.ExecInstance(name, api.InstanceExecPost{Command: []string{"kill", "1", "--signal", signal}}, nil)
 	})
+}
+
+func (c *Client) instanceSourceFromAPI(source infrav1.LXCMachineImageSource) api.InstanceSource {
+	result := api.InstanceSource{
+		Type:        "image",
+		Alias:       source.Name,
+		Server:      source.Server,
+		Protocol:    source.Protocol,
+		Source:      source.Snapshot,
+		Fingerprint: source.Fingerprint,
+	}
+
+	return result
 }

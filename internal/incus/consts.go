@@ -12,6 +12,12 @@ const (
 	// loadBalancerReconfigureTimeout is the timeout for updating load balancer configuration and reloading.
 	loadBalancerReconfigureTimeout = 60 * time.Second
 
+	// instanceCreateTimeout is the timeout for creating and starting an instance.
+	instanceCreateTimeout = 60 * time.Second
+
+	// instanceDeleteTimeout is the timeout for stopping and deleting an instance.
+	instanceDeleteTimeout = 30 * time.Second
+
 	// loadBalancerDefaultHaproxyImage is the default image to use for the load balancer container.
 	// TODO(neoaggelos): mirror and use our own image
 	loadBalancerDefaultHaproxyImage = "kindest/haproxy:v20230606-42a2262b"
@@ -30,4 +36,7 @@ const (
 
 	// configInstanceRoleKey is the user config key that tracks the instance role.
 	configInstanceRoleKey = "user.cluster-role"
+
+	// configCloudInitKey is the config key that seeds cloud-init configuration into the instance.
+	configCloudInitKey = "cloud-init.user-data"
 )

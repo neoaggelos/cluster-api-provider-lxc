@@ -18,11 +18,18 @@ package controllers
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/klog/v2"
 	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/util"
+	"sigs.k8s.io/cluster-api/util/finalizers"
+	utillog "sigs.k8s.io/cluster-api/util/log"
+	"sigs.k8s.io/cluster-api/util/patch"
+	"sigs.k8s.io/cluster-api/util/paused"
 	"sigs.k8s.io/cluster-api/util/predicates"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -31,9 +38,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	corev1 "k8s.io/api/core/v1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
 
 // LXCMachineReconciler reconciles a LXCMachine object
@@ -64,12 +73,117 @@ type LXCMachineReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.1/pkg/reconcile
-func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) (_ ctrl.Result, rerr error) {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	// Fetch the LXCMachine instance.
+	lxcMachine := &infrav1.LXCMachine{}
+	if err := r.Client.Get(ctx, req.NamespacedName, lxcMachine); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
 
-	return ctrl.Result{}, nil
+	// AddOwners adds the owners of LXCMachine as k/v pairs to the logger.
+	// Specifically, it will add KubeadmControlPlane, MachineSet and MachineDeployment.
+	ctx, log, err := utillog.AddOwners(ctx, r.Client, lxcMachine)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// Fetch the Machine.
+	machine, err := util.GetOwnerMachine(ctx, r.Client, lxcMachine.ObjectMeta)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if machine == nil {
+		log.Info("Waiting for Machine Controller to set OwnerRef on LXCMachine")
+		return ctrl.Result{}, nil
+	}
+
+	log = log.WithValues("Machine", klog.KObj(machine))
+	ctx = ctrl.LoggerInto(ctx, log)
+
+	// Fetch the Cluster.
+	cluster, err := util.GetClusterFromMetadata(ctx, r.Client, machine.ObjectMeta)
+	if err != nil {
+		log.Info("DockerMachine owner Machine is missing cluster label or cluster does not exist")
+		return ctrl.Result{}, err
+	}
+	if cluster == nil {
+		log.Info(fmt.Sprintf("Please associate this machine with a cluster using the label %s: <name of cluster>", clusterv1.ClusterNameLabel))
+		return ctrl.Result{}, nil
+	}
+
+	log = log.WithValues("Cluster", klog.KObj(cluster))
+	ctx = ctrl.LoggerInto(ctx, log)
+
+	if isPaused, conditionChanged, err := paused.EnsurePausedCondition(ctx, r.Client, cluster, lxcMachine); err != nil || isPaused || conditionChanged {
+		return ctrl.Result{}, err
+	}
+
+	if cluster.Spec.InfrastructureRef == nil {
+		log.Info("Cluster infrastructureRef is not available yet")
+		return ctrl.Result{}, nil
+	}
+
+	// Fetch the LXC Cluster.
+	lxcCluster := &infrav1.LXCCluster{}
+	lxcClusterName := client.ObjectKey{
+		Namespace: lxcMachine.Namespace,
+		Name:      cluster.Spec.InfrastructureRef.Name,
+	}
+	if err := r.Client.Get(ctx, lxcClusterName, lxcCluster); err != nil {
+		log.Info("LXCCluster is not available yet")
+		return ctrl.Result{}, nil
+	}
+
+	// Fetch the lxcSecret before adding any finalizers, so that clusters without a valid secretRef do not get stuck
+	lxcSecret := &corev1.Secret{}
+	if err := r.Client.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
+		log.WithValues("secret", lxcCluster.GetLXCSecretNamespacedName()).Error(err, "Failed to fetch LXC credentials secret")
+		return ctrl.Result{}, fmt.Errorf("failed to fetch LXC credentials: %w", err)
+	}
+	lxcClient, err := incus.New(ctx, incus.NewOptionsFromSecret(lxcSecret))
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to create incus client")
+	}
+	_ = lxcClient
+
+	// Add finalizer first if not set to avoid the race condition between init and delete.
+	if finalizerAdded, err := finalizers.EnsureFinalizer(ctx, r.Client, lxcMachine, infrav1.MachineFinalizer); err != nil || finalizerAdded {
+		return ctrl.Result{}, err
+	}
+
+	// Initialize the patch helper
+	patchHelper, err := patch.NewHelper(lxcMachine, r)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	// Always attempt to Patch the LXCMachine object and status after each reconciliation.
+	defer func() {
+		if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
+			log.Error(err, "Failed to patch LXCMachine")
+			if rerr == nil {
+				rerr = err
+			}
+		}
+	}()
+
+	// Handle deleted machines
+	if !lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() {
+		return ctrl.Result{}, r.reconcileDelete(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
+	}
+
+	result, err := r.reconcileNormal(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
+	// Requeue if the reconcile failed because the ClusterCacheTracker was locked for the
+	// current cluster because of concurrent access.
+	if errors.Is(err, clustercache.ErrClusterNotConnected) {
+		log.V(5).Info("Requeuing because connection to the workload cluster is down")
+		return ctrl.Result{RequeueAfter: time.Minute}, nil
+	}
+	return result, err
 }
 
 // SetupWithManager sets up the controller with the Manager.

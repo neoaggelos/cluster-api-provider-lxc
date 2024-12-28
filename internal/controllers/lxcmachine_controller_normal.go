@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
@@ -85,6 +87,8 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to create instance: %w", err)
 	}
+	r.setLXCMachineAddresses(lxcMachine, address)
+	conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
 
 	// update load balancer
 	if util.IsControlPlaneMachine(machine) && !lxcMachine.Status.LoadBalancerConfigured {
@@ -94,12 +98,53 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		lxcMachine.Status.LoadBalancerConfigured = true
 	}
 
-	r.setLXCMachineAddresses(lxcMachine, address)
+	// check cloud-init status on the node
+	cloudInitStatus, err := lxcClient.CheckCloudInitStatus(ctx, lxcMachine.GetInstanceName())
+	if err != nil || cloudInitStatus == incus.CloudInitStatusUnknown {
+		log.Error(err, "Could not retrieve cloud-init status")
+		conditions.MarkUnknown(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingUnknownStatusReason, "%s", err)
+	}
+	switch cloudInitStatus {
+	case incus.CloudInitStatusRunning:
+		log.Info("Waiting for bootstrap script to complete")
+		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingReason, clusterv1.ConditionSeverityInfo, "")
+		return ctrl.Result{RequeueAfter: 20 * time.Second}, nil
+	case incus.CloudInitStatusError:
+		err := fmt.Errorf("bootstrap failed")
+		log.WithValues("FailureReason", infrav1.FailureReasonBootstrapFailed).Error(err, "Marking machine as failed")
+		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrapFailedReason, clusterv1.ConditionSeverityError, "%s", err)
+		lxcMachine.Status.FailureReason = ptr.To(infrav1.FailureReasonBootstrapFailed)
+		lxcMachine.Status.FailureMessage = ptr.To(infrav1.FailureMessageBootstrapFailed)
+		return ctrl.Result{}, nil
+	case incus.CloudInitStatusDone:
+		log.Info("Bootstrap finished successfully")
+		conditions.MarkTrue(lxcMachine, infrav1.BootstrapSucceededCondition)
+	default:
+		// This should never happen, but not adding a panic on purpose. If only Go had enums :)
+	}
 
-	// TODO(neoaggelos): set conditions depending on bootstrap progress
-	// TODO(neoaggelos): do cloud-provider node patch on workload cluster
+	// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
+	// to contact to get the ProviderID for the Node hosted on this machine, so return early.
+	// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
+	// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
+	// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
+	// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
+	if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
+		log.Info("Waiting for initialized ControlPlane")
+		return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
+	}
+
+	remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
+	}
+
+	if err := r.cloudProviderNodePatch(ctx, remoteClient, lxcMachine); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
+	}
+
 	lxcMachine.Status.Ready = true
-	lxcMachine.Spec.ProviderID = ptr.To(fmt.Sprintf("lxc:///%s", lxcMachine.GetInstanceName()))
+	lxcMachine.Spec.ProviderID = ptr.To(lxcMachine.GetExpectedProviderID())
 
 	return ctrl.Result{}, nil
 }

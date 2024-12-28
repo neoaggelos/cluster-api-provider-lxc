@@ -17,10 +17,12 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/cluster-api/util/paused"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/paused"
 )
 
 const (
@@ -176,6 +178,11 @@ func (c *LXCMachine) SetV1Beta2Conditions(conditions []metav1.Condition) {
 
 func (c *LXCMachine) GetInstanceName() string {
 	return c.Name
+}
+
+// GetExpectedProviderID returns the expected providerID that the Kubernetes node should have.
+func (c *LXCMachine) GetExpectedProviderID() string {
+	return fmt.Sprintf("lxc:///%s", c.GetInstanceName())
 }
 
 // +kubebuilder:object:root=true

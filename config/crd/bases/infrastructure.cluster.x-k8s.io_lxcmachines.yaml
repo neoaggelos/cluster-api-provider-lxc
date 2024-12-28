@@ -81,7 +81,6 @@ spec:
                       instance. It should be in the form "instance/snapshot".
                     type: string
                 required:
-                - fingerprint
                 - name
                 type: object
               instanceType:
@@ -176,6 +175,22 @@ spec:
                   - type
                   type: object
                 type: array
+              failureMessage:
+                description: |-
+                  failureMessage will be set in the event that there is a terminal problem reconciling the FooMachine
+                  and will contain a more verbose string suitable for logging and human consumption.
+
+                  This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+                  but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+                type: string
+              failureReason:
+                description: |-
+                  FailureReason will be set in the event that there is a terminal problem reconciling the FooMachine
+                  and will contain a succinct value suitable for machine interpretation.
+
+                  This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+                  but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+                type: string
               loadBalancerConfigured:
                 description: LoadBalancerConfigured will be set to true once for each
                   control plane node, after the load balancer instance is reconfigured.

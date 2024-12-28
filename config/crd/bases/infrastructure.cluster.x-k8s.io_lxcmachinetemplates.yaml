@@ -99,7 +99,6 @@ spec:
                               the instance. It should be in the form "instance/snapshot".
                             type: string
                         required:
-                        - fingerprint
                         - name
                         type: object
                       instanceType:

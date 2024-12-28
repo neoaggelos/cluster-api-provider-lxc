@@ -357,6 +357,16 @@ func (in *LXCMachineStatus) DeepCopyInto(out *LXCMachineStatus) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.FailureReason != nil {
+		in, out := &in.FailureReason, &out.FailureReason
+		*out = new(string)
+		**out = **in
+	}
+	if in.FailureMessage != nil {
+		in, out := &in.FailureMessage, &out.FailureMessage
+		*out = new(string)
+		**out = **in
+	}
 	if in.V1Beta2 != nil {
 		in, out := &in.V1Beta2, &out.V1Beta2
 		*out = new(LXCMachineV1Beta2Status)

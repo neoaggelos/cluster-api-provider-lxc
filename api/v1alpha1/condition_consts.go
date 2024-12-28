@@ -59,10 +59,23 @@ const (
 	// script that creates the Kubernetes node on the newly provisioned machine infrastructure.
 	BootstrappingReason = "Bootstrapping"
 
+	// BootstrappingUnknownStatus documents a LXCMachine for which the current status of the bootstrap
+	// script that creates the Kubernetes node on the newly provisioned machine infrastructure is unknown.
+	BootstrappingUnknownStatusReason = "BootstrappingUnknownStatus"
+
 	// BootstrapFailedReason documents (Severity=Warning) a LXCMachine controller detecting an error while
 	// bootstrapping the Kubernetes node on the machine just provisioned; those kind of errors are usually
 	// transient and failed bootstrap are automatically re-tried by the controller.
 	//
 	// NOTE(neoaggelos): a retry is usually done in the form of recreating the instance.
 	BootstrapFailedReason = "BootstrapFailed"
+)
+
+// FailureReasons and FailureMessages for the LXCMachine object.
+const (
+	// FailureReasonBootstrapFailed documents a LXCMachine controller detecting an error while bootstrapping
+	// the Kubernetes node on the machine just provisioned.
+	FailureReasonBootstrapFailed = "BootstrapFailed"
+
+	FailureMessageBootstrapFailed = "The LXCMachine instance cloud-init finished with status error, which means that the bootstrapping process failed"
 )

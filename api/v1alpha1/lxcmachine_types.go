@@ -60,6 +60,7 @@ type LXCMachineImageSource struct {
 	Name string `json:"name"`
 
 	// Fingerprint is the image fingerprint.
+	// +optional
 	Fingerprint string `json:"fingerprint"`
 
 	// Server is the remote server, e.g. "https://images.linuxcontainers.org"
@@ -71,6 +72,7 @@ type LXCMachineImageSource struct {
 	Protocol string `json:"protocol,omitempty"`
 
 	// Snapshot is the snapshot to use for launching the instance. It should be in the form "instance/snapshot".
+	// +optional
 	Snapshot string `json:"snapshot,omitempty"`
 }
 
@@ -95,6 +97,22 @@ type LXCMachineStatus struct {
 	// Conditions defines current service state of the LXCMachine.
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
+
+	// FailureReason will be set in the event that there is a terminal problem reconciling the FooMachine
+	// and will contain a succinct value suitable for machine interpretation.
+	//
+	// This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+	// but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+	// +optional
+	FailureReason *string `json:"failureReason,omitempty"`
+
+	// failureMessage will be set in the event that there is a terminal problem reconciling the FooMachine
+	// and will contain a more verbose string suitable for logging and human consumption.
+	//
+	// This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+	// but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+	// +optional
+	FailureMessage *string `json:"failureMessage,omitempty"`
 
 	// V1Beta2 groups all status fields that will be added in LXCMachine's status with the v1beta2 version.
 	// +optional

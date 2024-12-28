@@ -102,13 +102,10 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, nil
 	}
 
-	log = log.WithValues("Machine", klog.KObj(machine))
-	ctx = ctrl.LoggerInto(ctx, log)
-
 	// Fetch the Cluster.
 	cluster, err := util.GetClusterFromMetadata(ctx, r.Client, machine.ObjectMeta)
 	if err != nil {
-		log.Info("DockerMachine owner Machine is missing cluster label or cluster does not exist")
+		log.Info("LXCMachine owner Machine is missing cluster label or cluster does not exist")
 		return ctrl.Result{}, err
 	}
 	if cluster == nil {
@@ -116,8 +113,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, nil
 	}
 
-	log = log.WithValues("Cluster", klog.KObj(cluster))
-	ctx = ctrl.LoggerInto(ctx, log)
+	ctx = ctrl.LoggerInto(ctx, log.WithValues("Cluster", klog.KObj(cluster)))
 
 	if isPaused, conditionChanged, err := paused.EnsurePausedCondition(ctx, r.Client, cluster, lxcMachine); err != nil || isPaused || conditionChanged {
 		return ctrl.Result{}, err
@@ -149,7 +145,6 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to create incus client")
 	}
-	_ = lxcClient
 
 	// Add finalizer first if not set to avoid the race condition between init and delete.
 	if finalizerAdded, err := finalizers.EnsureFinalizer(ctx, r.Client, lxcMachine, infrav1.MachineFinalizer); err != nil || finalizerAdded {

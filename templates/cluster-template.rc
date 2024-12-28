@@ -1,0 +1,105 @@
+#######################################################
+## Kubernetes cluster configuration
+
+export KUBERNETES_VERSION=v1.32.0
+export CONTROL_PLANE_MACHINE_COUNT=1
+export WORKER_MACHINE_COUNT=1
+
+#######################################################
+## LXC server configuration
+
+# Unless namespace is specified, uses the secret from the same namespace as the cluster object
+export LXC_SECRET_NAME=incus-secret
+export LXC_SECRET_NAMESPACE=
+
+#######################################################
+## LXC image configuration
+
+# option A. use stock ubuntu image
+#export LXC_MACHINE_IMAGE="ubuntu/22.04/cloud"
+#export LXC_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
+#export LXC_MACHINE_IMAGE_PROTOCOL="simplestreams"
+#unset HACK_PREKUBEADM_COMMANDS
+
+## option B. configuration (using custom base image)
+#export LXC_MACHINE_IMAGE="k8s-u22-v1.32.0-lxc"
+#export LXC_MACHINE_IMAGE_SERVER=""
+#export LXC_MACHINE_IMAGE_PROTOCOL=""
+#export HACK_PREKUBEADM_COMMANDS="kubelet --version"
+
+#######################################################
+## LXC instance configuration
+
+## option A. virtual machines (requires kvm)
+#export LXC_MACHINE_TYPE="virtual-machine"
+#export LXC_MACHINE_PROFILES="default"
+#export LXC_MACHINE_INSTANCE_TYPE="c2-m4"
+
+## option B. lxc containers (requires cluster-api-lxc profile)
+#export LXC_MACHINE_TYPE="container"
+#export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
+#export LXC_MACHINE_INSTANCE_TYPE=""
+
+#######################################################
+## Control plane and workers configuration
+
+# Control plane machine configuration
+export CONTROL_PLANE_MACHINE_IMAGE="${LXC_MACHINE_IMAGE}"
+export CONTROL_PLANE_MACHINE_IMAGE_SERVER="${LXC_MACHINE_IMAGE_SERVER}"
+export CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL="${LXC_MACHINE_IMAGE_PROTOCOL}"
+export CONTROL_PLANE_MACHINE_TYPE="${LXC_MACHINE_TYPE}"
+export CONTROL_PLANE_MACHINE_PROFILES="${LXC_MACHINE_PROFILES}"
+export CONTROL_PLANE_MACHINE_INSTANCE_TYPE="${LXC_MACHINE_INSTANCE_TYPE}"
+
+# Worker machine configuration
+export WORKER_MACHINE_IMAGE="${LXC_MACHINE_IMAGE}"
+export WORKER_MACHINE_IMAGE_SERVER="${LXC_MACHINE_IMAGE_SERVER}"
+export WORKER_MACHINE_IMAGE_PROTOCOL="${LXC_MACHINE_IMAGE_PROTOCOL}"
+export WORKER_MACHINE_TYPE="${LXC_MACHINE_TYPE}"
+export WORKER_MACHINE_PROFILES="${LXC_MACHINE_PROFILES}"
+export WORKER_MACHINE_INSTANCE_TYPE="${LXC_MACHINE_INSTANCE_TYPE}"
+
+#######################################################
+## (HACK) Support for stock Ubuntu images
+
+# Adjust component versions below as needed.
+ARCH="${ARCH:-amd64}"
+CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.6.0}"
+CRICTL_VERSION="${CRICTL_VERSION:-v1.31.0}"
+KREL_VERSION="${KREL_VERSION:-v0.16.2}"
+CONTAINERD_CONFIG_URL="${CONTAINERD_CONFIG_URL:-https://gist.githubusercontent.com/neoaggelos/2946240e0ddf2971851c22197ae63645/raw/00e2c8222f5b7f56827917e1836642400146cbd1/lxc-containerd-config.toml}"
+
+# If using a stock Ubuntu image, we need to start by installing containerd, kubeadm and cni plugins.
+export HACK_PREKUBEADM_COMMANDS="${HACK_PREKUBEADM_COMMANDS:-
+
+sysctl net.ipv4.ip_forward=1;
+echo 'net.ipv4.ip_forward=1' | tee /etc/sysctl.d/99-capi.conf;
+
+modprobe br_netfilter;
+echo 'br_netfilter' | tee /etc/modules-load.d/br_netfilter.conf;
+
+apt update;
+apt install -y containerd iptables ethtool curl;
+
+mkdir -p /etc/containerd;
+curl '${CONTAINERD_CONFIG_URL}' | tee /etc/containerd/config.toml;
+systemctl restart containerd;
+
+mkdir -p /opt/cni/bin;
+curl -L 'https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-${ARCH}-${CNI_PLUGINS_VERSION}.tgz' | tar -C /opt/cni/bin -xz;
+
+curl -L 'https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${ARCH}.tar.gz' | tar -C /usr/bin -xz;
+
+curl -L --remote-name-all 'https://dl.k8s.io/release/${KUBERNETES_VERSION}/bin/linux/${ARCH}/kubeadm' -o /usr/bin/kubeadm;
+curl -L --remote-name-all 'https://dl.k8s.io/release/${KUBERNETES_VERSION}/bin/linux/${ARCH}/kubelet' -o /usr/bin/kubelet;
+curl -L --remote-name-all 'https://dl.k8s.io/release/${KUBERNETES_VERSION}/bin/linux/${ARCH}/kubectl' -o /usr/bin/kubectl;
+chmod +x /usr/bin/kubeadm /usr/bin/kubelet /usr/bin/kubectl;
+
+mkdir -p /usr/lib/systemd/system/kubelet.service.d;
+curl -sSL 'https://raw.githubusercontent.com/kubernetes/release/${KREL_VERSION}/cmd/krel/templates/latest/kubelet/kubelet.service' | tee /usr/lib/systemd/system/kubelet.service;
+curl -sSL 'https://raw.githubusercontent.com/kubernetes/release/${KREL_VERSION}/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf' | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf;
+systemctl enable kubelet.service;
+
+[ -f /run/kubeadm/kubeadm.yaml ] && kubeadm config images pull;
+
+}"

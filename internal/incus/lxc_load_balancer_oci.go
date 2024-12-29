@@ -40,9 +40,9 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 	source := api.InstanceSource{
 		Type:     "image",
 		Protocol: "oci",
-		Server:   "https://docker.io",
+		Server:   "https://ghcr.io",
 		Mode:     "pull",
-		Alias:    "kindest/haproxy:v20230606-42a2262b",
+		Alias:    "neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1",
 	}
 
 	empty := infrav1.LXCMachineImageSource{}

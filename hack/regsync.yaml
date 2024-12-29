@@ -1,0 +1,10 @@
+
+
+sync:
+  - source: docker.io/kindest/haproxy:v20230606-42a2262b
+    target: ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v20230606-42a2262b
+    type: image
+
+  - source: docker.io/kindest/haproxy:v20230606-42a2262b
+    target: ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+    type: image

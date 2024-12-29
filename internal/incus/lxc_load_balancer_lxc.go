@@ -29,6 +29,8 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
+
 	source := api.InstanceSource{
 		Type:     "image",
 		Protocol: "simplestreams",
@@ -42,7 +44,6 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
 	}
 
-	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
 		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.Type),

@@ -31,9 +31,13 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 	if l.networkName == "" {
 		return nil, terminalError{fmt.Errorf("network load balancer cannot be provisioned as .spec.loadBalancer.ovnNetworkName is not specified")}
 	}
-	if !l.lxcClient.Client.HasExtension("network_load_balancer") {
+
+	if supports, err := l.lxcClient.serverSupportsExtension("network_load_balancer"); err != nil {
+		return nil, fmt.Errorf("failed to check if server supports 'network_load_balancer' extension: %w", err)
+	} else if !supports {
 		return nil, terminalError{fmt.Errorf("server missing required 'network_load_balancer' extension, cannot create network load balancers")}
 	}
+
 	if _, _, err := l.lxcClient.Client.GetNetwork(l.networkName); err != nil {
 		return nil, terminalError{fmt.Errorf("failed to check network %q: %w", l.networkName, err)}
 	}
@@ -117,7 +121,7 @@ func (l *loadBalancerNetwork) Reconfigure(ctx context.Context) error {
 		lbConfig.Ports[0].TargetBackend = append(lbConfig.Ports[0].TargetBackend, name)
 	}
 
-	if l.lxcClient.Client.HasExtension("network_load_balancer_health_check") {
+	if v, _ := l.lxcClient.serverSupportsExtension("network_load_balancer_health_check"); v {
 		lbConfig.Config["healthcheck"] = "true"
 		lbConfig.Config["healthcheck.interval"] = "5"
 		lbConfig.Config["healthcheck.timeout"] = "5"

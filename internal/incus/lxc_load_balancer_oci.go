@@ -29,8 +29,12 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
-	if !l.lxcClient.Client.HasExtension("instance_1oci") {
-		return nil, terminalError{fmt.Errorf("server missing required 'instance_1oci' extension, cannot create OCI container instance")}
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
+
+	if supports, err := l.lxcClient.serverSupportsExtension("instance_oci"); err != nil {
+		return nil, fmt.Errorf("failed to check if server supports 'instance_oci' extension: %w", err)
+	} else if !supports {
+		return nil, terminalError{fmt.Errorf("server missing required 'instance_oci' extension, cannot create OCI container instances")}
 	}
 
 	source := api.InstanceSource{
@@ -46,7 +50,6 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
 	}
 
-	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
 		Type:         api.InstanceTypeContainer, // instance type must be Container for OCI containers.

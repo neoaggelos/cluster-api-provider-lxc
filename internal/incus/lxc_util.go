@@ -3,6 +3,7 @@ package incus
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -184,4 +185,13 @@ func (c *Client) getLoadBalancerConfiguration(ctx context.Context, clusterName s
 	}
 
 	return config, nil
+}
+
+// The built-in Client.HasExtension() from Incus cannot be trusted, as it returns true if we skip the GetServer call
+func (c *Client) serverSupportsExtension(name string) (bool, error) {
+	if server, _, err := c.Client.GetServer(); err != nil {
+		return false, fmt.Errorf("failed to retrieve server information: %w", err)
+	} else {
+		return slices.Contains(server.APIExtensions, name), nil
+	}
 }

@@ -55,7 +55,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 			return ctrl.Result{}, nil
 		} else if err == nil {
 			conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
-			r.setLXCMachineAddresses(lxcMachine, lxcClient.ParseMachineAddressIfExists(state))
+			r.setLXCMachineAddresses(lxcMachine, lxcClient.ParseActiveMachineAddresses(state))
 
 			return ctrl.Result{}, nil
 		}

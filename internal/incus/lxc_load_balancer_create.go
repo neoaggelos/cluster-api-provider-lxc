@@ -10,13 +10,13 @@ import (
 )
 
 // CreateLoadBalancer creates the LoadBalancer container and returns the instance address.
-func (c *Client) CreateLoadBalancer(ctx context.Context, lxcCluster *infrav1.LXCCluster) (string, error) {
+func (c *Client) CreateLoadBalancer(ctx context.Context, lxcCluster *infrav1.LXCCluster) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
 	if !c.Client.HasExtension("instance_oci") {
 		// TODO(neoaggelos): find an alternative for LXD or Incus without OCI support
-		return "", fmt.Errorf("server missing required 'instance_oci' extension, cannot create loadbalancer container")
+		return nil, fmt.Errorf("server missing required 'instance_oci' extension, cannot create loadbalancer container")
 	}
 	name := lxcCluster.GetLoadBalancerInstanceName()
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name))
@@ -38,16 +38,16 @@ func (c *Client) CreateLoadBalancer(ctx context.Context, lxcCluster *infrav1.LXC
 			},
 		},
 	}); err != nil {
-		return "", fmt.Errorf("failed to ensure loadbalancer instance exists: %w", err)
+		return nil, fmt.Errorf("failed to ensure loadbalancer instance exists: %w", err)
 	}
 
 	if err := c.ensureInstanceRunning(ctx, name); err != nil {
-		return "", fmt.Errorf("failed to ensure loadbalancer instance is running: %w", err)
+		return nil, fmt.Errorf("failed to ensure loadbalancer instance is running: %w", err)
 	}
 
-	address, err := c.waitForInstanceAddress(ctx, name)
+	addrs, err := c.waitForInstanceAddress(ctx, name)
 	if err != nil {
-		return "", fmt.Errorf("failed to get loadbalancer instance address: %w", err)
+		return nil, fmt.Errorf("failed to get loadbalancer instance address: %w", err)
 	}
-	return address, nil
+	return addrs, nil
 }

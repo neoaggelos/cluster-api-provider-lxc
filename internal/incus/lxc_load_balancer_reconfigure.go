@@ -37,9 +37,10 @@ func (c *Client) ReconfigureLoadBalancer(ctx context.Context, lxcCluster *infrav
 		BackendServers:           make(map[string]loadbalancer.BackendServer, len(instances)),
 	}
 	for _, instance := range instances {
-		if address := c.ParseMachineAddressIfExists(instance.State); address != "" {
+		if addresses := c.ParseActiveMachineAddresses(instance.State); len(addresses) > 0 {
 			// TODO(neoaggelos): care about the instance weight (e.g. for deleted machines)
-			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: address, Weight: 100}
+			// TODO(neoaggelos): care about ipv4 vs ipv6 addresses
+			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: addresses[0], Weight: 100}
 		}
 	}
 

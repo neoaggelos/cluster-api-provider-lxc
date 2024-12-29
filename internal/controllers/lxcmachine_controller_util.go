@@ -52,12 +52,13 @@ func (r *LXCMachineReconciler) getBootstrapData(ctx context.Context, namespace s
 	return string(value), nil
 }
 
-func (r *LXCMachineReconciler) setLXCMachineAddresses(lxcMachine *infrav1.LXCMachine, address string) {
-	lxcMachine.Status.Addresses = []clusterv1.MachineAddress{{
+func (r *LXCMachineReconciler) setLXCMachineAddresses(lxcMachine *infrav1.LXCMachine, addrs []string) {
+	lxcMachine.Status.Addresses = make([]clusterv1.MachineAddress, 0, 1+2*len(addrs))
+	lxcMachine.Status.Addresses = append(lxcMachine.Status.Addresses, clusterv1.MachineAddress{
 		Type:    clusterv1.MachineHostName,
 		Address: lxcMachine.GetInstanceName(),
-	}}
-	if address != "" {
+	})
+	for _, address := range addrs {
 		lxcMachine.Status.Addresses = append(lxcMachine.Status.Addresses,
 			clusterv1.MachineAddress{
 				Type:    clusterv1.MachineInternalIP,

@@ -14,7 +14,7 @@ import (
 )
 
 // CreateInstance creates the LXC instance based on configuration from the machine.
-func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcCluster *infrav1.LXCCluster, cloudInit string) (string, error) {
+func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcCluster *infrav1.LXCCluster, cloudInit string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, instanceCreateTimeout)
 	defer cancel()
 
@@ -41,16 +41,16 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 			},
 		},
 	}); err != nil {
-		return "", fmt.Errorf("failed to ensure instance exists: %w", err)
+		return nil, fmt.Errorf("failed to ensure instance exists: %w", err)
 	}
 
 	if err := c.ensureInstanceRunning(ctx, name); err != nil {
-		return "", fmt.Errorf("failed to ensure loadbalancer instance is running: %w", err)
+		return nil, fmt.Errorf("failed to ensure loadbalancer instance is running: %w", err)
 	}
 
-	address, err := c.waitForInstanceAddress(ctx, name)
+	addrs, err := c.waitForInstanceAddress(ctx, name)
 	if err != nil {
-		return "", fmt.Errorf("failed to get loadbalancer instance address: %w", err)
+		return nil, fmt.Errorf("failed to get loadbalancer instance address: %w", err)
 	}
-	return address, nil
+	return addrs, nil
 }

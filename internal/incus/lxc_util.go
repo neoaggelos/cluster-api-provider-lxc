@@ -24,18 +24,18 @@ func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operatio
 	return nil
 }
 
-func (c *Client) waitForInstanceAddress(ctx context.Context, name string) (string, error) {
+func (c *Client) waitForInstanceAddress(ctx context.Context, name string) ([]string, error) {
 	for {
 		log.FromContext(ctx).V(4).Info("Checking for instance address")
 		if state, _, err := c.Client.GetInstanceState(name); err != nil {
-			return "", fmt.Errorf("failed to GetInstanceState: %w", err)
-		} else if address := c.ParseMachineAddressIfExists(state); address != "" {
-			return address, nil
+			return nil, fmt.Errorf("failed to GetInstanceState: %w", err)
+		} else if addrs := c.ParseActiveMachineAddresses(state); len(addrs) > 0 {
+			return addrs, nil
 		}
 
 		select {
 		case <-ctx.Done():
-			return "", fmt.Errorf("timed out waiting for instance address: %w", ctx.Err())
+			return nil, fmt.Errorf("timed out waiting for instance address: %w", ctx.Err())
 		case <-time.After(time.Second):
 		}
 	}

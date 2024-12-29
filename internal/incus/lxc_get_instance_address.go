@@ -1,18 +1,23 @@
 package incus
 
-import "github.com/lxc/incus/v6/shared/api"
+import (
+	"slices"
 
-// ParseMachineAddressIfExists returns the main IP address of the instance.
+	"github.com/lxc/incus/v6/shared/api"
+)
+
+// ParseActiveMachineAddresses returns the main IP addresses of the instance.
 // It filters for networks that have a host interface name (e.g. vethbbcd39c7), so that CNI addresses are ignored.
 // It filters for addresses with global scope, so that IPv6 link-local addresses are ignored.
-func (c *Client) ParseMachineAddressIfExists(state *api.InstanceState) string {
+func (c *Client) ParseActiveMachineAddresses(state *api.InstanceState) []string {
 	if state == nil {
-		return ""
+		return nil
 	}
+	var addresses []string
 	for _, network := range state.Network {
 		switch {
 		case network.Type == "loopback":
-			// ignore loopback address
+			// ignore loopback
 			continue
 		case network.HostName == "":
 			// only consider networks with a matching interface name on the host
@@ -20,12 +25,23 @@ func (c *Client) ParseMachineAddressIfExists(state *api.InstanceState) string {
 		}
 
 		for _, addr := range network.Addresses {
-			// TODO(neoaggelos): care for addr.Family ipv4 vs ipv6
-			if addr.Scope == "global" {
-				return addr.Address
+			switch {
+			case addr.Scope != "global":
+				// ignore addresses without global scope
+				continue
+			case addr.Family == "inet" && addr.Netmask == "32":
+				// ignore /32 IPv4 addresses, this will most likely be a VIP
+				continue
+			case addr.Family == "inet6" && addr.Netmask == "128":
+				// ignore /128 IPv6 addresses, this will most likely be a VIP
+				continue
 			}
+
+			addresses = append(addresses, addr.Address)
 		}
 	}
 
-	return ""
+	// sort to ensure stable order across invocations
+	slices.Sort(addresses)
+	return addresses
 }

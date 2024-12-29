@@ -115,7 +115,10 @@ func (l *loadBalancerOCI) Reconfigure(ctx context.Context) error {
 		return fmt.Errorf("failed to write load balancer config to container: %w", err)
 	}
 
-	if err := l.lxcClient.killInstance(ctx, l.name, "SIGUSR2"); err != nil {
+	log.FromContext(ctx).V(4).WithValues("signal", "SIGUSR2").Info("Reloading haproxy configuration")
+	if err := l.lxcClient.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
+		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{Command: []string{"kill", "1", "--signal", "SIGUSR2"}}, nil)
+	}); err != nil {
 		return fmt.Errorf("failed to send SIGUSR2 signal to reload configuration: %w", err)
 	}
 

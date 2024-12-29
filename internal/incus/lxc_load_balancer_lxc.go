@@ -121,6 +121,7 @@ func (l *loadBalancerLXC) Reconfigure(ctx context.Context) error {
 		return fmt.Errorf("failed to write load balancer config to container: %w", err)
 	}
 
+	log.FromContext(ctx).V(4).WithValues("signal", "SIGUSR2").Info("Reloading haproxy configuration")
 	if err := l.lxcClient.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
 		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{
 			Command: []string{"systemctl", "reload", "haproxy.service"},

@@ -139,14 +139,6 @@ nextInstance:
 	return instances, nil
 }
 
-func (c *Client) killInstance(ctx context.Context, name string, signal string) error {
-	log.FromContext(ctx).V(4).WithValues("instance", name, "signal", signal).Info("Kill instance")
-
-	return c.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
-		return c.Client.ExecInstance(name, api.InstanceExecPost{Command: []string{"kill", "1", "--signal", signal}}, nil)
-	})
-}
-
 func (c *Client) instanceSourceFromAPI(source infrav1.LXCMachineImageSource) api.InstanceSource {
 	result := api.InstanceSource{
 		Type:        "image",

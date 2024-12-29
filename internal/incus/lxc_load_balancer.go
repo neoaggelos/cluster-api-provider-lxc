@@ -54,4 +54,19 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 	// 		Alias:    "ubuntu/22.04",
 	// 	},
 	// }
+
+	// TODO: make configurable from lxcCluster spec
+	// return &loadBalancerNetwork{
+	// 	lxcClient:        c,
+	// 	clusterName:      lxcCluster.Name,
+	// 	clusterNamespace: lxcCluster.Namespace,
+
+	// 	networkName:   "ovn1",
+	// 	listenAddress: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+	// }
+
+	// TODO: make configurable from lxcCluster spec
+	// return &loadBalancerExternal{
+	// 	address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+	// }
 }

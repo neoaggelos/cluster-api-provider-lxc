@@ -31,7 +31,7 @@ export LXC_LOAD_BALANCER_TYPE=network
 ## LXC image configuration
 
 # option A. use stock ubuntu image
-export LXC_MACHINE_IMAGE="ubuntu/22.04/cloud"
+export LXC_MACHINE_IMAGE="ubuntu/24.04/cloud"
 export LXC_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
 export LXC_MACHINE_IMAGE_PROTOCOL="simplestreams"
 unset HACK_PREKUBEADM_COMMANDS

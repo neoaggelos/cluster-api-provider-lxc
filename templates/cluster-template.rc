@@ -25,8 +25,8 @@ export LXC_LOAD_BALANCER_MACHINE_TYPE="container"
 export LXC_LOAD_BALANCER_MACHINE_PROFILES="default"
 export LXC_LOAD_BALANCER_MACHINE_FLAVOR=""
 
-## Image configuration (for "lxc" type) (or leave empty for Ubuntu 22.04)
-#export LXC_LOAD_BALANCER_MACHINE_IMAGE="ubuntu/22.04"
+## Image configuration (for "lxc" type) (or leave empty for Ubuntu 24.04)
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE="ubuntu/24.04"
 #export LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
 #export LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL="simplestreams"
 
@@ -39,7 +39,7 @@ export LXC_LOAD_BALANCER_MACHINE_FLAVOR=""
 ## LXC image configuration
 
 # option A. use stock ubuntu image
-export LXC_MACHINE_IMAGE="ubuntu/22.04/cloud"
+export LXC_MACHINE_IMAGE="ubuntu/24.04/cloud"
 export LXC_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
 export LXC_MACHINE_IMAGE_PROTOCOL="simplestreams"
 unset HACK_PREKUBEADM_COMMANDS

@@ -33,10 +33,9 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 
 	source := api.InstanceSource{
 		Type:     "image",
-		Protocol: "simplestreams",
+		Alias:    "ubuntu/24.04",
 		Server:   "https://images.linuxcontainers.org",
-		Mode:     "pull",
-		Alias:    "ubuntu/22.04",
+		Protocol: "simplestreams",
 	}
 
 	empty := infrav1.LXCMachineImageSource{}

@@ -39,10 +39,9 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 
 	source := api.InstanceSource{
 		Type:     "image",
-		Protocol: "oci",
-		Server:   "https://ghcr.io",
-		Mode:     "pull",
 		Alias:    "neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1",
+		Server:   "https://ghcr.io",
+		Protocol: "oci",
 	}
 
 	empty := infrav1.LXCMachineImageSource{}

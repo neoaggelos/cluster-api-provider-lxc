@@ -15,7 +15,7 @@ import (
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
-func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, _ *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) error {
+func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) error {
 	// Set the InstanceProvisionedCondition reporting delete is started, and issue a patch in order to make
 	// this visible to the users.
 	// NB. The operation in LXC is fast, so there is the chance the user will not notice the status change;
@@ -34,8 +34,8 @@ func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, _ *clusterv1
 		return fmt.Errorf("failed to delete the instance: %w", err)
 	}
 
-	// If the deleted machine is a control-plane node, remove it from the load balancer configuration
-	if util.IsControlPlaneMachine(machine) {
+	// If the deleted machine is a control-plane node, remove it from the load balancer configuration (unless the cluster is getting deleted)
+	if util.IsControlPlaneMachine(machine) && cluster.ObjectMeta.DeletionTimestamp.IsZero() {
 		if err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Reconfigure(ctx); err != nil {
 			return fmt.Errorf("failed to reconfigure load balancer after removing control plane node: %w", err)
 		}

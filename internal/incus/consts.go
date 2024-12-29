@@ -18,16 +18,6 @@ const (
 	// instanceDeleteTimeout is the timeout for stopping and deleting an instance.
 	instanceDeleteTimeout = 30 * time.Second
 
-	// loadBalancerDefaultHaproxyImage is the default image to use for the load balancer container.
-	// TODO(neoaggelos): mirror and use our own image
-	loadBalancerDefaultHaproxyImage = "kindest/haproxy:v20230606-42a2262b"
-
-	// loadBalancerDefaultHaproxyImageRegistry is the default OCI registry we will pull the load balancer haproxy image.
-	loadBalancerDefaultHaproxyImageRegistry = "https://docker.io"
-
-	// loadBalancerDefaultHaproxyConfigPath is the path where haproxy config is created.
-	loadBalancerDefaultHaproxyConfigPath = "/usr/local/etc/haproxy/haproxy.cfg"
-
 	// configClusterNameKey is the user config key that tracks the cluster name.
 	configClusterNameKey = "user.cluster-name"
 

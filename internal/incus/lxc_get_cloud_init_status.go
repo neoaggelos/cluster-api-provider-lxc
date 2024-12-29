@@ -80,7 +80,7 @@ func (c *Client) CheckCloudInitStatus(ctx context.Context, name string) (result 
 	}
 
 	defer func() {
-		log.FromContext(ctx).V(4).WithValues("status", result, "stdout", strings.TrimSpace(stdout.String()), "stderr", strings.TrimSpace(stderr.String()), "error", rerr).Info("Checked cloud-init status on instance")
+		log.FromContext(ctx).V(4).WithValues("status", result, "stdout", strings.TrimSpace(stdout.String()), "stderr", strings.TrimSpace(stderr.String()), "error", rerr).Info("Check cloud-init status on instance")
 	}()
 	switch {
 	case strings.Contains(stdout.String(), "status: error"):

@@ -3,6 +3,7 @@ package incus
 import (
 	"context"
 
+	"github.com/lxc/incus/v6/shared/api"
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
@@ -22,8 +23,18 @@ type LoadBalancerManager interface {
 func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) LoadBalancerManager {
 	return &loadBalancerOCI{
 		lxcClient:        c,
-		instanceName:     lxcCluster.GetLoadBalancerInstanceName(),
 		clusterName:      lxcCluster.Name,
 		clusterNamespace: lxcCluster.Namespace,
+
+		name: lxcCluster.GetLoadBalancerInstanceName(),
+
+		// TODO: make source configurable from lxcCluster spec
+		source: api.InstanceSource{
+			Type:     "image",
+			Protocol: "oci",
+			Server:   "https://docker.io",
+			Mode:     "pull",
+			Alias:    "kindest/haproxy:v20230606-42a2262b",
+		},
 	}
 }

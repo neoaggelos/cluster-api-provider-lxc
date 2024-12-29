@@ -44,12 +44,10 @@ spec:
   kubeadmConfigSpec:
     preKubeadmCommands:
     - set -x
+    # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
     - |
       if systemd-detect-virt -c -q 2>/dev/null; then
-        echo '---' | tee -a /run/kubeadm/kubeadm.yaml
-        echo 'apiVersion: kubeproxy.config.k8s.io/v1alpha1' | tee -a /run/kubeadm/kubeadm.yaml
-        echo 'kind: KubeProxyConfiguration' | tee -a /run/kubeadm/kubeadm.yaml
-        echo 'conntrack: {maxPerCore: 0}' | tee -a /run/kubeadm/kubeadm.yaml
+        cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
       fi
     - "${HACK_PREKUBEADM_COMMANDS}"
     clusterConfiguration:
@@ -67,6 +65,16 @@ spec:
         kubeletExtraArgs:
           eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
           fail-swap-on: "false"
+    files:
+    - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
+      content: |
+        ---
+        kind: KubeProxyConfiguration
+        apiVersion: kubeproxy.config.k8s.io/v1alpha1
+        conntrack:
+          maxPerCore: 0
+      owner: root:root
+      permissions: "0444"
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
 kind: LXCMachineTemplate

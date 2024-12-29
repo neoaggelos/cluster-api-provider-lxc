@@ -77,26 +77,9 @@ func (l *loadBalancerOCI) Reconfigure(ctx context.Context) error {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 
-	instances, err := l.lxcClient.getInstancesWithFilter(ctx, api.InstanceTypeAny, map[string]string{
-		configClusterNameKey:      l.clusterName,
-		configClusterNamespaceKey: l.clusterNamespace,
-		configInstanceRoleKey:     "control-plane",
-	})
+	config, err := l.lxcClient.getLoadBalancerConfiguration(ctx, l.clusterName, l.clusterNamespace)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve cluster control plane instances: %w", err)
-	}
-
-	config := &loadbalancer.ConfigData{
-		FrontendControlPlanePort: "6443",
-		BackendControlPlanePort:  "6443",
-		BackendServers:           make(map[string]loadbalancer.BackendServer, len(instances)),
-	}
-	for _, instance := range instances {
-		if addresses := l.lxcClient.ParseActiveMachineAddresses(instance.State); len(addresses) > 0 {
-			// TODO(neoaggelos): care about the instance weight (e.g. for deleted machines)
-			// TODO(neoaggelos): care about ipv4 vs ipv6 addresses
-			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: addresses[0], Weight: 100}
-		}
+		return fmt.Errorf("failed to build load balancer configuration: %w", err)
 	}
 
 	haproxyCfg, err := loadbalancer.Config(config, loadbalancer.DefaultTemplate)

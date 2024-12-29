@@ -11,6 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
 )
 
 // wait executes an Incus API call that returns an Operation, and waits for the operation to complete.
@@ -150,4 +151,30 @@ func (c *Client) instanceSourceFromAPI(source infrav1.LXCMachineImageSource) api
 	}
 
 	return result
+}
+
+func (c *Client) getLoadBalancerConfiguration(ctx context.Context, clusterName string, clusterNamespace string) (*loadbalancer.ConfigData, error) {
+	instances, err := c.getInstancesWithFilter(ctx, api.InstanceTypeAny, map[string]string{
+		configClusterNameKey:      clusterName,
+		configClusterNamespaceKey: clusterNamespace,
+		configInstanceRoleKey:     "control-plane",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve cluster control plane instances: %w", err)
+	}
+
+	config := &loadbalancer.ConfigData{
+		FrontendControlPlanePort: "6443",
+		BackendControlPlanePort:  "6443",
+		BackendServers:           make(map[string]loadbalancer.BackendServer, len(instances)),
+	}
+	for _, instance := range instances {
+		if addresses := c.ParseActiveMachineAddresses(instance.State); len(addresses) > 0 {
+			// TODO(neoaggelos): care about the instance weight (e.g. for deleted machines)
+			// TODO(neoaggelos): care about ipv4 vs ipv6 addresses
+			config.BackendServers[instance.Name] = loadbalancer.BackendServer{Address: addresses[0], Weight: 100}
+		}
+	}
+
+	return config, nil
 }

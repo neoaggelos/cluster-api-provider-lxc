@@ -6,6 +6,7 @@ import (
 
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/cluster-api/util/conditions"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
@@ -19,10 +20,11 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	if err != nil {
 		err = fmt.Errorf("failed to create load balancer: %w", err)
 		if incus.IsTerminalError(err) {
+			log.FromContext(ctx).Error(err, "Failed to provision cluster infrastructure")
 			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "%s", err)
 			lxcCluster.Status.FailureReason = ptr.To(infrav1.FailureReasonLoadBalancerProvisionFailed)
 			lxcCluster.Status.FailureMessage = ptr.To(infrav1.FailureMessageLoadBalancerProvisionFailed)
-			return err
+			return nil
 		}
 		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
 		return err

@@ -1,3 +1,5 @@
+set -u
+
 #######################################################
 ## Kubernetes cluster configuration
 
@@ -13,6 +15,27 @@ export LXC_SECRET_NAME=incus-secret
 export LXC_SECRET_NAMESPACE=
 
 #######################################################
+## LXC load balancer configuration overrides
+
+# Set to "lxc" or "oci"
+#export LXC_LOAD_BALANCER_TYPE=lxc
+
+# Configure load balancer instance (or leave empty)
+export LXC_LOAD_BALANCER_MACHINE_TYPE="container"
+export LXC_LOAD_BALANCER_MACHINE_PROFILES="default"
+export LXC_LOAD_BALANCER_MACHINE_FLAVOR=""
+
+# Image configuration (for lxc type) (or leave empty for Ubuntu 22.04)
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE="ubuntu/22.04"
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL="simplestreams"
+
+# Image configuration (for oci type) (or leave empty for default kindest/haproxy image)
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE="neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1"
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER="https://ghcr.io"
+#export LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL="oci"
+
+#######################################################
 ## LXC image configuration
 
 # option A. use stock ubuntu image
@@ -21,7 +44,7 @@ export LXC_SECRET_NAMESPACE=
 #export LXC_MACHINE_IMAGE_PROTOCOL="simplestreams"
 #unset HACK_PREKUBEADM_COMMANDS
 
-## option B. configuration (using custom base image)
+# option B. configuration (using custom base image)
 #export LXC_MACHINE_IMAGE="k8s-u22-v1.32.0-lxc"
 #export LXC_MACHINE_IMAGE_SERVER=""
 #export LXC_MACHINE_IMAGE_PROTOCOL=""
@@ -33,12 +56,12 @@ export LXC_SECRET_NAMESPACE=
 ## option A. virtual machines (requires kvm)
 #export LXC_MACHINE_TYPE="virtual-machine"
 #export LXC_MACHINE_PROFILES="default"
-#export LXC_MACHINE_INSTANCE_TYPE="c2-m4"
+#export LXC_MACHINE_FLAVOR="c2-m4"
 
-## option B. lxc containers (requires cluster-api-lxc profile)
-#export LXC_MACHINE_TYPE="container"
-#export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
-#export LXC_MACHINE_INSTANCE_TYPE=""
+# option B. lxc containers (requires cluster-api-lxc profile)
+export LXC_MACHINE_TYPE="container"
+export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
+export LXC_MACHINE_FLAVOR=""
 
 #######################################################
 ## Control plane and workers configuration
@@ -49,7 +72,7 @@ export CONTROL_PLANE_MACHINE_IMAGE_SERVER="${LXC_MACHINE_IMAGE_SERVER}"
 export CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL="${LXC_MACHINE_IMAGE_PROTOCOL}"
 export CONTROL_PLANE_MACHINE_TYPE="${LXC_MACHINE_TYPE}"
 export CONTROL_PLANE_MACHINE_PROFILES="${LXC_MACHINE_PROFILES}"
-export CONTROL_PLANE_MACHINE_INSTANCE_TYPE="${LXC_MACHINE_INSTANCE_TYPE}"
+export CONTROL_PLANE_MACHINE_FLAVOR="${LXC_MACHINE_FLAVOR}"
 
 # Worker machine configuration
 export WORKER_MACHINE_IMAGE="${LXC_MACHINE_IMAGE}"
@@ -57,7 +80,7 @@ export WORKER_MACHINE_IMAGE_SERVER="${LXC_MACHINE_IMAGE_SERVER}"
 export WORKER_MACHINE_IMAGE_PROTOCOL="${LXC_MACHINE_IMAGE_PROTOCOL}"
 export WORKER_MACHINE_TYPE="${LXC_MACHINE_TYPE}"
 export WORKER_MACHINE_PROFILES="${LXC_MACHINE_PROFILES}"
-export WORKER_MACHINE_INSTANCE_TYPE="${LXC_MACHINE_INSTANCE_TYPE}"
+export WORKER_MACHINE_FLAVOR="${LXC_MACHINE_FLAVOR}"
 
 #######################################################
 ## (HACK) Support for stock Ubuntu images

@@ -16,6 +16,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudprovider"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
 
@@ -139,7 +140,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
 	}
 
-	if err := r.cloudProviderNodePatch(ctx, remoteClient, lxcMachine); err != nil {
+	if err := cloudprovider.PatchNode(ctx, remoteClient, lxcMachine); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
 	}
 

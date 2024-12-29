@@ -31,10 +31,9 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 	}
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("networkName", l.networkName, "listenAddress", l.listenAddress))
-	if _, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil {
-		if !strings.Contains(err.Error(), "Network Load Balancer not found") {
-			return nil, fmt.Errorf("failed to GetNetworkLoadBalancer: %w", err)
-		}
+	if _, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "Network load balancer not found") {
+		return nil, fmt.Errorf("failed to GetNetworkLoadBalancer: %w", err)
+	} else if err == nil {
 		return []string{l.listenAddress}, nil
 	}
 
@@ -110,6 +109,14 @@ func (l *loadBalancerNetwork) Reconfigure(ctx context.Context) error {
 		})
 
 		lbConfig.Ports[0].TargetBackend = append(lbConfig.Ports[0].TargetBackend, name)
+	}
+
+	if l.lxcClient.Client.HasExtension("network_load_balancer_health_check") {
+		lbConfig.Config["healthcheck"] = "true"
+		lbConfig.Config["healthcheck.interval"] = "5"
+		lbConfig.Config["healthcheck.timeout"] = "5"
+		lbConfig.Config["healthcheck.failure_count"] = "3"
+		lbConfig.Config["healthcheck.success_count"] = "2"
 	}
 
 	if err := l.lxcClient.Client.UpdateNetworkLoadBalancer(l.networkName, l.listenAddress, lbConfig, ""); err != nil {

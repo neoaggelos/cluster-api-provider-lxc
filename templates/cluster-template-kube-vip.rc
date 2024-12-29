@@ -17,29 +17,29 @@ export LXC_SECRET_NAMESPACE=
 #######################################################
 ## kube-vip configuration
 
-# Must be set to external for kube-vip
+# Must be set to "external" for kube-vip
 export LXC_LOAD_BALANCER_TYPE=external
 
-# Configure static IP to use for kube-vip. This must be an unused IP address on the network.
-export LXC_LOAD_BALANCER_ADDRESS=10.0.42.1
+## Configure static IP to use for kube-vip. This must be an unused IP address on the network.
+#export LXC_LOAD_BALANCER_ADDRESS=10.0.42.1
 
-# Optionally, configure name of interface to bind vip (will use first found if not set)
+## Optionally, configure name of interface to bind vip (will use first found if not set)
 #export LXC_LOAD_BALANCER_INTERFACE=eth0
 
 #######################################################
 ## LXC image configuration
 
-# option A. use stock ubuntu image
+## option A. use stock ubuntu image
 #export LXC_MACHINE_IMAGE="ubuntu/22.04/cloud"
 #export LXC_MACHINE_IMAGE_SERVER="https://images.linuxcontainers.org"
 #export LXC_MACHINE_IMAGE_PROTOCOL="simplestreams"
 #unset HACK_PREKUBEADM_COMMANDS
 
-# option B. configuration (using custom base image)
-export LXC_MACHINE_IMAGE="k8s-u22-v1.32.0-lxc"
-export LXC_MACHINE_IMAGE_SERVER=""
-export LXC_MACHINE_IMAGE_PROTOCOL=""
-export HACK_PREKUBEADM_COMMANDS="kubelet --version"
+## option B. configuration (using custom base image)
+#export LXC_MACHINE_IMAGE="k8s-u22-v1.32.0-lxc"
+#export LXC_MACHINE_IMAGE_SERVER=""
+#export LXC_MACHINE_IMAGE_PROTOCOL=""
+#export HACK_PREKUBEADM_COMMANDS="kubelet --version"
 
 #######################################################
 ## LXC instance configuration
@@ -49,10 +49,10 @@ export HACK_PREKUBEADM_COMMANDS="kubelet --version"
 #export LXC_MACHINE_PROFILES="default"
 #export LXC_MACHINE_FLAVOR="c2-m4"
 
-# option B. lxc containers (requires cluster-api-lxc profile)
-export LXC_MACHINE_TYPE="container"
-export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
-export LXC_MACHINE_FLAVOR=""
+## option B. lxc containers (requires cluster-api-lxc profile)
+#export LXC_MACHINE_TYPE="container"
+#export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
+#export LXC_MACHINE_FLAVOR=""
 
 #######################################################
 ## Control plane and workers configuration

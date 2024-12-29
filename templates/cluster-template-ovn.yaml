@@ -1,0 +1,151 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 10.244.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+    serviceDomain: cluster.local
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: ${CLUSTER_NAME}-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    kind: LXCCluster
+    name: ${CLUSTER_NAME}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCCluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  secretRef:
+    name: ${LXC_SECRET_NAME}
+    namespace: ${LXC_SECRET_NAMESPACE}
+  controlPlaneEndpoint:
+    host: ${LXC_LOAD_BALANCER_ADDRESS}
+    port: 6443
+  loadBalancer:
+    type: ${LXC_LOAD_BALANCER_TYPE:=network}
+    ovnNetworkName: ${LXC_LOAD_BALANCER_NETWORK}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: ${CLUSTER_NAME}-control-plane
+spec:
+  replicas: ${CONTROL_PLANE_MACHINE_COUNT}
+  version: ${KUBERNETES_VERSION}
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+      kind: LXCMachineTemplate
+      name: ${CLUSTER_NAME}-control-plane
+  kubeadmConfigSpec:
+    preKubeadmCommands:
+    - set -x
+    # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
+    - |
+      if systemd-detect-virt -c -q 2>/dev/null; then
+        cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
+      fi
+    - "${HACK_PREKUBEADM_COMMANDS}"
+    clusterConfiguration:
+      apiServer:
+        certSANs:
+        - localhost
+        - 127.0.0.1
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+          fail-swap-on: "false"
+    joinConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+          fail-swap-on: "false"
+    files:
+    - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
+      content: |
+        ---
+        kind: KubeProxyConfiguration
+        apiVersion: kubeproxy.config.k8s.io/v1alpha1
+        conntrack:
+          maxPerCore: 0
+      owner: root:root
+      permissions: "0444"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCMachineTemplate
+metadata:
+  name: "${CLUSTER_NAME}-control-plane"
+spec:
+  template:
+    spec:
+      type: ${CONTROL_PLANE_MACHINE_TYPE}
+      flavor: ${CONTROL_PLANE_MACHINE_FLAVOR:=""}
+      profiles: [${CONTROL_PLANE_MACHINE_PROFILES}]
+      image:
+        protocol: ${CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL}
+        server: ${CONTROL_PLANE_MACHINE_IMAGE_SERVER}
+        name: ${CONTROL_PLANE_MACHINE_IMAGE}
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  clusterName: ${CLUSTER_NAME}
+  replicas: ${WORKER_MACHINE_COUNT}
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+  template:
+    spec:
+      version: ${KUBERNETES_VERSION}
+      clusterName: ${CLUSTER_NAME}
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: ${CLUSTER_NAME}-md-0
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+        kind: LXCMachineTemplate
+        name: ${CLUSTER_NAME}-md-0
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCMachineTemplate
+metadata:
+  name: "${CLUSTER_NAME}-md-0"
+spec:
+  template:
+    spec:
+      type: ${WORKER_MACHINE_TYPE}
+      flavor: ${WORKER_MACHINE_FLAVOR:=""}
+      profiles: [${WORKER_MACHINE_PROFILES}]
+      image:
+        protocol: ${WORKER_MACHINE_IMAGE_PROTOCOL}
+        server: ${WORKER_MACHINE_IMAGE_SERVER}
+        name: ${WORKER_MACHINE_IMAGE}
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+kind: KubeadmConfigTemplate
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  template:
+    spec:
+      preKubeadmCommands: [set -x, "${HACK_PREKUBEADM_COMMANDS}"]
+      joinConfiguration:
+        nodeRegistration:
+          kubeletExtraArgs:
+            eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+            fail-swap-on: "false"

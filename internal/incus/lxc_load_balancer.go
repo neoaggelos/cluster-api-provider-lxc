@@ -37,4 +37,21 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 			Alias:    "kindest/haproxy:v20230606-42a2262b",
 		},
 	}
+
+	// return &loadBalancerLXC{
+	// 	lxcClient:        c,
+	// 	clusterName:      lxcCluster.Name,
+	// 	clusterNamespace: lxcCluster.Namespace,
+
+	// 	name: lxcCluster.GetLoadBalancerInstanceName(),
+
+	// 	// TODO: make source configurable from lxcCluster spec
+	// 	source: api.InstanceSource{
+	// 		Type:     "image",
+	// 		Protocol: "simplestreams",
+	// 		Server:   "https://images.linuxcontainers.org",
+	// 		Mode:     "pull",
+	// 		Alias:    "ubuntu/22.04",
+	// 	},
+	// }
 }

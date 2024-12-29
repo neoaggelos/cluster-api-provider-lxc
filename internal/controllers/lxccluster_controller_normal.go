@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/cluster-api/util/conditions"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
@@ -17,9 +18,18 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
 	if err != nil {
 		err = fmt.Errorf("failed to create load balancer: %w", err)
+		if incus.IsTerminalError(err) {
+			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "%s", err)
+			lxcCluster.Status.FailureReason = ptr.To(infrav1.FailureReasonLoadBalancerProvisionFailed)
+			lxcCluster.Status.FailureMessage = ptr.To(infrav1.FailureMessageLoadBalancerProvisionFailed)
+			return err
+		}
 		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
 		return err
 	}
+
+	lxcCluster.Status.FailureReason = nil
+	lxcCluster.Status.FailureMessage = nil
 
 	// Surface the control plane endpoint
 	if lxcCluster.Spec.ControlPlaneEndpoint.Host == "" {

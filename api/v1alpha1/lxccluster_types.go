@@ -57,6 +57,22 @@ type LXCClusterStatus struct {
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 
+	// FailureReason will be set in the event that there is a terminal problem reconciling the LXCCluster
+	// and will contain a succinct value suitable for machine interpretation.
+	//
+	// This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+	// but instead indicate that something is fundamentally wrong with the LXCCluster and that it cannot be recovered.
+	// +optional
+	FailureReason *string `json:"failureReason,omitempty"`
+
+	// FailureMessage will be set in the event that there is a terminal problem reconciling the LXCCluster
+	// and will contain a more verbose string suitable for logging and human consumption.
+	//
+	// This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
+	// but instead indicate that something is fundamentally wrong with the LXCCluster and that it cannot be recovered.
+	// +optional
+	FailureMessage *string `json:"failureMessage,omitempty"`
+
 	// V1Beta2 groups all status fields that will be added in LXCCluster's status with the v1beta2 version.
 	V1Beta2 *LXCClusterV1Beta2Status `json:"v1beta2,omitempty"`
 }

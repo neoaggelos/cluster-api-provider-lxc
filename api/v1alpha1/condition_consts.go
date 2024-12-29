@@ -16,6 +16,11 @@ const (
 	// an error while provisioning the container that provides the cluster load balancer; those kind of
 	// errors are usually transient and failed provisioning are automatically re-tried by the controller.
 	LoadBalancerProvisioningFailedReason = "LoadBalancerProvisioningFailed"
+
+	// LoadBalancerProvisioningAbortedReason (Severity=Error) documents a LXCCluster controller detecting
+	// an error while provisioning the cluster load balancer due to configuration not supported by the
+	// the remote server.
+	LoadBalancerProvisioningAbortedReason = "LoadBalancerProvisioningAbortedReason"
 )
 
 // Conditions and condition Reasons for the LXCMachine object.
@@ -78,4 +83,13 @@ const (
 	FailureReasonBootstrapFailed = "BootstrapFailed"
 
 	FailureMessageBootstrapFailed = "The LXCMachine instance cloud-init finished with status error, which means that the bootstrapping process failed"
+)
+
+// FailureReasons and FailureMessages for the LXCCluster object.
+const (
+	// FailureReasonLoadBalancerProvisionFailed documents a LXCCluster controller detecting a terminal failure
+	// while provisioning the load balancer.
+	FailureReasonLoadBalancerProvisionFailed = "LoadBalancerProvisionFailed"
+
+	FailureMessageLoadBalancerProvisionFailed = "The LoadBalancer failed to provision with a terminal error. See the LoadBalancerAvailable condition for more details."
 )

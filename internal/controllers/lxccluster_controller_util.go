@@ -18,7 +18,7 @@ func patchLXCCluster(ctx context.Context, patchHelper *patch.Helper, lxcCluster 
 		conditions.WithConditions(
 			infrav1.LoadBalancerAvailableCondition,
 		),
-		conditions.WithStepCounterIf(lxcCluster.ObjectMeta.DeletionTimestamp.IsZero()),
+		conditions.WithStepCounterIf(lxcCluster.ObjectMeta.DeletionTimestamp.IsZero() && lxcCluster.Status.FailureReason == nil),
 	)
 
 	// Patch the object, ignoring conflicts on the conditions owned by this controller.

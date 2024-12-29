@@ -22,7 +22,7 @@ func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine 
 			infrav1.InstanceProvisionedCondition,
 			infrav1.BootstrapSucceededCondition,
 		),
-		conditions.WithStepCounterIf(lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil),
+		conditions.WithStepCounterIf(lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil && lxcMachine.Status.FailureReason == nil),
 	)
 
 	// Patch the object, ignoring conflicts on the conditions owned by this controller.

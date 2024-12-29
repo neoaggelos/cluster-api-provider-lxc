@@ -9,6 +9,7 @@ import (
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
 )
 
@@ -20,8 +21,7 @@ type loadBalancerLXC struct {
 	clusterNamespace string
 
 	name string
-
-	source api.InstanceSource
+	spec infrav1.LXCMachineSpec
 }
 
 // Create implements loadBalancerManager.
@@ -29,12 +29,27 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
+	source := api.InstanceSource{
+		Type:     "image",
+		Protocol: "simplestreams",
+		Server:   "https://images.linuxcontainers.org",
+		Mode:     "pull",
+		Alias:    "ubuntu/22.04",
+	}
+
+	empty := infrav1.LXCMachineImageSource{}
+	if l.spec.Image != empty {
+		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
+	}
+
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
-		Name:   l.name,
-		Type:   api.InstanceTypeContainer,
-		Source: l.source,
+		Name:         l.name,
+		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.Type),
+		Source:       source,
+		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{
+			Profiles: l.spec.Profiles,
 			Config: map[string]string{
 				configClusterNameKey:      l.clusterName,
 				configClusterNamespaceKey: l.clusterNamespace,

@@ -27,7 +27,7 @@ func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operatio
 
 func (c *Client) waitForInstanceAddress(ctx context.Context, name string) ([]string, error) {
 	for {
-		log.FromContext(ctx).V(4).Info("Checking for instance address")
+		log.FromContext(ctx).V(4).Info("Waiting for instance address")
 		if state, _, err := c.Client.GetInstanceState(name); err != nil {
 			return nil, fmt.Errorf("failed to GetInstanceState: %w", err)
 		} else if addrs := c.ParseActiveMachineAddresses(state); len(addrs) > 0 {
@@ -151,6 +151,13 @@ func (c *Client) instanceSourceFromAPI(source infrav1.LXCMachineImageSource) api
 	}
 
 	return result
+}
+
+func (c *Client) instanceTypeFromAPI(instanceType string) api.InstanceType {
+	if instanceType == "" {
+		return api.InstanceTypeContainer
+	}
+	return api.InstanceType(instanceType)
 }
 
 func (c *Client) getLoadBalancerConfiguration(ctx context.Context, clusterName string, clusterNamespace string) (*loadbalancer.ConfigData, error) {

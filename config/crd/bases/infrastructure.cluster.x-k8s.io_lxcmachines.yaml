@@ -60,6 +60,13 @@ spec:
           spec:
             description: LXCMachineSpec defines the desired state of LXCMachine.
             properties:
+              flavor:
+                description: |-
+                  Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+                  Examples:
+                    - `t3.micro` -- match specs of an EC2 t3.micro instance
+                    - `c2-m4` -- 2 cores, 4 GB RAM
+                type: string
               image:
                 description: Image is the image to use for provisioning the machine.
                 properties:
@@ -80,16 +87,7 @@ spec:
                     description: Snapshot is the snapshot to use for launching the
                       instance. It should be in the form "instance/snapshot".
                     type: string
-                required:
-                - name
                 type: object
-              instanceType:
-                description: |-
-                  Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
-                  Examples:
-                    - `t3.micro` -- match specs of an EC2 t3.micro instance
-                    - `c2-m4` -- 2 cores, 4 GB RAM
-                type: string
               profiles:
                 description: Profiles is a list of profiles to attach to the instance.
                 items:
@@ -100,11 +98,12 @@ spec:
                   (lxc:///<containername>)
                 type: string
               type:
-                description: Type is the type of instance to create (container or
-                  virtual machine).
+                description: Type of instance to create (container or virtual machine).
+                  Empty defaults to "container".
                 enum:
                 - container
                 - virtual-machine
+                - ""
                 type: string
             required:
             - image
@@ -177,19 +176,19 @@ spec:
                 type: array
               failureMessage:
                 description: |-
-                  failureMessage will be set in the event that there is a terminal problem reconciling the FooMachine
+                  FailureMessage will be set in the event that there is a terminal problem reconciling the LXCMachine
                   and will contain a more verbose string suitable for logging and human consumption.
 
                   This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
-                  but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+                  but instead indicate that something is fundamentally wrong with the LXCMachine and that it cannot be recovered.
                 type: string
               failureReason:
                 description: |-
-                  FailureReason will be set in the event that there is a terminal problem reconciling the FooMachine
+                  FailureReason will be set in the event that there is a terminal problem reconciling the LXCMachine
                   and will contain a succinct value suitable for machine interpretation.
 
                   This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
-                  but instead indicate that something is fundamentally wrong with the FooMachine and that it cannot be recovered.
+                  but instead indicate that something is fundamentally wrong with the LXCMachine and that it cannot be recovered.
                 type: string
               loadBalancerConfigured:
                 description: LoadBalancerConfigured will be set to true once for each

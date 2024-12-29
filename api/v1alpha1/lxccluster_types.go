@@ -41,10 +41,71 @@ type LXCClusterSpec struct {
 	// SecretRef is a reference to a secret with credentials to access LXC (e.g. Incus, LXD) server.
 	SecretRef corev1.SecretReference `json:"secretRef,omitempty"`
 
-	// TODO(neoaggelos): add configuration for load balancer instance (resource limits, image, configuration, skip if not supported)
+	// LoadBalancer is configuration for provisioning the load balancer of the cluster.
+	LoadBalancer LXCClusterLoadBalancer `json:"loadBalancer"`
 
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`
+}
+
+// LXCClusterLoadBalancer is configuration for provisioning the load balancer of the cluster.
+type LXCClusterLoadBalancer struct {
+	// Type of load balancer to provision for the cluster.
+	//
+	//   - "lxc" will spin up a plain Ubuntu instance and install haproxy.
+	//
+	//     The controller will automatically update the list of backends on the
+	//     haproxy configuration control plane nodes are added or removed from
+	//     the cluster.
+	//
+	//     No other configuration is required for "lxc" mode. The load balancer
+	//     instance can be configured through .spec.loadBalancer.instanceSpec.
+	//
+	//   - "external" will not create any load balancer. Should be used alongside
+	//     something like kube-vip, otherwise the cluster will fail to provision.
+	//
+	//     When using "external" mode, the load balancer address must be set in
+	//     .spec.controlPlaneEndpoint.host on the LXCCluster object.
+	//
+	//   - "oci" will spin up an OCI instance running haproxy using the kind
+	//     haproxy image.
+	//
+	//     The controller will automatically update the list of backends on the
+	//     haproxy configuration control plane nodes are added or removed from
+	//     the cluster.
+	//
+	//     No other configuration is required for "oci" mode. The load balancer
+	//     instance can be configured through .spec.loadBalancer.instanceSpec.
+	//
+	//     Requires server extensions: "instance_oci"
+	//
+	//   - "network" will create a network load balancer.
+	//
+	//     The controller will automatically update the list of backends on the
+	//     haproxy configuration control plane nodes are added or removed from
+	//     the cluster.
+	//
+	//     When using "network" mode, the load balancer address must be set in
+	//     .spec.controlPlaneEndpoint.host on the LXCCluster object. In addition,
+	//     the ovn network to use must be set in .spec.loadBalancer.ovnNetworkName.
+	//     The cluster administrator is responsible to ensure that the OVN network
+	//     is configured and that the LXCMachineTemplate objects have appropriate
+	//     profiles to use the OVN network.
+	//
+	//     Requires server extensions: "network_load_balancer"
+	//
+	//     Optional server extensions: "network_load_balancer_health_checks"
+	//
+	// +kubebuilder:validation:Enum:=lxc;external;oci;network
+	Type string `json:"type,omitempty"`
+
+	// InstanceSpec can be used to adjust the load balancer instance when using the "lxc" or "oci" load balancer type.
+	// +optional
+	InstanceSpec LXCMachineSpec `json:"instanceSpec,omitempty"`
+
+	// OVNNetworkName is the name of the OVN network to use when using the "network" load balancer type.
+	// +optional
+	OVNNetworkName string `json:"ovnNetworkName,omitempty"`
 }
 
 // LXCClusterStatus defines the observed state of LXCCluster.

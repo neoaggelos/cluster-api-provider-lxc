@@ -26,11 +26,17 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
-	if !l.lxcClient.Client.HasExtension("network_load_balancer") {
-		return nil, &terminalError{fmt.Errorf("server missing required 'network_load_balancer' extension, cannot create network load balancers")}
-	}
-
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("networkName", l.networkName, "listenAddress", l.listenAddress))
+
+	if l.networkName == "" {
+		return nil, terminalError{fmt.Errorf("network load balancer cannot be provisioned as .spec.loadBalancer.ovnNetworkName is not specified")}
+	}
+	if !l.lxcClient.Client.HasExtension("network_load_balancer") {
+		return nil, terminalError{fmt.Errorf("server missing required 'network_load_balancer' extension, cannot create network load balancers")}
+	}
+	if _, _, err := l.lxcClient.Client.GetNetwork(l.networkName); err != nil {
+		return nil, terminalError{fmt.Errorf("failed to check network %q: %w", l.networkName, err)}
+	}
 	if _, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "Network load balancer not found") {
 		return nil, fmt.Errorf("failed to GetNetworkLoadBalancer: %w", err)
 	} else if err == nil {
@@ -62,7 +68,7 @@ func (l *loadBalancerNetwork) Delete(ctx context.Context) error {
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("networkName", l.networkName, "listenAddress", l.listenAddress))
 
 	log.FromContext(ctx).V(4).Info("Deleting network load balancer")
-	if err := l.lxcClient.Client.DeleteNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "Network load balancer not found") {
+	if err := l.lxcClient.Client.DeleteNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "not found") {
 		return fmt.Errorf("failed to DeleteNetworkLoadBalancer: %w", err)
 	}
 	return nil

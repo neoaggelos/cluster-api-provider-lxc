@@ -3,7 +3,6 @@ package incus
 import (
 	"context"
 
-	"github.com/lxc/incus/v6/shared/api"
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 )
 
@@ -21,52 +20,51 @@ type LoadBalancerManager interface {
 
 // LoadBalancerManagerForCluster returns the proper LoadBalancerManager based on the lxcCluster spec.
 func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) LoadBalancerManager {
-	return &loadBalancerOCI{
-		lxcClient:        c,
-		clusterName:      lxcCluster.Name,
-		clusterNamespace: lxcCluster.Namespace,
+	switch lxcCluster.Spec.LoadBalancer.Type {
+	case "lxc", "":
+		return &loadBalancerLXC{
+			lxcClient:        c,
+			clusterName:      lxcCluster.Name,
+			clusterNamespace: lxcCluster.Namespace,
 
-		name: lxcCluster.GetLoadBalancerInstanceName(),
+			name: lxcCluster.GetLoadBalancerInstanceName(),
+			spec: lxcCluster.Spec.LoadBalancer.InstanceSpec,
+		}
+	case "oci":
+		return &loadBalancerOCI{
+			lxcClient:        c,
+			clusterName:      lxcCluster.Name,
+			clusterNamespace: lxcCluster.Namespace,
 
-		// TODO: make source configurable from lxcCluster spec
-		source: api.InstanceSource{
-			Type:     "image",
-			Protocol: "oci",
-			Server:   "https://docker.io",
-			Mode:     "pull",
-			Alias:    "kindest/haproxy:v20230606-42a2262b",
-		},
+			name: lxcCluster.GetLoadBalancerInstanceName(),
+			spec: lxcCluster.Spec.LoadBalancer.InstanceSpec,
+		}
+	case "network":
+		return &loadBalancerNetwork{
+			lxcClient:        c,
+			clusterName:      lxcCluster.Name,
+			clusterNamespace: lxcCluster.Namespace,
+
+			networkName:   lxcCluster.Spec.LoadBalancer.OVNNetworkName,
+			listenAddress: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+		}
+	case "external":
+		return &loadBalancerExternal{
+			lxcClient:        c,
+			clusterName:      lxcCluster.Name,
+			clusterNamespace: lxcCluster.Namespace,
+
+			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+		}
+	default:
+		// TODO: handle this more gracefully.
+		// If only Go had enums.
+		return &loadBalancerExternal{
+			lxcClient:        c,
+			clusterName:      lxcCluster.Name,
+			clusterNamespace: lxcCluster.Namespace,
+
+			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+		}
 	}
-
-	// return &loadBalancerLXC{
-	// 	lxcClient:        c,
-	// 	clusterName:      lxcCluster.Name,
-	// 	clusterNamespace: lxcCluster.Namespace,
-
-	// 	name: lxcCluster.GetLoadBalancerInstanceName(),
-
-	// 	// TODO: make source configurable from lxcCluster spec
-	// 	source: api.InstanceSource{
-	// 		Type:     "image",
-	// 		Protocol: "simplestreams",
-	// 		Server:   "https://images.linuxcontainers.org",
-	// 		Mode:     "pull",
-	// 		Alias:    "ubuntu/22.04",
-	// 	},
-	// }
-
-	// TODO: make configurable from lxcCluster spec
-	// return &loadBalancerNetwork{
-	// 	lxcClient:        c,
-	// 	clusterName:      lxcCluster.Name,
-	// 	clusterNamespace: lxcCluster.Namespace,
-
-	// 	networkName:   "ovn1",
-	// 	listenAddress: lxcCluster.Spec.ControlPlaneEndpoint.Host,
-	// }
-
-	// TODO: make configurable from lxcCluster spec
-	// return &loadBalancerExternal{
-	// 	address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
-	// }
 }

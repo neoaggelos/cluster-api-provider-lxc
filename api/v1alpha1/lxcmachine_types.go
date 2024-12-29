@@ -40,17 +40,20 @@ type LXCMachineSpec struct {
 	// +optional
 	ProviderID *string `json:"providerID,omitempty"`
 
-	// Type is the type of instance to create (container or virtual machine).
-	// +kubebuilder:validation:Enum:=container;virtual-machine
+	// Type of instance to create (container or virtual machine). Empty defaults to "container".
+	// +kubebuilder:validation:Enum:=container;virtual-machine;""
+	// +optional
 	Type string `json:"type,omitempty"`
 
 	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
 	// Examples:
 	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
 	//   - `c2-m4` -- 2 cores, 4 GB RAM
-	Flavor string `json:"instanceType,omitempty"`
+	// +optional
+	Flavor string `json:"flavor,omitempty"`
 
 	// Profiles is a list of profiles to attach to the instance.
+	// +optional
 	Profiles []string `json:"profiles,omitempty"`
 
 	// Image is the image to use for provisioning the machine.
@@ -59,6 +62,7 @@ type LXCMachineSpec struct {
 
 type LXCMachineImageSource struct {
 	// Name is the image name or alias.
+	// +optional
 	Name string `json:"name"`
 
 	// Fingerprint is the image fingerprint.

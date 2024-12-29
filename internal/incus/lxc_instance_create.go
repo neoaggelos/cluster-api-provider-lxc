@@ -28,7 +28,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
-		Type:         api.InstanceType(lxcMachine.Spec.Type),
+		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.Type),
 		Source:       c.instanceSourceFromAPI(lxcMachine.Spec.Image),
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{

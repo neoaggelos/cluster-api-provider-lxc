@@ -9,6 +9,7 @@ import (
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
 )
 
@@ -20,8 +21,7 @@ type loadBalancerOCI struct {
 	clusterNamespace string
 
 	name string
-
-	source api.InstanceSource
+	spec infrav1.LXCMachineSpec
 }
 
 // Create implements loadBalancerManager.
@@ -29,16 +29,31 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
 
-	if !l.lxcClient.Client.HasExtension("instance_oci") {
-		return nil, &terminalError{fmt.Errorf("server missing required 'instance_oci' extension, cannot create OCI container instance")}
+	if !l.lxcClient.Client.HasExtension("instance_1oci") {
+		return nil, terminalError{fmt.Errorf("server missing required 'instance_1oci' extension, cannot create OCI container instance")}
+	}
+
+	source := api.InstanceSource{
+		Type:     "image",
+		Protocol: "oci",
+		Server:   "https://docker.io",
+		Mode:     "pull",
+		Alias:    "kindest/haproxy:v20230606-42a2262b",
+	}
+
+	empty := infrav1.LXCMachineImageSource{}
+	if l.spec.Image != empty {
+		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
 	}
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
-		Name:   l.name,
-		Type:   api.InstanceTypeContainer,
-		Source: l.source,
+		Name:         l.name,
+		Type:         api.InstanceTypeContainer, // instance type must be Container for OCI containers.
+		Source:       source,
+		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{
+			Profiles: l.spec.Profiles,
 			Config: map[string]string{
 				configClusterNameKey:      l.clusterName,
 				configClusterNamespaceKey: l.clusterNamespace,

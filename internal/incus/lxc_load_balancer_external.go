@@ -31,7 +31,7 @@ func (l *loadBalancerExternal) Create(ctx context.Context) ([]string, error) {
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
 
 	if l.address == "" {
-		return nil, fmt.Errorf("using external load balancer but no address is configured")
+		return nil, terminalError{fmt.Errorf("using external load balancer but no address is configured")}
 	}
 
 	log.FromContext(ctx).V(4).Info("Using external load balancer")

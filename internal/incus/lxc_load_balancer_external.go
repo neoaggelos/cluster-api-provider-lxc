@@ -8,6 +8,8 @@ import (
 )
 
 // loadBalancerExternal is a no-op LoadBalancerManager when using an external LoadBalancer mechanism for the cluster (e.g. kube-vip).
+//
+// TODO: extend to support automatically finding an available VIP from an address range (so that we don't have to statically assign kube-vips).
 type loadBalancerExternal struct {
 	lxcClient *Client
 
@@ -21,6 +23,10 @@ type loadBalancerExternal struct {
 func (l *loadBalancerExternal) Create(ctx context.Context) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, loadBalancerCreateTimeout)
 	defer cancel()
+
+	_ = l.clusterName
+	_ = l.clusterNamespace
+	_ = l.lxcClient
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
 

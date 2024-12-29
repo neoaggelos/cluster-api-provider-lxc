@@ -1,0 +1,239 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 10.244.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+    serviceDomain: cluster.local
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: ${CLUSTER_NAME}-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    kind: LXCCluster
+    name: ${CLUSTER_NAME}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCCluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  controlPlaneEndpoint:
+    host: ${LXC_LOAD_BALANCER_ADDRESS}
+    port: 6443
+  loadBalancer:
+    type: ${LXC_LOAD_BALANCER_TYPE}
+  secretRef:
+    name: ${LXC_SECRET_NAME}
+    namespace: ${LXC_SECRET_NAMESPACE}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: ${CLUSTER_NAME}-control-plane
+spec:
+  replicas: ${CONTROL_PLANE_MACHINE_COUNT}
+  version: ${KUBERNETES_VERSION}
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+      kind: LXCMachineTemplate
+      name: ${CLUSTER_NAME}-control-plane
+  kubeadmConfigSpec:
+    preKubeadmCommands:
+    - set -x
+    # Workaround for https://github.com/kube-vip/kube-vip/issues/684, see https://github.com/kube-vip/kube-vip/issues/684#issuecomment-1883955927
+    - |
+      if [ -f /run/kubeadm/kubeadm.yaml ]; then
+        sed -i 's#path: /etc/kubernetes/admin.conf#path: /etc/kubernetes/super-admin.conf#' /etc/kubernetes/manifests/kube-vip.yaml
+      fi
+    # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
+    - |
+      if systemd-detect-virt -c -q 2>/dev/null; then
+        cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
+      fi
+    - "${HACK_PREKUBEADM_COMMANDS}"
+    # # Workaround for https://github.com/kube-vip/kube-vip/issues/684, see https://github.com/kube-vip/kube-vip/issues/684#issuecomment-1883955927
+    # # This reverts the previous change. It is disabled as it restarts kube-vip and causes flakiness during cluster setup
+    # postKubeadmCommands:
+    # - |
+    #   if [ -f /run/kubeadm/kubeadm.yaml ]; then
+    #     sed -i 's#path: /etc/kubernetes/super-admin.conf#path: /etc/kubernetes/admin.conf#' /etc/kubernetes/manifests/kube-vip.yaml
+    #   fi
+    clusterConfiguration:
+      apiServer:
+        certSANs:
+        - localhost
+        - 127.0.0.1
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+          fail-swap-on: "false"
+    joinConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+          fail-swap-on: "false"
+    files:
+    - content: |
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          creationTimestamp: null
+          name: kube-vip
+          namespace: kube-system
+        spec:
+          containers:
+          - args:
+            - manager
+            env:
+            - name: vip_arp
+              value: "true"
+            - name: port
+              value: "6443"
+            - name: vip_interface
+              value: ${LXC_LOAD_BALANCER_INTERFACE:=""}
+            - name: vip_cidr
+              value: "32"
+            - name: cp_enable
+              value: "true"
+            - name: cp_namespace
+              value: kube-system
+            - name: vip_ddns
+              value: "false"
+            - name: svc_enable
+              value: "true"
+            - name: svc_leasename
+              value: plndr-svcs-lock
+            - name: svc_election
+              value: "true"
+            - name: vip_leaderelection
+              value: "true"
+            - name: vip_leasename
+              value: plndr-cp-lock
+            - name: vip_leaseduration
+              value: "15"
+            - name: vip_renewdeadline
+              value: "10"
+            - name: vip_retryperiod
+              value: "2"
+            - name: address
+              value: ${LXC_LOAD_BALANCER_ADDRESS}
+            - name: prometheus_server
+              value: :2112
+            image: ghcr.io/kube-vip/kube-vip:v0.6.4
+            imagePullPolicy: IfNotPresent
+            name: kube-vip
+            resources: {}
+            securityContext:
+              capabilities:
+                add:
+                - NET_ADMIN
+                - NET_RAW
+            volumeMounts:
+            - mountPath: /etc/kubernetes/admin.conf
+              name: kubeconfig
+            - mountPath: /etc/hosts
+              name: etchosts
+          hostNetwork: true
+          volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+            name: kubeconfig
+          - hostPath:
+              path: /etc/kube-vip.hosts
+              type: File
+            name: etchosts
+        status: {}
+      owner: root:root
+      path: /etc/kubernetes/manifests/kube-vip.yaml
+      permissions: "0644"
+    - content: 127.0.0.1 localhost kubernetes
+      owner: root:root
+      path: /etc/kube-vip.hosts
+      permissions: "0644"
+    - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
+      content: |
+        ---
+        kind: KubeProxyConfiguration
+        apiVersion: kubeproxy.config.k8s.io/v1alpha1
+        conntrack:
+          maxPerCore: 0
+      owner: root:root
+      permissions: "0444"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCMachineTemplate
+metadata:
+  name: "${CLUSTER_NAME}-control-plane"
+spec:
+  template:
+    spec:
+      type: ${CONTROL_PLANE_MACHINE_TYPE}
+      flavor: ${CONTROL_PLANE_MACHINE_FLAVOR:=""}
+      profiles: [${CONTROL_PLANE_MACHINE_PROFILES}]
+      image:
+        protocol: ${CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL}
+        server: ${CONTROL_PLANE_MACHINE_IMAGE_SERVER}
+        name: ${CONTROL_PLANE_MACHINE_IMAGE}
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  clusterName: ${CLUSTER_NAME}
+  replicas: ${WORKER_MACHINE_COUNT}
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+  template:
+    spec:
+      version: ${KUBERNETES_VERSION}
+      clusterName: ${CLUSTER_NAME}
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: ${CLUSTER_NAME}-md-0
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+        kind: LXCMachineTemplate
+        name: ${CLUSTER_NAME}-md-0
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: LXCMachineTemplate
+metadata:
+  name: "${CLUSTER_NAME}-md-0"
+spec:
+  template:
+    spec:
+      type: ${WORKER_MACHINE_TYPE}
+      flavor: ${WORKER_MACHINE_FLAVOR:=""}
+      profiles: [${WORKER_MACHINE_PROFILES}]
+      image:
+        protocol: ${WORKER_MACHINE_IMAGE_PROTOCOL}
+        server: ${WORKER_MACHINE_IMAGE_SERVER}
+        name: ${WORKER_MACHINE_IMAGE}
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+kind: KubeadmConfigTemplate
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  template:
+    spec:
+      preKubeadmCommands: [set -x, "${HACK_PREKUBEADM_COMMANDS}"]
+      joinConfiguration:
+        nodeRegistration:
+          kubeletExtraArgs:
+            eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+            fail-swap-on: "false"

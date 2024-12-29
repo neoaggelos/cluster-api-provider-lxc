@@ -26,7 +26,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name, "role", role))
 
-	if err := c.createInstanceIfNotExists(ctx, name, api.InstancesPost{
+	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
 		Type:         api.InstanceType(lxcMachine.Spec.Type),
 		Source:       c.instanceSourceFromAPI(lxcMachine.Spec.Image),

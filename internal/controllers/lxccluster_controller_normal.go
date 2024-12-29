@@ -14,7 +14,7 @@ import (
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
 	// Create the container hosting the load balancer.
-	lbIPs, err := lxcClient.CreateLoadBalancer(ctx, lxcCluster)
+	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
 	if err != nil {
 		err = fmt.Errorf("failed to create load balancer: %w", err)
 		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)

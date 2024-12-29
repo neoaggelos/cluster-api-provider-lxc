@@ -72,8 +72,8 @@ func (c *Client) forceRemoveInstanceIfExists(ctx context.Context, name string) e
 	return nil
 }
 
-func (c *Client) createInstanceIfNotExists(ctx context.Context, name string, instance api.InstancesPost) error {
-	state, _, err := c.Client.GetInstanceState(name)
+func (c *Client) createInstanceIfNotExists(ctx context.Context, instance api.InstancesPost) error {
+	state, _, err := c.Client.GetInstanceState(instance.Name)
 	if err != nil {
 		if !strings.Contains(err.Error(), "Instance not found") {
 			return fmt.Errorf("failed to GetInstanceState: %w", err)
@@ -81,7 +81,7 @@ func (c *Client) createInstanceIfNotExists(ctx context.Context, name string, ins
 	} else if state.Status == "Error" || state.StatusCode.IsFinal() {
 		log.FromContext(ctx).V(4).Info("Deleting old failed instance", "state", state)
 
-		if err := c.wait(ctx, "DeleteInstance", func() (incus.Operation, error) { return c.Client.DeleteInstance(name) }); err != nil {
+		if err := c.wait(ctx, "DeleteInstance", func() (incus.Operation, error) { return c.Client.DeleteInstance(instance.Name) }); err != nil {
 			return err
 		}
 	} else {

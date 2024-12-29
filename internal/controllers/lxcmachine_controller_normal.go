@@ -93,7 +93,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 	// update load balancer
 	if util.IsControlPlaneMachine(machine) && !lxcMachine.Status.LoadBalancerConfigured {
-		if err := lxcClient.ReconfigureLoadBalancer(ctx, lxcCluster); err != nil {
+		if err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Reconfigure(ctx); err != nil {
 			return ctrl.Result{}, fmt.Errorf("failed to update loadbalancer configuration: %w", err)
 		}
 		lxcMachine.Status.LoadBalancerConfigured = true

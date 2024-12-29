@@ -29,7 +29,7 @@ func (r *LXCClusterReconciler) reconcileDelete(ctx context.Context, lxcCluster *
 	}
 
 	// Delete the container hosting the load balancer
-	if err := lxcClient.DeleteLoadBalancer(ctx, lxcCluster); err != nil {
+	if err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Delete(ctx); err != nil {
 		return fmt.Errorf("failed to delete the load balancer instance: %w", err)
 	}
 

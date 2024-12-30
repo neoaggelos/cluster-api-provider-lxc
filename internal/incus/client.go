@@ -27,7 +27,7 @@ type Options struct {
 	InsecureSkipVerify bool   `json:"insecureSkipVerify"`
 }
 
-// NewOptionsFromSecret parses a Kubernetes secret and derives Options for talking to Incus.
+// NewOptionsFromSecret parses a Kubernetes secret and derives Options for connecting to Incus.
 //
 // The secret can be created like this:
 //
@@ -41,6 +41,14 @@ type Options struct {
 //	$ kubectl create secret generic incus-secret \
 //		--from-literal=server="https://10.0.0.49:8443" \
 //		--from-literal=server-crt="$(sudo cat /var/lib/incus/cluster.crt)" \
+//		--from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
+//		--from-literal=client-key="$(cat ~/.config/incus/client.key)" \
+//		--from-literal=project="default"
+//
+//	# or with insecure skip verify
+//	$ kubectl create secret generic lxd-secret \
+//		--from-literal=server=https://10.0.1.2:8901 \
+//		--from-literal=insecure-skip-verify=true \
 //		--from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
 //		--from-literal=client-key="$(cat ~/.config/incus/client.key)" \
 //		--from-literal=project="default"

@@ -16,6 +16,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudprovider"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
@@ -101,23 +102,23 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 	// check cloud-init status on the node
 	cloudInitStatus, err := lxcClient.CheckCloudInitStatus(ctx, lxcMachine.GetInstanceName())
-	if err != nil || cloudInitStatus == incus.CloudInitStatusUnknown {
+	if err != nil || cloudInitStatus == cloudinit.StatusUnknown {
 		log.Error(err, "Could not retrieve cloud-init status")
 		conditions.MarkUnknown(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingUnknownStatusReason, "%s", err)
 	}
 	switch cloudInitStatus {
-	case incus.CloudInitStatusRunning:
+	case cloudinit.StatusRunning:
 		log.Info("Waiting for bootstrap script to complete")
 		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingReason, clusterv1.ConditionSeverityInfo, "")
-		return ctrl.Result{RequeueAfter: 20 * time.Second}, nil
-	case incus.CloudInitStatusError:
+		return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+	case cloudinit.StatusError:
 		err := fmt.Errorf("bootstrap failed")
 		log.WithValues("FailureReason", infrav1.FailureReasonBootstrapFailed).Error(err, "Marking machine as failed")
 		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrapFailedReason, clusterv1.ConditionSeverityError, "%s", err)
 		lxcMachine.Status.FailureReason = ptr.To(infrav1.FailureReasonBootstrapFailed)
 		lxcMachine.Status.FailureMessage = ptr.To(infrav1.FailureMessageBootstrapFailed)
 		return ctrl.Result{}, nil
-	case incus.CloudInitStatusDone:
+	case cloudinit.StatusDone:
 		log.Info("Bootstrap finished successfully")
 		conditions.MarkTrue(lxcMachine, infrav1.BootstrapSucceededCondition)
 	default:

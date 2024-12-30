@@ -19,7 +19,7 @@ import (
 // Returns an error if anything failed.
 func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operation, error)) error {
 	if op, err := f(); err != nil {
-		return fmt.Errorf("failed to %s: %q", name, err)
+		return fmt.Errorf("failed to %s: %w", name, err)
 	} else if err := op.WaitContext(ctx); err != nil && !strings.Contains(err.Error(), "Operation not found") {
 		return fmt.Errorf("failed to wait for %s operation: %w", name, err)
 	}

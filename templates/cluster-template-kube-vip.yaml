@@ -183,7 +183,7 @@ spec:
       image:
         protocol: ${CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL}
         server: ${CONTROL_PLANE_MACHINE_IMAGE_SERVER}
-        name: ${CONTROL_PLANE_MACHINE_IMAGE}
+        name: "${CONTROL_PLANE_MACHINE_IMAGE}"
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -222,7 +222,7 @@ spec:
       image:
         protocol: ${WORKER_MACHINE_IMAGE_PROTOCOL}
         server: ${WORKER_MACHINE_IMAGE_SERVER}
-        name: ${WORKER_MACHINE_IMAGE}
+        name: "${WORKER_MACHINE_IMAGE}"
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate

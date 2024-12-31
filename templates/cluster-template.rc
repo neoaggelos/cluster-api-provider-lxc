@@ -36,10 +36,10 @@ export LXC_LOAD_BALANCER_MACHINE_TYPE="container"
 export LXC_LOAD_BALANCER_MACHINE_PROFILES="default"
 export LXC_LOAD_BALANCER_MACHINE_FLAVOR=""
 
-## Image configuration (for "lxc" type) (or leave empty for Ubuntu 24.04)
-#export LXC_LOAD_BALANCER_MACHINE_IMAGE="${LXC_DEFAULT_MACHINE_IMAGE}"
-#export LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER="${LXC_DEFAULT_MACHINE_IMAGE_SERVER}"
-#export LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL="simplestreams"
+# Image configuration (for "lxc" type) (or leave empty for Ubuntu 24.04)
+export LXC_LOAD_BALANCER_MACHINE_IMAGE="${LXC_DEFAULT_MACHINE_IMAGE}"
+export LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER="${LXC_DEFAULT_MACHINE_IMAGE_SERVER}"
+export LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL="simplestreams"
 
 ## Image configuration (for "oci" type) (or leave empty for default kindest/haproxy image)
 #export LXC_LOAD_BALANCER_MACHINE_IMAGE="neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1"
@@ -69,10 +69,10 @@ export LXC_MACHINE_TYPE="virtual-machine"
 export LXC_MACHINE_PROFILES="default"
 export LXC_MACHINE_FLAVOR="c2-m4"
 
-## option B. lxc containers (requires cluster-api-lxc profile)
-#export LXC_MACHINE_TYPE="container"
-#export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
-#export LXC_MACHINE_FLAVOR=""
+# option B. lxc containers (controller appends default kubeadm profile as needed)
+export LXC_MACHINE_TYPE="container"
+export LXC_MACHINE_PROFILES="default"
+export LXC_MACHINE_FLAVOR=""
 
 #######################################################
 ## Control plane and workers configuration

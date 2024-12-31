@@ -44,6 +44,21 @@ type LXCClusterSpec struct {
 	// LoadBalancer is configuration for provisioning the load balancer of the cluster.
 	LoadBalancer LXCClusterLoadBalancer `json:"loadBalancer"`
 
+	// Running Kubernetes on LXC requires an LXC profile enabling privileged
+	// containers and similar configuration. By default, a profile with name
+	// "cluster-api-$namespace-$name" profile is created and associated with
+	// all created Machines automatically.
+	//
+	// This option can be used to disable this behavior. In that case, the cluster
+	// administrator is responsible to create the LXC profile and specify it in the
+	// .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+	//
+	// This is useful in cases where a limited project is used, which does not
+	// allow privileged containers.
+	//
+	// +optional
+	SkipDefaultKubeadmProfile bool `json:"skipDefaultKubeadmProfile"`
+
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`
 }
@@ -208,6 +223,11 @@ func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
 // GetLoadBalancerInstanceName returns the instance name for the cluster load balancer.
 func (c *LXCCluster) GetLoadBalancerInstanceName() string {
 	return fmt.Sprintf("%s-%s-lb", c.Namespace, c.Name)
+}
+
+// GetProfileName returns the profile name for the cluster LXC machines.
+func (c *LXCCluster) GetProfileName() string {
+	return fmt.Sprintf("cluster-api-%s-%s", c.Namespace, c.Name)
 }
 
 // +kubebuilder:object:root=true

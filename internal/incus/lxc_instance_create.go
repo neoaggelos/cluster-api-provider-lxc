@@ -3,6 +3,7 @@ package incus
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/cluster-api/util"
@@ -26,13 +27,21 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name, "role", role))
 
+	instanceType := c.instanceTypeFromAPI(lxcMachine.Spec.Type)
+
+	profiles := lxcMachine.Spec.Profiles
+	if instanceType == api.InstanceTypeContainer && !lxcCluster.Spec.SkipDefaultKubeadmProfile && !slices.Contains(lxcMachine.Spec.Profiles, lxcCluster.GetProfileName()) {
+		// for containers, include the default kubeadm profile
+		profiles = append(lxcMachine.Spec.Profiles, lxcCluster.GetProfileName())
+	}
+
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
 		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.Type),
 		Source:       c.instanceSourceFromAPI(lxcMachine.Spec.Image),
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{
-			Profiles: lxcMachine.Spec.Profiles,
+			Profiles: profiles,
 			Config: map[string]string{
 				configClusterNameKey:      lxcCluster.Name,
 				configClusterNamespaceKey: lxcCluster.Namespace,
@@ -41,6 +50,10 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 			},
 		},
 	}); err != nil {
+
+		// TODO: Handle the below situation as a terminalError.
+		//
+		// E1230 21:42:45.170291 1388422 controller.go:316] "Reconciler error" err="failed to create instance: failed to ensure instance exists: failed to wait for CreateInstance operation: Requested image's type \"container\" doesn't match instance type \"virtual-machine\"" controller="lxcmachine" controllerGroup="infrastructure.cluster.x-k8s.io" controllerKind="LXCMachine" LXCMachine="default/c1-control-plane-kprl9" namespace="default" name="c1-control-plane-kprl9" reconcileID="d40dfec7-ce45-4585-9a1e-5974efbeb925"
 		return nil, fmt.Errorf("failed to ensure instance exists: %w", err)
 	}
 

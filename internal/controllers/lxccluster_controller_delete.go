@@ -24,8 +24,13 @@ func (r *LXCClusterReconciler) reconcileDelete(ctx context.Context, lxcCluster *
 		return err
 	}
 	conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, clusterv1.DeletingReason, clusterv1.ConditionSeverityInfo, "")
+	conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, clusterv1.DeletingReason, clusterv1.ConditionSeverityInfo, "")
 	if err := patchLXCCluster(ctx, patchHelper, lxcCluster); err != nil {
 		return fmt.Errorf("failed to patch LXCCluster: %w", err)
+	}
+
+	if err := lxcClient.DeleteProfile(ctx, lxcCluster.GetProfileName()); err != nil {
+		return fmt.Errorf("failed to delete the default kubeadm profile: %w", err)
 	}
 
 	// Delete the container hosting the load balancer

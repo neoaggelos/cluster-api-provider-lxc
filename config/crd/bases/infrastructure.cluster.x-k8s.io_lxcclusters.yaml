@@ -201,6 +201,20 @@ spec:
                     type: string
                 type: object
                 x-kubernetes-map-type: atomic
+              skipDefaultKubeadmProfile:
+                description: |-
+                  Running Kubernetes on LXC requires an LXC profile enabling privileged
+                  containers and similar configuration. By default, a profile with name
+                  "cluster-api-$namespace-$name" profile is created and associated with
+                  all created Machines automatically.
+
+                  This option can be used to disable this behavior. In that case, the cluster
+                  administrator is responsible to create the LXC profile and specify it in the
+                  .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+
+                  This is useful in cases where a limited project is used, which does not
+                  allow privileged containers.
+                type: boolean
             required:
             - loadBalancer
             type: object

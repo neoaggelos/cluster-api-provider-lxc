@@ -60,9 +60,9 @@ export LXC_MACHINE_TYPE="virtual-machine"
 export LXC_MACHINE_PROFILES="default"
 export LXC_MACHINE_FLAVOR="c2-m4"
 
-## option B. lxc containers (requires cluster-api-lxc profile)
+## option B. lxc containers (requires kubeadm profile, added automatically by the controller)
 #export LXC_MACHINE_TYPE="container"
-#export LXC_MACHINE_PROFILES="default,cluster-api-lxc"
+#export LXC_MACHINE_PROFILES="default"
 #export LXC_MACHINE_FLAVOR=""
 
 #######################################################

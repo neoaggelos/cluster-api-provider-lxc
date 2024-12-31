@@ -16,6 +16,7 @@ func patchLXCCluster(ctx context.Context, patchHelper *patch.Helper, lxcCluster 
 	// A step counter is added to represent progress during the provisioning process (instead we are hiding it during the deletion process).
 	conditions.SetSummary(lxcCluster,
 		conditions.WithConditions(
+			infrav1.KubeadmProfileAvailableCondition,
 			infrav1.LoadBalancerAvailableCondition,
 		),
 		conditions.WithStepCounterIf(lxcCluster.ObjectMeta.DeletionTimestamp.IsZero() && lxcCluster.Status.FailureReason == nil),
@@ -27,6 +28,7 @@ func patchLXCCluster(ctx context.Context, patchHelper *patch.Helper, lxcCluster 
 		lxcCluster,
 		patch.WithOwnedConditions{Conditions: []clusterv1.ConditionType{
 			clusterv1.ReadyCondition,
+			infrav1.KubeadmProfileAvailableCondition,
 			infrav1.LoadBalancerAvailableCondition,
 		}},
 	)

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -19,6 +18,7 @@ import (
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudprovider"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
 )
 
 func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) (ctrl.Result, error) {
@@ -124,6 +124,8 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	default:
 		// This should never happen, but not adding a panic on purpose. If only Go had enums :)
 	}
+
+	// TODO(neoaggelos): consider editing the instance and unsetting "cloud-init.user-data" configuration key.
 
 	// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
 	// to contact to get the ProviderID for the Node hosted on this machine, so return early.

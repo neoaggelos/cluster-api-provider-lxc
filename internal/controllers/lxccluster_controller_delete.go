@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -12,6 +11,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 )
 
 func (r *LXCClusterReconciler) reconcileDelete(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {

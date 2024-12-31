@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/lxc/incus/v6/shared/api"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
@@ -14,6 +13,7 @@ import (
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/profile"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {

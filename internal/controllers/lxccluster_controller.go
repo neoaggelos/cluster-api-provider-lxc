@@ -126,7 +126,7 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// Handle deleted clusters
 	if !lxcCluster.DeletionTimestamp.IsZero() {
-		return ctrl.Result{}, r.reconcileDelete(ctx, lxcCluster, lxcClient)
+		return r.reconcileDelete(ctx, cluster, lxcCluster, lxcClient)
 	}
 
 	// Handle non-deleted clusters

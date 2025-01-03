@@ -36,11 +36,15 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("serverType", lxcCluster.Spec.ServerType))
 
 	// Create the default kubeadm profile for LXC containers
+	profileName := lxcCluster.GetProfileName()
 	if lxcCluster.Spec.SkipDefaultKubeadmProfile {
-		conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileDisabledReason, clusterv1.ConditionSeverityInfo, "Will not create default kubeadm profile %s", lxcCluster.GetProfileName())
+		conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileDisabledReason, clusterv1.ConditionSeverityInfo, "Will not create default kubeadm profile %s", profileName)
 	} else {
-		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: lxcCluster.GetProfileName(), ProfilePut: profile.DefaultKubeadm}); err != nil {
-			err = fmt.Errorf("failed to create default kubeadm profile %q: %w", lxcCluster.GetProfileName(), err)
+
+		ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profileName", profileName))
+		log.FromContext(ctx).Info("Creating default kubeadm profile")
+		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: profileName, ProfilePut: profile.DefaultKubeadm}); err != nil {
+			err = fmt.Errorf("failed to create default kubeadm profile %q: %w", profileName, err)
 			log.FromContext(ctx).Error(err, "Failed to create default kubeadm profile")
 
 			if incus.IsTerminalError(err) {
@@ -58,6 +62,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	}
 
 	// Create the container hosting the load balancer.
+	log.FromContext(ctx).Info("Creating load balancer")
 	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
 	if err != nil {
 		err = fmt.Errorf("failed to create load balancer: %w", err)

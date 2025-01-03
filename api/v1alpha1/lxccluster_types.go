@@ -42,6 +42,16 @@ type LXCClusterSpec struct {
 	// SecretRef is a reference to a secret with credentials to access LXC (e.g. Incus, LXD) server.
 	SecretRef corev1.SecretReference `json:"secretRef,omitempty"`
 
+	// ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster and LXCMachine
+	// controllers to work with both implementations, as some defaults (e.g. remotes for pulling
+	// images) are not compatible.
+	//
+	// If left unset, will be automatically set by the LXCCluster controller while provisioning
+	// the cluster.
+	//
+	// +kubebuilder:validation:Enum:=incus;lxd;unknown;""
+	ServerType string `json:"serverType,omitempty"`
+
 	// LoadBalancer is configuration for provisioning the load balancer of the cluster.
 	LoadBalancer LXCClusterLoadBalancer `json:"loadBalancer"`
 

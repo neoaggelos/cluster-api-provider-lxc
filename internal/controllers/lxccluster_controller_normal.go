@@ -17,6 +17,24 @@ import (
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
+	// Detect if we are using LXD or Incus.
+	if lxcCluster.Spec.ServerType == "" {
+		if server, _, err := lxcClient.Client.GetServer(); err != nil {
+			log.FromContext(ctx).Error(fmt.Errorf("failed to GetServer: %w", err), "Failed to retrieve server information")
+		} else {
+			switch server.Environment.Server {
+			case "incus":
+				lxcCluster.Spec.ServerType = "incus"
+			case "lxd":
+				lxcCluster.Spec.ServerType = "lxd"
+			default:
+				lxcCluster.Spec.ServerType = "unknown"
+				log.FromContext(ctx).Error(fmt.Errorf("unknown server name %q", server.Environment.Server), "Failed to identify remote server type")
+			}
+		}
+	}
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("serverType", lxcCluster.Spec.ServerType))
+
 	// Create the default kubeadm profile for LXC containers
 	if lxcCluster.Spec.SkipDefaultKubeadmProfile {
 		conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileDisabledReason, clusterv1.ConditionSeverityInfo, "Will not create default kubeadm profile %s", lxcCluster.GetProfileName())

@@ -76,18 +76,9 @@ func (c *Client) forceRemoveInstanceIfExists(ctx context.Context, name string) e
 
 func (c *Client) createInstanceIfNotExists(ctx context.Context, instance api.InstancesPost) error {
 	state, _, err := c.Client.GetInstanceState(instance.Name)
-	if err != nil {
-		if !strings.Contains(err.Error(), "Instance not found") {
-			return fmt.Errorf("failed to GetInstanceState: %w", err)
-		}
-	} else if state.Status == "Error" || state.StatusCode.IsFinal() {
-		// TODO(neoaggelos): machines can be in Error state because the hypervisor is not available, do not recreate in that case
-		log.FromContext(ctx).V(4).Info("Deleting old failed instance", "state", state)
-
-		if err := c.wait(ctx, "DeleteInstance", func() (incus.Operation, error) { return c.Client.DeleteInstance(instance.Name) }); err != nil {
-			return err
-		}
-	} else {
+	if err != nil && !strings.Contains(err.Error(), "Instance not found") {
+		return fmt.Errorf("failed to GetInstanceState: %w", err)
+	} else if err == nil {
 		log.FromContext(ctx).V(4).WithValues("status", state.Status).Info("Instance exists")
 		return nil
 	}

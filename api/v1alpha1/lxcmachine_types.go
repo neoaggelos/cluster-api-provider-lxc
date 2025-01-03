@@ -82,6 +82,10 @@ type LXCMachineImageSource struct {
 	Snapshot string `json:"snapshot,omitempty"`
 }
 
+func (s *LXCMachineImageSource) IsZero() bool {
+	return s == nil || *s == LXCMachineImageSource{}
+}
+
 // LXCMachineStatus defines the observed state of LXCMachine.
 type LXCMachineStatus struct {
 	// Ready denotes that the LXC machine is ready.

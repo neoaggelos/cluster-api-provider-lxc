@@ -34,11 +34,32 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		// for containers, include the default kubeadm profile
 		profiles = append(lxcMachine.Spec.Profiles, lxcCluster.GetProfileName())
 	}
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profiles", profiles))
+
+	// If image is not set, use the default image (depending on the remote server type)
+	image := lxcMachine.Spec.Image
+	if image.IsZero() {
+		switch lxcCluster.Spec.ServerType {
+		case "lxd":
+			image = infrav1.LXCMachineImageSource{
+				Name:     "24.04",
+				Server:   "https://cloud-images.ubuntu.com/releases",
+				Protocol: "simplestreams",
+			}
+		case "incus":
+			image = infrav1.LXCMachineImageSource{
+				Name:     "ubuntu/24.04/cloud",
+				Server:   "https://images.linuxcontainers.org",
+				Protocol: "simplestreams",
+			}
+		}
+	}
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("image", image))
 
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
 		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.Type),
-		Source:       c.instanceSourceFromAPI(lxcMachine.Spec.Image),
+		Source:       c.instanceSourceFromAPI(image),
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{
 			Profiles: profiles,

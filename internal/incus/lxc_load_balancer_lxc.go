@@ -20,6 +20,8 @@ type loadBalancerLXC struct {
 	clusterName      string
 	clusterNamespace string
 
+	serverType string
+
 	name string
 	spec infrav1.LXCMachineSpec
 }
@@ -31,22 +33,31 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 
-	source := api.InstanceSource{
-		Type:     "image",
-		Alias:    "ubuntu/24.04",
-		Server:   "https://images.linuxcontainers.org",
-		Protocol: "simplestreams",
+	// If image is not set, use the default image (depending on the remote server type)
+	image := l.spec.Image
+	if image.IsZero() {
+		switch l.serverType {
+		case "lxd":
+			image = infrav1.LXCMachineImageSource{
+				Name:     "24.04",
+				Server:   "https://cloud-images.ubuntu.com/releases",
+				Protocol: "simplestreams",
+			}
+		case "incus":
+			image = infrav1.LXCMachineImageSource{
+				Name:     "ubuntu/24.04/cloud",
+				Server:   "https://images.linuxcontainers.org",
+				Protocol: "simplestreams",
+			}
+		}
 	}
 
-	empty := infrav1.LXCMachineImageSource{}
-	if l.spec.Image != empty {
-		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
-	}
+	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("image", image))
 
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
 		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.Type),
-		Source:       source,
+		Source:       l.lxcClient.instanceSourceFromAPI(image),
 		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{
 			Profiles: l.spec.Profiles,
@@ -69,7 +80,6 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 		return nil, fmt.Errorf("failed to get loadbalancer instance address: %w", err)
 	}
 
-	log.FromContext(ctx).Info("Installing haproxy")
 	if err := l.lxcClient.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
 		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{
 			Command: []string{"bash", "-e", "-c", "if ! which haproxy; then mkdir -p /etc/haproxy; apt update; apt install haproxy -y; fi"},

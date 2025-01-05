@@ -8,6 +8,7 @@ import (
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
@@ -30,6 +31,7 @@ func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, cluster *clu
 	}
 
 	// Delete the machine
+	log.FromContext(ctx).Info("Deleting instance")
 	if err := lxcClient.DeleteInstance(ctx, lxcMachine); err != nil {
 		return fmt.Errorf("failed to delete the instance: %w", err)
 	}

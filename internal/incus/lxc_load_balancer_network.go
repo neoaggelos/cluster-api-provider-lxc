@@ -41,9 +41,12 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 	if _, _, err := l.lxcClient.Client.GetNetwork(l.networkName); err != nil {
 		return nil, terminalError{fmt.Errorf("failed to check network %q: %w", l.networkName, err)}
 	}
-	if _, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "Network load balancer not found") {
+	if lb, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "Network load balancer not found") {
 		return nil, fmt.Errorf("failed to GetNetworkLoadBalancer: %w", err)
 	} else if err == nil {
+		if lb.Config[configClusterNameKey] != l.clusterName || lb.Config[configClusterNamespaceKey] != l.clusterNamespace {
+			return nil, terminalError{fmt.Errorf("conflict: a LoadBalancer with IP %s already exists without the required keys %s=%s and %s=%s", l.listenAddress, configClusterNameKey, l.clusterName, configClusterNamespaceKey, l.clusterNamespace)}
+		}
 		return []string{l.listenAddress}, nil
 	}
 

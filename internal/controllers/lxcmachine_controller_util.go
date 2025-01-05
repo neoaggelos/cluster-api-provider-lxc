@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -15,25 +16,31 @@ import (
 )
 
 func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine *infrav1.LXCMachine) error {
+	infraConditions := []clusterv1.ConditionType{
+		infrav1.KubeadmProfileAvailableCondition,
+		infrav1.LoadBalancerAvailableCondition,
+	}
+	hasInfraConditionError := false
+	for _, condition := range lxcMachine.GetConditions() {
+		// slices.Contains is fast enough as we only have < 5 conditions
+		if slices.Contains(infraConditions, condition.Type) && condition.Severity == clusterv1.ConditionSeverityError {
+			hasInfraConditionError = true
+			break
+		}
+	}
+
 	// Always update the readyCondition by summarizing the state of other conditions.
 	// A step counter is added to represent progress during the provisioning process (instead we are hiding the step counter during the deletion process).
 	conditions.SetSummary(lxcMachine,
-		conditions.WithConditions(
-			infrav1.InstanceProvisionedCondition,
-			infrav1.BootstrapSucceededCondition,
-		),
-		conditions.WithStepCounterIf(lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil && lxcMachine.Status.FailureReason == nil),
+		conditions.WithConditions(infraConditions...),
+		conditions.WithStepCounterIf(lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil && !hasInfraConditionError),
 	)
 
 	// Patch the object, ignoring conflicts on the conditions owned by this controller.
 	return patchHelper.Patch(
 		ctx,
 		lxcMachine,
-		patch.WithOwnedConditions{Conditions: []clusterv1.ConditionType{
-			clusterv1.ReadyCondition,
-			infrav1.InstanceProvisionedCondition,
-			infrav1.BootstrapSucceededCondition,
-		}},
+		patch.WithOwnedConditions{Conditions: append(infraConditions, clusterv1.ReadyCondition)},
 	)
 }
 

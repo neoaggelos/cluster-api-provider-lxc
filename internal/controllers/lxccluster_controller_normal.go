@@ -13,7 +13,6 @@ import (
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/profile"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
@@ -48,9 +47,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 			log.FromContext(ctx).Error(err, "Failed to create default kubeadm profile")
 
 			if incus.IsTerminalError(err) {
-				conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileCreationAbortedReason, clusterv1.ConditionSeverityError, "%s", err)
-				lxcCluster.Status.FailureReason = ptr.To(infrav1.FailureReasonKubeadmProfileCreationFailed)
-				lxcCluster.Status.FailureMessage = ptr.To(infrav1.FailureMessageKubeadmProfileCreationFailed)
+				conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileCreationAbortedReason, clusterv1.ConditionSeverityError, "The default kubeadm LXC profile could not be created, most likely because of a permissions issue. Either enable privileged containers on the project, or specify .spec.skipDefaultKubeadmProfile=true on the LXCCluster object. The error was: %s", err)
 				return nil
 			}
 
@@ -65,20 +62,14 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	log.FromContext(ctx).Info("Creating load balancer")
 	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
 	if err != nil {
-		err = fmt.Errorf("failed to create load balancer: %w", err)
 		log.FromContext(ctx).Error(err, "Failed to provision cluster infrastructure")
 		if incus.IsTerminalError(err) {
-			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "%s", err)
-			lxcCluster.Status.FailureReason = ptr.To(infrav1.FailureReasonLoadBalancerProvisionFailed)
-			lxcCluster.Status.FailureMessage = ptr.To(infrav1.FailureMessageLoadBalancerProvisionFailed)
+			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "The cluster load balancer could not be provisioned. The error was: %s", err)
 			return nil
 		}
 		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
 		return err
 	}
-
-	lxcCluster.Status.FailureReason = nil
-	lxcCluster.Status.FailureMessage = nil
 
 	// Surface the control plane endpoint
 	if lxcCluster.Spec.ControlPlaneEndpoint.Host == "" {

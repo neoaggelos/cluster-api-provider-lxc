@@ -87,34 +87,7 @@ const (
 	// script that creates the Kubernetes node on the newly provisioned machine infrastructure is unknown.
 	BootstrappingUnknownStatusReason = "BootstrappingUnknownStatus"
 
-	// BootstrapFailedReason documents (Severity=Warning) a LXCMachine controller detecting an error while
-	// bootstrapping the Kubernetes node on the machine just provisioned; those kind of errors are usually
-	// transient and failed bootstrap are automatically re-tried by the controller.
-	//
-	// NOTE(neoaggelos): a retry is usually done in the form of recreating the instance.
+	// BootstrapFailedReason documents (Severity=Error) a LXCMachine controller detecting an error while
+	// bootstrapping the Kubernetes node on the machine just provisioned.
 	BootstrapFailedReason = "BootstrapFailed"
-)
-
-// FailureReasons and FailureMessages for the LXCMachine object.
-const (
-	// FailureReasonBootstrapFailed documents a LXCMachine controller detecting an error while bootstrapping
-	// the Kubernetes node on the machine just provisioned.
-	FailureReasonBootstrapFailed = "BootstrapFailed"
-
-	FailureMessageBootstrapFailed = "The LXCMachine instance cloud-init finished with status error, which means that the bootstrapping process failed"
-)
-
-// FailureReasons and FailureMessages for the LXCCluster object.
-const (
-	// FailureReasonLoadBalancerProvisionFailed documents a LXCCluster controller detecting a terminal failure
-	// while provisioning the load balancer.
-	FailureReasonLoadBalancerProvisionFailed = "LoadBalancerProvisionFailed"
-
-	FailureMessageLoadBalancerProvisionFailed = "The LoadBalancer failed to provision with a terminal error. See the LoadBalancerAvailable condition for more details."
-
-	// FailureReasonKubeadmProfileCreationFailed documents a LXCCluster controller detecting a terminal failure
-	// while provision the default kubeadm LXC profile.
-	FailureReasonKubeadmProfileCreationFailed = "KubeadmProfileCreationFailed"
-
-	FailureMessageKubeadmProfileCreationFailed = "The default kubeadm LXC profile could not be created, most likely because of a permissions issue. Either enable privileged containers on the project, or specify .spec.skipDefaultKubeadmProfile=true on the LXCCluster object"
 )

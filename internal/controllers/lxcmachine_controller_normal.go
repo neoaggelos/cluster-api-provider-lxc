@@ -22,11 +22,9 @@ import (
 )
 
 func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) (ctrl.Result, error) {
-	log := log.FromContext(ctx)
-
 	// Check if the infrastructure is ready, otherwise return and wait for the cluster object to be updated
 	if !cluster.Status.InfrastructureReady {
-		log.Info("Waiting for LXCCluster Controller to create cluster infrastructure")
+		log.FromContext(ctx).Info("Waiting for LXCCluster Controller to create cluster infrastructure")
 		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.WaitingForClusterInfrastructureReason, clusterv1.ConditionSeverityInfo, "")
 		return ctrl.Result{}, nil
 	}
@@ -70,17 +68,18 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	// Make sure bootstrap data is available and populated.
 	if dataSecretName == nil {
 		if !util.IsControlPlaneMachine(machine) && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
-			log.Info("Waiting for the control plane to be initialized")
+			log.FromContext(ctx).Info("Waiting for the control plane to be initialized")
 			conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, clusterv1.WaitingForControlPlaneAvailableReason, clusterv1.ConditionSeverityInfo, "")
 			return ctrl.Result{}, nil
 		}
 
-		log.Info("Waiting for the Bootstrap provider controller to set bootstrap data")
+		log.FromContext(ctx).Info("Waiting for the Bootstrap provider controller to set bootstrap data")
 		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.WaitingForBootstrapDataReason, clusterv1.ConditionSeverityInfo, "")
 		return ctrl.Result{}, nil
 	}
 
 	// Create the lxc instance hosting the machine
+	log.FromContext(ctx).Info("Creating instance")
 	cloudInit, err := r.getBootstrapData(ctx, lxcMachine.Namespace, *dataSecretName)
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to retrieve bootstrap data: %w", err)
@@ -103,23 +102,21 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	// check cloud-init status on the node
 	cloudInitStatus, err := lxcClient.CheckCloudInitStatus(ctx, lxcMachine.GetInstanceName())
 	if err != nil || cloudInitStatus == cloudinit.StatusUnknown {
-		log.Error(err, "Could not retrieve cloud-init status")
+		log.FromContext(ctx).Error(err, "Could not retrieve cloud-init status")
 		conditions.MarkUnknown(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingUnknownStatusReason, "%s", err)
 	}
 	switch cloudInitStatus {
 	case cloudinit.StatusRunning:
-		log.Info("Waiting for bootstrap script to complete")
+		log.FromContext(ctx).Info("Waiting for bootstrap script to complete")
 		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingReason, clusterv1.ConditionSeverityInfo, "")
 		return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 	case cloudinit.StatusError:
-		err := fmt.Errorf("bootstrap failed")
-		log.WithValues("FailureReason", infrav1.FailureReasonBootstrapFailed).Error(err, "Marking machine as failed")
+		err := fmt.Errorf("bootstrap failed since cloud-init finished with error status")
+		log.FromContext(ctx).Error(err, "Marking machine as failed")
 		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrapFailedReason, clusterv1.ConditionSeverityError, "%s", err)
-		lxcMachine.Status.FailureReason = ptr.To(infrav1.FailureReasonBootstrapFailed)
-		lxcMachine.Status.FailureMessage = ptr.To(infrav1.FailureMessageBootstrapFailed)
 		return ctrl.Result{}, nil
 	case cloudinit.StatusDone:
-		log.Info("Bootstrap finished successfully")
+		log.FromContext(ctx).Info("Bootstrap finished successfully")
 		conditions.MarkTrue(lxcMachine, infrav1.BootstrapSucceededCondition)
 	default:
 		// This should never happen, but not adding a panic on purpose. If only Go had enums :)
@@ -134,7 +131,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
 	// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
 	if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
-		log.Info("Waiting for initialized ControlPlane")
+		log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
 		return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
 	}
 

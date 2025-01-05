@@ -139,7 +139,6 @@ func (c *Client) instanceSourceFromAPI(source infrav1.LXCMachineImageSource) api
 		Alias:       source.Name,
 		Server:      source.Server,
 		Protocol:    source.Protocol,
-		Source:      source.Snapshot,
 		Fingerprint: source.Fingerprint,
 	}
 

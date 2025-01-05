@@ -80,13 +80,17 @@ spec:
                       flavor:
                         description: |-
                           Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
                           Examples:
                             - `t3.micro` -- match specs of an EC2 t3.micro instance
                             - `c2-m4` -- 2 cores, 4 GB RAM
                         type: string
                       image:
-                        description: Image is the image to use for provisioning the
-                          machine.
+                        description: |-
+                          Image is the image to use for provisioning the machine.
+
+                          If not set, a standard Ubuntu image from the default remote will be used. In that case,
+                          preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
                         properties:
                           fingerprint:
                             description: Fingerprint is the image fingerprint.
@@ -100,10 +104,6 @@ spec:
                             type: string
                           server:
                             description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
-                            type: string
-                          snapshot:
-                            description: Snapshot is the snapshot to use for launching
-                              the instance. It should be in the form "instance/snapshot".
                             type: string
                         type: object
                       profiles:
@@ -124,8 +124,6 @@ spec:
                         - virtual-machine
                         - ""
                         type: string
-                    required:
-                    - image
                     type: object
                 required:
                 - spec

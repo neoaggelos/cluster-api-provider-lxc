@@ -82,13 +82,17 @@ spec:
                       flavor:
                         description: |-
                           Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
                           Examples:
                             - `t3.micro` -- match specs of an EC2 t3.micro instance
                             - `c2-m4` -- 2 cores, 4 GB RAM
                         type: string
                       image:
-                        description: Image is the image to use for provisioning the
-                          machine.
+                        description: |-
+                          Image is the image to use for provisioning the machine.
+
+                          If not set, a standard Ubuntu image from the default remote will be used. In that case,
+                          preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
                         properties:
                           fingerprint:
                             description: Fingerprint is the image fingerprint.
@@ -102,10 +106,6 @@ spec:
                             type: string
                           server:
                             description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
-                            type: string
-                          snapshot:
-                            description: Snapshot is the snapshot to use for launching
-                              the instance. It should be in the form "instance/snapshot".
                             type: string
                         type: object
                       profiles:
@@ -126,8 +126,6 @@ spec:
                         - virtual-machine
                         - ""
                         type: string
-                    required:
-                    - image
                     type: object
                   ovnNetworkName:
                     description: OVNNetworkName is the name of the OVN network to
@@ -188,19 +186,16 @@ spec:
                     type: string
                 type: object
               secretRef:
-                description: SecretRef is a reference to a secret with credentials
-                  to access LXC (e.g. Incus, LXD) server.
+                description: SecretRef references a secret with credentials to access
+                  the LXC (e.g. Incus, LXD) server.
                 properties:
                   name:
-                    description: name is unique within a namespace to reference a
-                      secret resource.
+                    description: Name is the name of the secret to use. The secret
+                      must already exist in the same namespace as the parent object.
                     type: string
-                  namespace:
-                    description: namespace defines the space within which the secret
-                      name must be unique.
-                    type: string
+                required:
+                - name
                 type: object
-                x-kubernetes-map-type: atomic
               serverType:
                 description: |-
                   ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster and LXCMachine
@@ -280,22 +275,6 @@ spec:
                   - type
                   type: object
                 type: array
-              failureMessage:
-                description: |-
-                  FailureMessage will be set in the event that there is a terminal problem reconciling the LXCCluster
-                  and will contain a more verbose string suitable for logging and human consumption.
-
-                  This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
-                  but instead indicate that something is fundamentally wrong with the LXCCluster and that it cannot be recovered.
-                type: string
-              failureReason:
-                description: |-
-                  FailureReason will be set in the event that there is a terminal problem reconciling the LXCCluster
-                  and will contain a succinct value suitable for machine interpretation.
-
-                  This field should not be set for transitive errors that can be fixed automatically or with manual intervention,
-                  but instead indicate that something is fundamentally wrong with the LXCCluster and that it cannot be recovered.
-                type: string
               ready:
                 description: Ready denotes that the LXC cluster (infrastructure) is
                   ready.

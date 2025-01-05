@@ -37,49 +37,59 @@ const (
 // LXCMachineSpec defines the desired state of LXCMachine.
 type LXCMachineSpec struct {
 	// ProviderID is the container name in ProviderID format (lxc:///<containername>)
+	//
 	// +optional
 	ProviderID *string `json:"providerID,omitempty"`
 
 	// Type of instance to create (container or virtual machine). Empty defaults to "container".
+	//
 	// +kubebuilder:validation:Enum:=container;virtual-machine;""
 	// +optional
 	Type string `json:"type,omitempty"`
 
 	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+	//
 	// Examples:
 	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
 	//   - `c2-m4` -- 2 cores, 4 GB RAM
+	//
 	// +optional
 	Flavor string `json:"flavor,omitempty"`
 
 	// Profiles is a list of profiles to attach to the instance.
+	//
 	// +optional
 	Profiles []string `json:"profiles,omitempty"`
 
 	// Image is the image to use for provisioning the machine.
+	//
+	// If not set, a standard Ubuntu image from the default remote will be used. In that case,
+	// preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
+	//
+	// +optional
 	Image LXCMachineImageSource `json:"image"`
 }
 
 type LXCMachineImageSource struct {
 	// Name is the image name or alias.
+	//
 	// +optional
 	Name string `json:"name"`
 
 	// Fingerprint is the image fingerprint.
+	//
 	// +optional
 	Fingerprint string `json:"fingerprint"`
 
 	// Server is the remote server, e.g. "https://images.linuxcontainers.org"
+	//
 	// +optional
 	Server string `json:"server,omitempty"`
 
 	// Protocol is the protocol to use for fetching the image, e.g. "simplestreams".
+	//
 	// +optional
 	Protocol string `json:"protocol,omitempty"`
-
-	// Snapshot is the snapshot to use for launching the instance. It should be in the form "instance/snapshot".
-	// +optional
-	Snapshot string `json:"snapshot,omitempty"`
 }
 
 func (s *LXCMachineImageSource) IsZero() bool {
@@ -89,22 +99,22 @@ func (s *LXCMachineImageSource) IsZero() bool {
 // LXCMachineStatus defines the observed state of LXCMachine.
 type LXCMachineStatus struct {
 	// Ready denotes that the LXC machine is ready.
+	//
 	// +optional
 	Ready bool `json:"ready,omitempty"`
 
-	// State is the LXC machine state.
-	// +optional
-	State string `json:"state,omitempty"`
-
 	// LoadBalancerConfigured will be set to true once for each control plane node, after the load balancer instance is reconfigured.
+	//
 	// +optional
 	LoadBalancerConfigured bool `json:"loadBalancerConfigured,omitempty"`
 
 	// Addresses is the list of addresses of the LXC machine.
+	//
 	// +optional
 	Addresses []clusterv1.MachineAddress `json:"addresses"`
 
 	// Conditions defines current service state of the LXCMachine.
+	//
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 

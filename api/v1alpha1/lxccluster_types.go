@@ -131,10 +131,12 @@ type LXCClusterLoadBalancer struct {
 	Type string `json:"type,omitempty"`
 
 	// InstanceSpec can be used to adjust the load balancer instance when using the "lxc" or "oci" load balancer type.
+	//
 	// +optional
 	InstanceSpec LXCMachineSpec `json:"instanceSpec,omitempty"`
 
 	// OVNNetworkName is the name of the OVN network to use when using the "network" load balancer type.
+	//
 	// +optional
 	OVNNetworkName string `json:"ovnNetworkName,omitempty"`
 }
@@ -142,10 +144,12 @@ type LXCClusterLoadBalancer struct {
 // LXCClusterStatus defines the observed state of LXCCluster.
 type LXCClusterStatus struct {
 	// Ready denotes that the LXC cluster (infrastructure) is ready.
+	//
 	// +optional
 	Ready bool `json:"ready"`
 
 	// Conditions defines current service state of the LXCCluster.
+	//
 	// +optional
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 

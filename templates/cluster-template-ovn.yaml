@@ -27,7 +27,6 @@ metadata:
 spec:
   secretRef:
     name: ${LXC_SECRET_NAME}
-    namespace: ${LXC_SECRET_NAMESPACE}
   controlPlaneEndpoint:
     host: ${LXC_LOAD_BALANCER_ADDRESS}
     port: 6443

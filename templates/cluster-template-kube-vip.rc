@@ -21,9 +21,8 @@ export WORKER_MACHINE_COUNT=1
 #######################################################
 ## LXC server configuration
 
-# Unless namespace is specified, uses the secret from the same namespace as the cluster object
+# Name of secret with credentials for Incus or LXD server
 export LXC_SECRET_NAME=incus-secret
-export LXC_SECRET_NAMESPACE=
 
 #######################################################
 ## kube-vip configuration

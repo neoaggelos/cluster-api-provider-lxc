@@ -22,7 +22,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	corev1 "k8s.io/api/core/v1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	"sigs.k8s.io/cluster-api/util/paused"
@@ -39,8 +38,8 @@ type LXCClusterSpec struct {
 	// ControlPlaneEndpoint represents the endpoint to communicate with the control plane.
 	ControlPlaneEndpoint clusterv1.APIEndpoint `json:"controlPlaneEndpoint,omitempty"`
 
-	// SecretRef is a reference to a secret with credentials to access LXC (e.g. Incus, LXD) server.
-	SecretRef corev1.SecretReference `json:"secretRef,omitempty"`
+	// SecretRef references a secret with credentials to access the LXC (e.g. Incus, LXD) server.
+	SecretRef SecretRef `json:"secretRef,omitempty"`
 
 	// ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster and LXCMachine
 	// controllers to work with both implementations, as some defaults (e.g. remotes for pulling
@@ -72,6 +71,12 @@ type LXCClusterSpec struct {
 
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`
+}
+
+// SecretRef is a reference to a secret in the cluster.
+type SecretRef struct {
+	// Name is the name of the secret to use. The secret must already exist in the same namespace as the parent object.
+	Name string `json:"name"`
 }
 
 // LXCClusterLoadBalancer is configuration for provisioning the load balancer of the cluster.
@@ -221,14 +226,10 @@ func (c *LXCCluster) SetV1Beta2Conditions(conditions []metav1.Condition) {
 // GetLXCSecretNamespacedName returns the client.ObjectKey for the secret containing LXC credentials.
 // It defaults to the namespace of the cluster, if that is not set in the secretRef.
 func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
-	key := types.NamespacedName{
-		Namespace: c.Spec.SecretRef.Namespace,
+	return types.NamespacedName{
+		Namespace: c.ObjectMeta.Namespace,
 		Name:      c.Spec.SecretRef.Name,
 	}
-	if key.Namespace == "" {
-		key.Namespace = c.Namespace
-	}
-	return key
 }
 
 // GetLoadBalancerInstanceName returns the instance name for the cluster load balancer.

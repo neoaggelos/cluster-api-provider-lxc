@@ -27,7 +27,6 @@ metadata:
 spec:
   secretRef:
     name: ${LXC_SECRET_NAME}
-    namespace: ${LXC_SECRET_NAMESPACE}
   loadBalancer:
     type: ${LXC_LOAD_BALANCER_TYPE:=lxc}
     instanceSpec:

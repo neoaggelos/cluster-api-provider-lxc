@@ -44,7 +44,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
+	ctrl_controller "sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
@@ -52,7 +52,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controllers"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -316,7 +316,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 			},
 		},
 		WatchFilterValue: watchFilterValue,
-	}, controller.Options{
+	}, ctrl_controller.Options{
 		MaxConcurrentReconciles: clusterCacheConcurrency,
 	})
 	if err != nil {
@@ -324,20 +324,21 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 		os.Exit(1)
 	}
 
-	if err := (&controllers.LXCClusterReconciler{
+	if err := (&controller.LXCClusterReconciler{
 		Client:           mgr.GetClient(),
 		CachingClient:    secretCachingClient,
 		WatchFilterValue: watchFilterValue,
-	}).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
+	}).SetupWithManager(ctx, mgr, ctrl_controller.Options{}); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LXCCluster")
 		os.Exit(1)
 	}
-	if err := (&controllers.LXCMachineReconciler{
+
+	if err := (&controller.LXCMachineReconciler{
 		Client:           mgr.GetClient(),
 		CachingClient:    secretCachingClient,
 		ClusterCache:     clusterCache,
 		WatchFilterValue: watchFilterValue,
-	}).SetupWithManager(ctx, mgr, controller.Options{
+	}).SetupWithManager(ctx, mgr, ctrl_controller.Options{
 		MaxConcurrentReconciles: concurrency,
 	}); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "LXCMachine")

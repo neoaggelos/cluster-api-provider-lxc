@@ -41,12 +41,12 @@ type LXCClusterSpec struct {
 	// SecretRef references a secret with credentials to access the LXC (e.g. Incus, LXD) server.
 	SecretRef SecretRef `json:"secretRef,omitempty"`
 
-	// ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster and LXCMachine
-	// controllers to work with both implementations, as some defaults (e.g. remotes for pulling
-	// images) are not compatible.
+	// ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster
+	// and LXCMachine controllers to work with both implementations, as some
+	// defaults (e.g. remotes for pulling images) are not compatible.
 	//
-	// If left unset, will be automatically set by the LXCCluster controller while provisioning
-	// the cluster.
+	// If left unset, will be automatically set by the LXCCluster controller while
+	// provisioning the cluster.
 	//
 	// +kubebuilder:validation:Enum:=incus;lxd;unknown;""
 	ServerType string `json:"serverType,omitempty"`
@@ -60,8 +60,8 @@ type LXCClusterSpec struct {
 	// all created Machines automatically.
 	//
 	// This option can be used to disable this behavior. In that case, the cluster
-	// administrator is responsible to create the LXC profile and specify it in the
-	// .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+	// administrator is responsible to create the LXC profile and specify it in
+	// the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
 	//
 	// This is useful in cases where a limited project is used, which does not
 	// allow privileged containers.

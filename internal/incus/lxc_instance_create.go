@@ -27,7 +27,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", name, "role", role))
 
-	instanceType := c.instanceTypeFromAPI(lxcMachine.Spec.Type)
+	instanceType := c.instanceTypeFromAPI(lxcMachine.Spec.InstanceType)
 
 	profiles := lxcMachine.Spec.Profiles
 	if instanceType == api.InstanceTypeContainer && !lxcCluster.Spec.SkipDefaultKubeadmProfile && !slices.Contains(lxcMachine.Spec.Profiles, lxcCluster.GetProfileName()) {
@@ -58,7 +58,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
-		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.Type),
+		Type:         instanceType,
 		Source:       c.instanceSourceFromAPI(image),
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{

@@ -56,7 +56,7 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
-		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.Type),
+		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.InstanceType),
 		Source:       l.lxcClient.instanceSourceFromAPI(image),
 		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{

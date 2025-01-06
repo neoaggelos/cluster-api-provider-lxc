@@ -70,10 +70,11 @@ spec:
                 type: string
               image:
                 description: |-
-                  Image is the image to use for provisioning the machine.
+                  Image to use for provisioning the machine.
 
-                  If not set, a standard Ubuntu image from the default remote will be used. In that case,
-                  preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
+                  If not set, a standard Ubuntu image from the default remote will be used.
+                  In that case, preKubeadmCommands must be configured on deployed clusters
+                  to install Kubeadm and configure the instance.
                 properties:
                   fingerprint:
                     description: Fingerprint is the image fingerprint.
@@ -89,6 +90,14 @@ spec:
                     description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
                     type: string
                 type: object
+              instanceType:
+                description: InstanceType is "container" or "virtual-machine". Empty
+                  defaults to "container".
+                enum:
+                - container
+                - virtual-machine
+                - ""
+                type: string
               profiles:
                 description: Profiles is a list of profiles to attach to the instance.
                 items:
@@ -97,14 +106,6 @@ spec:
               providerID:
                 description: ProviderID is the container name in ProviderID format
                   (lxc:///<containername>)
-                type: string
-              type:
-                description: Type of instance to create (container or virtual machine).
-                  Empty defaults to "container".
-                enum:
-                - container
-                - virtual-machine
-                - ""
                 type: string
             type: object
           status:

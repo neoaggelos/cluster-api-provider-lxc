@@ -89,10 +89,11 @@ spec:
                         type: string
                       image:
                         description: |-
-                          Image is the image to use for provisioning the machine.
+                          Image to use for provisioning the machine.
 
-                          If not set, a standard Ubuntu image from the default remote will be used. In that case,
-                          preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
+                          If not set, a standard Ubuntu image from the default remote will be used.
+                          In that case, preKubeadmCommands must be configured on deployed clusters
+                          to install Kubeadm and configure the instance.
                         properties:
                           fingerprint:
                             description: Fingerprint is the image fingerprint.
@@ -108,6 +109,14 @@ spec:
                             description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
                             type: string
                         type: object
+                      instanceType:
+                        description: InstanceType is "container" or "virtual-machine".
+                          Empty defaults to "container".
+                        enum:
+                        - container
+                        - virtual-machine
+                        - ""
+                        type: string
                       profiles:
                         description: Profiles is a list of profiles to attach to the
                           instance.
@@ -117,14 +126,6 @@ spec:
                       providerID:
                         description: ProviderID is the container name in ProviderID
                           format (lxc:///<containername>)
-                        type: string
-                      type:
-                        description: Type of instance to create (container or virtual
-                          machine). Empty defaults to "container".
-                        enum:
-                        - container
-                        - virtual-machine
-                        - ""
                         type: string
                     type: object
                   ovnNetworkName:
@@ -198,12 +199,12 @@ spec:
                 type: object
               serverType:
                 description: |-
-                  ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster and LXCMachine
-                  controllers to work with both implementations, as some defaults (e.g. remotes for pulling
-                  images) are not compatible.
+                  ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster
+                  and LXCMachine controllers to work with both implementations, as some
+                  defaults (e.g. remotes for pulling images) are not compatible.
 
-                  If left unset, will be automatically set by the LXCCluster controller while provisioning
-                  the cluster.
+                  If left unset, will be automatically set by the LXCCluster controller while
+                  provisioning the cluster.
                 enum:
                 - incus
                 - lxd
@@ -218,8 +219,8 @@ spec:
                   all created Machines automatically.
 
                   This option can be used to disable this behavior. In that case, the cluster
-                  administrator is responsible to create the LXC profile and specify it in the
-                  .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+                  administrator is responsible to create the LXC profile and specify it in
+                  the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
 
                   This is useful in cases where a limited project is used, which does not
                   allow privileged containers.

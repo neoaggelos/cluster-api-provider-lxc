@@ -41,11 +41,11 @@ type LXCMachineSpec struct {
 	// +optional
 	ProviderID *string `json:"providerID,omitempty"`
 
-	// Type of instance to create (container or virtual machine). Empty defaults to "container".
+	// InstanceType is "container" or "virtual-machine". Empty defaults to "container".
 	//
 	// +kubebuilder:validation:Enum:=container;virtual-machine;""
 	// +optional
-	Type string `json:"type,omitempty"`
+	InstanceType string `json:"instanceType,omitempty"`
 
 	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
 	//
@@ -61,10 +61,11 @@ type LXCMachineSpec struct {
 	// +optional
 	Profiles []string `json:"profiles,omitempty"`
 
-	// Image is the image to use for provisioning the machine.
+	// Image to use for provisioning the machine.
 	//
-	// If not set, a standard Ubuntu image from the default remote will be used. In that case,
-	// preKubeadmCommands must be set to install containerd, kubeadm and configure the instance.
+	// If not set, a standard Ubuntu image from the default remote will be used.
+	// In that case, preKubeadmCommands must be configured on deployed clusters
+	// to install Kubeadm and configure the instance.
 	//
 	// +optional
 	Image LXCMachineImageSource `json:"image"`

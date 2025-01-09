@@ -47,16 +47,20 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 	// if the machine is already provisioned, return
 	if lxcMachine.Spec.ProviderID != nil {
-		lxcMachine.Status.Ready = true
-
 		state, _, err := lxcClient.Client.GetInstanceState(lxcMachine.GetInstanceName())
-		if err != nil && strings.Contains(err.Error(), "Instance not found") {
-			conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceDeletedReason, clusterv1.ConditionSeverityError, "Instance %s does not exist anymore", lxcMachine.GetInstanceName())
-			return ctrl.Result{}, nil
-		} else if err == nil {
+		if err != nil {
+			if strings.Contains(err.Error(), "Instance not found") {
+				lxcMachine.Status.Ready = false
+				conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceDeletedReason, clusterv1.ConditionSeverityError, "Instance %s does not exist anymore", lxcMachine.GetInstanceName())
+				return ctrl.Result{}, nil
+			}
+
+			log.FromContext(ctx).Error(err, "Failed to check instance state")
+			return ctrl.Result{}, err
+		} else {
+			lxcMachine.Status.Ready = true
 			conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
 			r.setLXCMachineAddresses(lxcMachine, lxcClient.ParseActiveMachineAddresses(state))
-
 			return ctrl.Result{}, nil
 		}
 	}
@@ -84,11 +88,11 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to retrieve bootstrap data: %w", err)
 	}
-	address, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, lxcCluster, cloudInit)
+	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, lxcCluster, cloudInit)
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to create instance: %w", err)
 	}
-	r.setLXCMachineAddresses(lxcMachine, address)
+	r.setLXCMachineAddresses(lxcMachine, addresses)
 	conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
 
 	// update load balancer

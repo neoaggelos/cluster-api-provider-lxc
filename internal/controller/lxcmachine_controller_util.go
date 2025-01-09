@@ -17,8 +17,7 @@ import (
 
 func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine *infrav1.LXCMachine) error {
 	infraConditions := []clusterv1.ConditionType{
-		infrav1.KubeadmProfileAvailableCondition,
-		infrav1.LoadBalancerAvailableCondition,
+		infrav1.InstanceProvisionedCondition,
 	}
 	hasInfraConditionError := false
 	for _, condition := range lxcMachine.GetConditions() {

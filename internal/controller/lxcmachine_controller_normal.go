@@ -8,6 +8,7 @@ import (
 
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
+	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -87,7 +88,15 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		return ctrl.Result{}, fmt.Errorf("failed to retrieve bootstrap data: %w", err)
 	}
 
-	// TODO: mark the machine as provisioning
+	// Set the InstanceProvisionedCondition and issue a patch in order to make this visible to the users.
+	patchHelper, err := patch.NewHelper(lxcMachine, r.Client)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	conditions.MarkFalse(lxcCluster, infrav1.InstanceProvisionedCondition, infrav1.CreatingInstanceReason, clusterv1.ConditionSeverityInfo, "")
+	if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to patch LXCMachine: %w", err)
+	}
 
 	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, lxcCluster, cloudInit)
 	if err != nil {

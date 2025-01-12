@@ -62,6 +62,10 @@ const (
 	// script to be ready before starting to create the instance that provides the LXCMachine infrastructure.
 	WaitingForBootstrapDataReason = "WaitingForBootstrapData"
 
+	// CreatingInstanceReason (Severity=Info) documents a LXCMachine waiting for the instance that
+	// provides the LXCMachine infrastructure to be created.
+	CreatingInstanceReason = "CreatingInstance"
+
 	// InstanceProvisioningFailedReason (Severity=Warning) documents a LXCMachine controller detecting
 	// an error while provisioning the instance that provides the LXCMachine infrastructure; those kind of
 	// errors are usually transient and failed provisioning are automatically re-tried by the controller.

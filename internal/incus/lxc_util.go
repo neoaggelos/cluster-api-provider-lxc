@@ -18,9 +18,23 @@ import (
 // wait executes an Incus API call that returns an Operation, and waits for the operation to complete.
 // Returns an error if anything failed.
 func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operation, error)) error {
-	if op, err := f(); err != nil {
+	op, err := f()
+	if err != nil {
 		return fmt.Errorf("failed to %s: %w", name, err)
-	} else if err := op.WaitContext(ctx); err != nil && !strings.Contains(err.Error(), "Operation not found") {
+	}
+
+	// log progress of LXC operation. Note that this will be very verbose and should only be enabled while actively troubleshooting issues
+	operationLogger := log.FromContext(ctx).V(6).WithValues("operation.name", name)
+	if operationLogger.Enabled() {
+		target, _ := op.AddHandler(func(o api.Operation) {
+			operationLogger.WithValues("operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status).Info("Operation in progress")
+		})
+		defer func() {
+			_ = op.RemoveHandler(target)
+		}()
+	}
+
+	if err := op.WaitContext(ctx); err != nil && !strings.Contains(err.Error(), "Operation not found") {
 		return fmt.Errorf("failed to wait for %s operation: %w", name, err)
 	}
 	return nil

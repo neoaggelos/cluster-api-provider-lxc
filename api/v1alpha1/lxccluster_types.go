@@ -41,16 +41,6 @@ type LXCClusterSpec struct {
 	// SecretRef references a secret with credentials to access the LXC (e.g. Incus, LXD) server.
 	SecretRef SecretRef `json:"secretRef,omitempty"`
 
-	// ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster
-	// and LXCMachine controllers to work with both implementations, as some
-	// defaults (e.g. remotes for pulling images) are not compatible.
-	//
-	// If left unset, will be automatically set by the LXCCluster controller while
-	// provisioning the cluster.
-	//
-	// +kubebuilder:validation:Enum:=incus;lxd;unknown;""
-	ServerType string `json:"serverType,omitempty"`
-
 	// LoadBalancer is configuration for provisioning the load balancer of the cluster.
 	LoadBalancer LXCClusterLoadBalancer `json:"loadBalancer"`
 
@@ -83,7 +73,7 @@ type SecretRef struct {
 type LXCClusterLoadBalancer struct {
 	// Type of load balancer to provision for the cluster.
 	//
-	//   - "lxc" will spin up a plain Ubuntu instance and install haproxy.
+	//   - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
 	//
 	//     The controller will automatically update the list of backends on the
 	//     haproxy configuration control plane nodes are added or removed from
@@ -133,12 +123,38 @@ type LXCClusterLoadBalancer struct {
 	// InstanceSpec can be used to adjust the load balancer instance when using the "lxc" or "oci" load balancer type.
 	//
 	// +optional
-	InstanceSpec LXCMachineSpec `json:"instanceSpec,omitempty"`
+	InstanceSpec LXCLoadBalancerMachineSpec `json:"instanceSpec,omitempty"`
 
 	// OVNNetworkName is the name of the OVN network to use when using the "network" load balancer type.
 	//
 	// +optional
 	OVNNetworkName string `json:"ovnNetworkName,omitempty"`
+}
+
+// LXCLoadBalancerMachineSpec is configuration for the container that will host the cluster load balancer, when using the "lxc" or "oci" load balancer type.
+type LXCLoadBalancerMachineSpec struct {
+	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+	//
+	// Examples:
+	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
+	//   - `c2-m4` -- 2 cores, 4 GB RAM
+	//
+	// +optional
+	Flavor string `json:"flavor,omitempty"`
+
+	// Profiles is a list of profiles to attach to the instance.
+	//
+	// +optional
+	Profiles []string `json:"profiles,omitempty"`
+
+	// Image to use for provisioning the load balancer machine. If not set,
+	// a default image based on the load balancer type will be used.
+	//
+	//   - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+	//   - "lxc": haproxy from the default simplestreams server
+	//
+	// +optional
+	Image LXCMachineImageSource `json:"image"`
 }
 
 // LXCClusterStatus defines the observed state of LXCCluster.
@@ -214,7 +230,6 @@ func (c *LXCCluster) SetV1Beta2Conditions(conditions []metav1.Condition) {
 }
 
 // GetLXCSecretNamespacedName returns the client.ObjectKey for the secret containing LXC credentials.
-// It defaults to the namespace of the cluster, if that is not set in the secretRef.
 func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
 	return types.NamespacedName{
 		Namespace: c.ObjectMeta.Namespace,

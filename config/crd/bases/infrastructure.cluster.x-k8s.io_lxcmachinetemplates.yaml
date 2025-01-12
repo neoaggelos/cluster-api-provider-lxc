@@ -87,7 +87,12 @@ spec:
                         type: string
                       image:
                         description: |-
-                          Image to use for provisioning the machine.
+                          Image to use for provisioning the machine. If not set, a kubeadm image
+                          from the default upstream simplestreams source will be used, based on
+                          the version of the machine.
+
+                          Note that the default source does not support images for all Kubernetes
+                          versions.
 
                           If not set, a standard Ubuntu image from the default remote will be used.
                           In that case, preKubeadmCommands must be configured on deployed clusters

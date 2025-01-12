@@ -89,11 +89,11 @@ spec:
                         type: string
                       image:
                         description: |-
-                          Image to use for provisioning the machine.
+                          Image to use for provisioning the load balancer machine. If not set,
+                          a default image based on the load balancer type will be used.
 
-                          If not set, a standard Ubuntu image from the default remote will be used.
-                          In that case, preKubeadmCommands must be configured on deployed clusters
-                          to install Kubeadm and configure the instance.
+                            - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+                            - "lxc": haproxy from the default simplestreams server
                         properties:
                           fingerprint:
                             description: Fingerprint is the image fingerprint.
@@ -109,24 +109,12 @@ spec:
                             description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
                             type: string
                         type: object
-                      instanceType:
-                        description: InstanceType is "container" or "virtual-machine".
-                          Empty defaults to "container".
-                        enum:
-                        - container
-                        - virtual-machine
-                        - ""
-                        type: string
                       profiles:
                         description: Profiles is a list of profiles to attach to the
                           instance.
                         items:
                           type: string
                         type: array
-                      providerID:
-                        description: ProviderID is the container name in ProviderID
-                          format (lxc:///<containername>)
-                        type: string
                     type: object
                   ovnNetworkName:
                     description: OVNNetworkName is the name of the OVN network to
@@ -136,7 +124,7 @@ spec:
                     description: |-
                       Type of load balancer to provision for the cluster.
 
-                        - "lxc" will spin up a plain Ubuntu instance and install haproxy.
+                        - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
 
                           The controller will automatically update the list of backends on the
                           haproxy configuration control plane nodes are added or removed from

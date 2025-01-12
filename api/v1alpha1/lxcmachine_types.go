@@ -61,11 +61,13 @@ type LXCMachineSpec struct {
 	// +optional
 	Profiles []string `json:"profiles,omitempty"`
 
-	// Image to use for provisioning the machine.
+	// Image to use for provisioning the machine. If not set, a kubeadm image
+	// from the default upstream simplestreams source will be used, based on
+	// the version of the machine.
 	//
-	// If not set, a standard Ubuntu image from the default remote will be used.
-	// In that case, preKubeadmCommands must be configured on deployed clusters
-	// to install Kubeadm and configure the instance.
+	// Note that the default source does not support images for all Kubernetes
+	// versions, refer to the documentation for more details on which versions
+	// are supported and how to build a base image for any version.
 	//
 	// +optional
 	Image LXCMachineImageSource `json:"image"`

@@ -29,15 +29,15 @@ export LXC_LOAD_BALANCER_NETWORK=default
 #######################################################
 ## LXC instance configuration
 
-## option A. virtual machines (requires kvm)
-#export LXC_MACHINE_TYPE="virtual-machine"
-#export LXC_MACHINE_PROFILES="default"
-#export LXC_MACHINE_FLAVOR="c2-m4"
-
-# option B. lxc containers (requires kubeadm profile, added automatically by the controller)
+# option A. lxc containers (requires kubeadm profile, added automatically by the controller)
 export LXC_MACHINE_TYPE="container"
 export LXC_MACHINE_PROFILES="default"
 export LXC_MACHINE_FLAVOR="c2-m4"
+
+## option B. virtual machines (requires kvm)
+#export LXC_MACHINE_TYPE="virtual-machine"
+#export LXC_MACHINE_PROFILES="default"
+#export LXC_MACHINE_FLAVOR="c2-m4"
 
 #######################################################
 ## Control plane and workers configuration

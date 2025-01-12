@@ -30,13 +30,8 @@ spec:
   loadBalancer:
     type: ${LXC_LOAD_BALANCER_TYPE:=lxc}
     instanceSpec:
-      type: ${LXC_LOAD_BALANCER_MACHINE_TYPE:=container}
       flavor: ${LXC_LOAD_BALANCER_MACHINE_FLAVOR:=""}
-      profiles: [${LXC_LOAD_BALANCER_MACHINE_PROFILES}]
-      image:
-        protocol: ${LXC_LOAD_BALANCER_MACHINE_IMAGE_PROTOCOL:=""}
-        server: ${LXC_LOAD_BALANCER_MACHINE_IMAGE_SERVER:=""}
-        name: "${LXC_LOAD_BALANCER_MACHINE_IMAGE:=}"
+      profiles: [${LXC_LOAD_BALANCER_MACHINE_PROFILES:=default}]
 ---
 apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: KubeadmControlPlane
@@ -58,7 +53,6 @@ spec:
       if systemd-detect-virt -c -q 2>/dev/null; then
         cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
       fi
-    - "${HACK_PREKUBEADM_COMMANDS}"
     clusterConfiguration:
       apiServer:
         certSANs:
@@ -92,13 +86,9 @@ metadata:
 spec:
   template:
     spec:
-      type: ${CONTROL_PLANE_MACHINE_TYPE}
-      flavor: ${CONTROL_PLANE_MACHINE_FLAVOR:=""}
-      profiles: [${CONTROL_PLANE_MACHINE_PROFILES}]
-      image:
-        protocol: ${CONTROL_PLANE_MACHINE_IMAGE_PROTOCOL}
-        server: ${CONTROL_PLANE_MACHINE_IMAGE_SERVER}
-        name: "${CONTROL_PLANE_MACHINE_IMAGE}"
+      instanceType: ${CONTROL_PLANE_MACHINE_TYPE}
+      flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
+      profiles: [${CONTROL_PLANE_MACHINE_PROFILES:=default}]
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -131,13 +121,9 @@ metadata:
 spec:
   template:
     spec:
-      type: ${WORKER_MACHINE_TYPE}
-      flavor: ${WORKER_MACHINE_FLAVOR:=""}
-      profiles: [${WORKER_MACHINE_PROFILES}]
-      image:
-        protocol: ${WORKER_MACHINE_IMAGE_PROTOCOL}
-        server: ${WORKER_MACHINE_IMAGE_SERVER}
-        name: "${WORKER_MACHINE_IMAGE}"
+      instanceType: ${WORKER_MACHINE_TYPE}
+      flavor: ${WORKER_MACHINE_FLAVOR}
+      profiles: [${WORKER_MACHINE_PROFILES:=default}]
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate
@@ -146,7 +132,6 @@ metadata:
 spec:
   template:
     spec:
-      preKubeadmCommands: [set -x, "${HACK_PREKUBEADM_COMMANDS}"]
       joinConfiguration:
         nodeRegistration:
           kubeletExtraArgs:

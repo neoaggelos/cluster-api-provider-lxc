@@ -17,7 +17,7 @@ func (c *Client) InitProfile(ctx context.Context, profile api.ProfilesPost) erro
 	if err := c.Client.CreateProfile(profile); err != nil {
 		switch {
 		case strings.Contains(err.Error(), "The profile already exists"):
-			log.FromContext(ctx).V(4).Info("The profile already exists")
+			log.FromContext(ctx).V(2).Info("The profile already exists")
 			return nil
 		case strings.Contains(err.Error(), "Privileged containers are forbidden"):
 			// TODO: handle case of restricted projects, e.g.
@@ -28,7 +28,7 @@ func (c *Client) InitProfile(ctx context.Context, profile api.ProfilesPost) erro
 		}
 		return fmt.Errorf("failed to CreateProfile: %w", err)
 	} else {
-		log.FromContext(ctx).V(4).Info("Successfully created profile")
+		log.FromContext(ctx).V(2).Info("Successfully created profile")
 	}
 	return nil
 }
@@ -39,13 +39,13 @@ func (c *Client) DeleteProfile(ctx context.Context, profileName string) error {
 
 	if err := c.Client.DeleteProfile(profileName); err != nil {
 		if strings.Contains(err.Error(), "Profile not found") {
-			log.FromContext(ctx).V(4).Info("The profile does not exist")
+			log.FromContext(ctx).V(2).Info("The profile does not exist")
 			return nil
 		}
 
 		return fmt.Errorf("failed to DeleteProfile: %w", err)
 	}
 
-	log.FromContext(ctx).V(4).Info("Successfully removed profile")
+	log.FromContext(ctx).V(2).Info("Successfully removed profile")
 	return nil
 }

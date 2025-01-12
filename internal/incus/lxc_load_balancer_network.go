@@ -50,7 +50,7 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 		return []string{l.listenAddress}, nil
 	}
 
-	log.FromContext(ctx).V(4).Info("Creating network load balancer")
+	log.FromContext(ctx).V(2).Info("Creating network load balancer")
 	if err := l.lxcClient.Client.CreateNetworkLoadBalancer(l.networkName, api.NetworkLoadBalancersPost{
 		ListenAddress: l.listenAddress,
 		NetworkLoadBalancerPut: api.NetworkLoadBalancerPut{
@@ -74,7 +74,7 @@ func (l *loadBalancerNetwork) Delete(ctx context.Context) error {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("networkName", l.networkName, "listenAddress", l.listenAddress))
 
-	log.FromContext(ctx).V(4).Info("Deleting network load balancer")
+	log.FromContext(ctx).V(2).Info("Deleting network load balancer")
 	if err := l.lxcClient.Client.DeleteNetworkLoadBalancer(l.networkName, l.listenAddress); err != nil && !strings.Contains(err.Error(), "not found") {
 		return fmt.Errorf("failed to DeleteNetworkLoadBalancer: %w", err)
 	}

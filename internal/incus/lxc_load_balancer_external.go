@@ -34,7 +34,7 @@ func (l *loadBalancerExternal) Create(ctx context.Context) ([]string, error) {
 		return nil, terminalError{fmt.Errorf("using external load balancer but no address is configured")}
 	}
 
-	log.FromContext(ctx).V(4).Info("Using external load balancer")
+	log.FromContext(ctx).V(2).Info("Using external load balancer")
 	return []string{l.address}, nil
 }
 
@@ -45,7 +45,7 @@ func (l *loadBalancerExternal) Delete(ctx context.Context) error {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
 
-	log.FromContext(ctx).V(4).Info("Using external load balancer, nothing to delete")
+	log.FromContext(ctx).V(2).Info("Using external load balancer, nothing to delete")
 	return nil
 }
 
@@ -55,7 +55,7 @@ func (l *loadBalancerExternal) Reconfigure(ctx context.Context) error {
 	defer cancel()
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
-	log.FromContext(ctx).V(4).Info("Using external load balancer, nothing to reconfigure")
+	log.FromContext(ctx).V(2).Info("Using external load balancer, nothing to reconfigure")
 
 	return nil
 }

@@ -85,7 +85,7 @@ func New(ctx context.Context, opts Options) (*Client, error) {
 		client = client.UseProject(opts.Project)
 	}
 
-	log.V(4).Info("Initialized new incus client")
+	log.V(2).Info("Initialized new client")
 
 	return &Client{Client: client}, nil
 }

@@ -69,14 +69,6 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 		return nil, fmt.Errorf("failed to get loadbalancer instance address: %w", err)
 	}
 
-	if err := l.lxcClient.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
-		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{
-			Command: []string{"bash", "-e", "-c", "if ! which haproxy; then mkdir -p /etc/haproxy; apt update; apt install haproxy -y; fi"},
-		}, nil)
-	}); err != nil {
-		return nil, fmt.Errorf("failed to install haproxy on loadbalancer instance: %w", err)
-	}
-
 	return addrs, nil
 }
 

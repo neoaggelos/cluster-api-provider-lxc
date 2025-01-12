@@ -21,7 +21,7 @@ type loadBalancerOCI struct {
 	clusterNamespace string
 
 	name string
-	spec infrav1.LXCMachineSpec
+	spec infrav1.LXCLoadBalancerMachineSpec
 }
 
 // Create implements loadBalancerManager.
@@ -37,22 +37,19 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 		return nil, terminalError{fmt.Errorf("server missing required 'instance_oci' extension, cannot create OCI container instances")}
 	}
 
-	source := api.InstanceSource{
-		Type:     "image",
-		Alias:    "neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1",
-		Server:   "https://ghcr.io",
-		Protocol: "oci",
-	}
-
-	empty := infrav1.LXCMachineImageSource{}
-	if l.spec.Image != empty {
-		source = l.lxcClient.instanceSourceFromAPI(l.spec.Image)
+	image := l.spec.Image
+	if image.IsZero() {
+		image = infrav1.LXCMachineImageSource{
+			Name:     "neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1",
+			Server:   "https://ghcr.io",
+			Protocol: "oci",
+		}
 	}
 
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
 		Type:         api.InstanceTypeContainer, // instance type must be Container for OCI containers.
-		Source:       source,
+		Source:       l.lxcClient.instanceSourceFromAPI(image),
 		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{
 			Profiles: l.spec.Profiles,

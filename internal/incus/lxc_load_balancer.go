@@ -26,7 +26,6 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 			lxcClient:        c,
 			clusterName:      lxcCluster.Name,
 			clusterNamespace: lxcCluster.Namespace,
-			serverType:       lxcCluster.Spec.ServerType,
 
 			name: lxcCluster.GetLoadBalancerInstanceName(),
 			spec: lxcCluster.Spec.LoadBalancer.InstanceSpec,

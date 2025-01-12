@@ -29,4 +29,7 @@ const (
 
 	// configCloudInitKey is the config key that seeds cloud-init configuration into the instance.
 	configCloudInitKey = "cloud-init.user-data"
+
+	// defaultSimplestreamsServer is the default simplestreams server for fetching images.
+	defaultSimplestreamsServer = "https://d14dnvi2l3tc5t.cloudfront.net"
 )

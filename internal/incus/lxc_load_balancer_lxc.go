@@ -20,10 +20,8 @@ type loadBalancerLXC struct {
 	clusterName      string
 	clusterNamespace string
 
-	serverType string
-
 	name string
-	spec infrav1.LXCMachineSpec
+	spec infrav1.LXCLoadBalancerMachineSpec
 }
 
 // Create implements loadBalancerManager.
@@ -36,19 +34,10 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 	// If image is not set, use the default image (depending on the remote server type)
 	image := l.spec.Image
 	if image.IsZero() {
-		switch l.serverType {
-		case "lxd":
-			image = infrav1.LXCMachineImageSource{
-				Name:     "24.04",
-				Server:   "https://cloud-images.ubuntu.com/releases",
-				Protocol: "simplestreams",
-			}
-		case "incus":
-			image = infrav1.LXCMachineImageSource{
-				Name:     "ubuntu/24.04/cloud",
-				Server:   "https://images.linuxcontainers.org",
-				Protocol: "simplestreams",
-			}
+		image = infrav1.LXCMachineImageSource{
+			Name:     "haproxy",
+			Server:   defaultSimplestreamsServer,
+			Protocol: "simplestreams",
 		}
 	}
 
@@ -56,7 +45,7 @@ func (l *loadBalancerLXC) Create(ctx context.Context) ([]string, error) {
 
 	if err := l.lxcClient.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         l.name,
-		Type:         l.lxcClient.instanceTypeFromAPI(l.spec.InstanceType),
+		Type:         api.InstanceTypeContainer,
 		Source:       l.lxcClient.instanceSourceFromAPI(image),
 		InstanceType: l.spec.Flavor,
 		InstancePut: api.InstancePut{

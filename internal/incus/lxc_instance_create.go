@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 
+	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -36,29 +37,32 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profiles", profiles))
 
-	// If image is not set, use the default image (depending on the remote server type)
 	image := lxcMachine.Spec.Image
 	if image.IsZero() {
-		switch lxcCluster.Spec.ServerType {
-		case "lxd":
-			image = infrav1.LXCMachineImageSource{
-				Name:     "24.04",
-				Server:   "https://cloud-images.ubuntu.com/releases",
-				Protocol: "simplestreams",
-			}
-		case "incus":
-			image = infrav1.LXCMachineImageSource{
-				Name:     "ubuntu/24.04/cloud",
-				Server:   "https://images.linuxcontainers.org",
-				Protocol: "simplestreams",
-			}
+		if machine.Spec.Version == nil {
+			return nil, terminalError{fmt.Errorf("no image source specified on LXCMachineTemplate and machine %q does not have a Kubernetes version", machine.Name)}
+		}
+
+		version := *machine.Spec.Version
+
+		// test if image for version exists on default simplestreams server, fail otherwise.
+		if ssClient, err := incus.ConnectSimpleStreams(defaultSimplestreamsServer, &incus.ConnectionArgs{}); err != nil {
+			return nil, fmt.Errorf("no image source specified and failed to connect to simplestreams server %q: %w", defaultSimplestreamsServer, err)
+		} else if _, _, err := ssClient.GetImageAliasType(string(instanceType), fmt.Sprintf("kubeadm/%s", version)); err != nil {
+			return nil, terminalError{fmt.Errorf("no image source specified and simplestreams server %q does not provide images for Kubernetes version %q: %w. Please consider using a different Kubernetes version, or build your own base image and set the image source on the LXCMachineTemplate resource", defaultSimplestreamsServer, version, err)}
+		}
+
+		image = infrav1.LXCMachineImageSource{
+			Name:     fmt.Sprintf("kubeadm/%s", version),
+			Server:   defaultSimplestreamsServer,
+			Protocol: "simplestreams",
 		}
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("image", image))
 
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
-		Type:         instanceType,
+		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.InstanceType),
 		Source:       c.instanceSourceFromAPI(image),
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{

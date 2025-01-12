@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strconv"
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
@@ -112,9 +113,32 @@ func (l *loadBalancerOCI) Reconfigure(ctx context.Context) error {
 		return fmt.Errorf("failed to write load balancer config to container: %w", err)
 	}
 
-	log.FromContext(ctx).V(2).WithValues("signal", "SIGUSR2").Info("Reloading haproxy configuration")
+	if err := l.lxcClient.ensureInstanceRunning(ctx, l.name); err != nil {
+		return fmt.Errorf("failed to ensure load balancer is running: %w", err)
+	}
+
+	// NOTE(neoaggelos): lxc will silence signals to the init process from the same namespace
+	// https://github.com/lxc/lxc/pull/4503/files#diff-bf8397458e8edecf47bdd0021167704c859cdd088fd7afdf0b56d289cf87a54fR430-R434
+	//
+	// Instead, scan `/proc` for pids and send SIGUSR2 to all of them
+	log.FromContext(ctx).V(2).Info("Reloading haproxy configuration")
 	if err := l.lxcClient.wait(ctx, "ExecInstance", func() (incus.Operation, error) {
-		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{Command: []string{"kill", "1", "--signal", "SIGUSR2"}}, nil)
+
+		command := []string{"kill", "--signal", "SIGUSR2"}
+		if _, response, err := l.lxcClient.Client.GetInstanceFile(l.name, "/proc"); err != nil {
+			return nil, fmt.Errorf("failed to list running processes in load balancer instance: %w", err)
+		} else {
+			// find numeric pids under /proc
+			for _, entry := range response.Entries {
+				if _, err := strconv.ParseUint(entry, 10, 64); err != nil {
+					continue
+				}
+				command = append(command, entry)
+			}
+		}
+
+		log.FromContext(ctx).V(4).WithValues("command", command).Info("Kill haproxy processes")
+		return l.lxcClient.Client.ExecInstance(l.name, api.InstanceExecPost{Command: command}, nil)
 	}); err != nil {
 		return fmt.Errorf("failed to send SIGUSR2 signal to reload configuration: %w", err)
 	}

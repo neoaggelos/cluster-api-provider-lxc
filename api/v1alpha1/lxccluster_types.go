@@ -47,7 +47,7 @@ type LXCClusterSpec struct {
 	// Running Kubernetes on LXC requires an LXC profile enabling privileged
 	// containers and similar configuration. By default, a profile with name
 	// "cluster-api-$namespace-$name" profile is created and associated with
-	// all created Machines automatically.
+	// all LXCMachine instances.
 	//
 	// This option can be used to disable this behavior. In that case, the cluster
 	// administrator is responsible to create the LXC profile and specify it in
@@ -58,6 +58,13 @@ type LXCClusterSpec struct {
 	//
 	// +optional
 	SkipDefaultKubeadmProfile bool `json:"skipDefaultKubeadmProfile"`
+
+	// SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
+	// to set `.spec.providerID`. Note that this requires deploying the external
+	// incus cloud controller manager to finish deploying the cluster.
+	//
+	// +optional
+	SkipCloudProviderNodePatch bool `json:"skipCloudProviderNodePatch"`
 
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`

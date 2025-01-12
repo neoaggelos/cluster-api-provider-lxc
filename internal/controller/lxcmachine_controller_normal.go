@@ -144,24 +144,28 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 	// TODO(neoaggelos): consider editing the instance and unsetting "cloud-init.user-data" configuration key.
 
-	// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
-	// to contact to get the ProviderID for the Node hosted on this machine, so return early.
-	// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
-	// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
-	// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
-	// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
-	if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
-		log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
-		return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
-	}
+	if !lxcCluster.Spec.SkipCloudProviderNodePatch {
+		// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
+		// to contact to get the ProviderID for the Node hosted on this machine, so return early.
+		// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
+		// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
+		// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
+		// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
+		if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
+			log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
+			return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
+		}
 
-	remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
-	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
-	}
+		remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
+		if err != nil {
+			return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
+		}
 
-	if err := cloudprovider.PatchNode(ctx, remoteClient, lxcMachine); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
+		if err := cloudprovider.PatchNode(ctx, remoteClient, lxcMachine); err != nil {
+			return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
+		}
+	} else {
+		log.FromContext(ctx).Info("Skip cloud provider node patch")
 	}
 
 	lxcMachine.Status.Ready = true

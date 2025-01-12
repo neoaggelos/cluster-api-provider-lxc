@@ -66,8 +66,6 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	}
 
 	dataSecretName := machine.Spec.Bootstrap.DataSecretName
-	version := machine.Spec.Version
-	_ = version
 
 	// Make sure bootstrap data is available and populated.
 	if dataSecretName == nil {
@@ -88,8 +86,17 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to retrieve bootstrap data: %w", err)
 	}
+
+	// TODO: mark the machine as provisioning
+
 	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, lxcCluster, cloudInit)
 	if err != nil {
+		if incus.IsTerminalError(err) {
+			log.FromContext(ctx).Error(err, "Fatal error while creating instance")
+			conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceProvisioningAbortedReason, clusterv1.ConditionSeverityError, "Failed to create instance: %s", err.Error())
+			return ctrl.Result{}, nil
+		}
+		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "Failed to create instance: %s", err.Error())
 		return ctrl.Result{}, fmt.Errorf("failed to create instance: %w", err)
 	}
 	r.setLXCMachineAddresses(lxcMachine, addresses)

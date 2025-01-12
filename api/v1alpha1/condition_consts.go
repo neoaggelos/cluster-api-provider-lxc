@@ -67,6 +67,10 @@ const (
 	// errors are usually transient and failed provisioning are automatically re-tried by the controller.
 	InstanceProvisioningFailedReason = "InstanceProvisioningFailed"
 
+	// InstanceProvisioningAbortedReason (Severity=Error) documents a LXCMachine controller detecting
+	// a terminal error while provisioning the instance that provides the LXCMachine infrastructure.
+	InstanceProvisioningAbortedReason = "InstanceProvisioningAborted"
+
 	// InstanceDeletedReason (Severity=Error) documents a LXCMachine controller detecting
 	// the underlying instance has been deleted unexpectedly.
 	InstanceDeletedReason = "InstanceDeleted"

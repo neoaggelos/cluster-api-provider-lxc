@@ -208,20 +208,6 @@ spec:
                         required:
                         - name
                         type: object
-                      serverType:
-                        description: |-
-                          ServerType is "incus" or "lxd". This makes it simpler for the LXCCluster
-                          and LXCMachine controllers to work with both implementations, as some
-                          defaults (e.g. remotes for pulling images) are not compatible.
-
-                          If left unset, will be automatically set by the LXCCluster controller while
-                          provisioning the cluster.
-                        enum:
-                        - incus
-                        - lxd
-                        - unknown
-                        - ""
-                        type: string
                       skipDefaultKubeadmProfile:
                         description: |-
                           Running Kubernetes on LXC requires an LXC profile enabling privileged

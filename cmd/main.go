@@ -100,7 +100,8 @@ func InitFlags(fs *pflag.FlagSet) {
 	logsv1.AddFlags(logOptions, fs)
 
 	fs.BoolVar(&enableLeaderElection, "leader-elect", false,
-		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
+		"Enable leader election for controller manager. Enabling this will ensure there is only one"+
+			" active controller manager.")
 
 	fs.DurationVar(&leaderElectionLeaseDuration, "leader-elect-lease-duration", 15*time.Second,
 		"Interval at which non-leader candidates will wait to force acquire leadership (duration string)")
@@ -112,10 +113,13 @@ func InitFlags(fs *pflag.FlagSet) {
 		"Duration the LeaderElector clients should wait between tries of actions (duration string)")
 
 	fs.StringVar(&watchNamespace, "namespace", "",
-		"Namespace that the controller watches to reconcile cluster-api objects. If unspecified, the controller watches for cluster-api objects across all namespaces.")
+		"Namespace that the controller watches to reconcile cluster-api objects. If unspecified, the"+
+			" controller watches for cluster-api objects across all namespaces.")
 
 	fs.StringVar(&watchFilterValue, "watch-filter", "",
-		fmt.Sprintf("Label value that the controller watches to reconcile cluster-api objects. Label key is always %s. If unspecified, the controller watches for all cluster-api objects.", clusterv1.WatchLabel))
+		fmt.Sprintf("Label value that the controller watches to reconcile cluster-api objects."+
+			" Label key is always %s. If unspecified, the controller watches for all cluster-api"+
+			" objects.", clusterv1.WatchLabel))
 
 	fs.StringVar(&profilerAddress, "profiler-address", "",
 		"Bind address to expose the pprof profiler (e.g. localhost:6060)")
@@ -136,13 +140,16 @@ func InitFlags(fs *pflag.FlagSet) {
 		"Maximum queries per second from the controller client to the Kubernetes API server.")
 
 	fs.IntVar(&restConfigBurst, "kube-api-burst", 30,
-		"Maximum number of queries that should be allowed in one burst from the controller client to the Kubernetes API server.")
+		"Maximum number of queries that should be allowed in one burst from the controller client to"+
+			" the Kubernetes API server.")
 
 	fs.Float32Var(&clusterCacheClientQPS, "clustercache-client-qps", 20,
-		"Maximum queries per second from the cluster cache clients to the Kubernetes API server of workload clusters.")
+		"Maximum queries per second from the cluster cache clients to the Kubernetes API server of"+
+			" workload clusters.")
 
 	fs.IntVar(&clusterCacheClientBurst, "clustercache-client-burst", 30,
-		"Maximum number of queries that should be allowed in one burst from the cluster cache clients to the Kubernetes API server of workload clusters.")
+		"Maximum number of queries that should be allowed in one burst from the cluster cache clients"+
+			" to the Kubernetes API server of workload clusters.")
 
 	fs.IntVar(&webhookPort, "webhook-port", 9443,
 		"Webhook Server port")

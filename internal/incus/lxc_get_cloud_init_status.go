@@ -26,10 +26,12 @@ func (c *Client) CheckCloudInitStatus(ctx context.Context, name string) (result 
 		log.FromContext(ctx).Error(err, "Could not read cloud-init status file")
 		return cloudinit.StatusUnknown, nil
 	}
+	defer func() {
+		_ = reader.Close()
+	}()
 
 	defer func() {
 		log.FromContext(ctx).V(2).WithValues("result", result, "error", rerr).Info("Checking cloud-init status on instance")
 	}()
-	defer reader.Close()
 	return cloudinit.ParseStatus(reader)
 }

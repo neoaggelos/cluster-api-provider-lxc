@@ -19,9 +19,9 @@ issues:
 linters:
   disable-all: true
   enable:
+    - copyloopvar
     - dupl
     - errcheck
-    - copyloopvar
     - ginkgolinter
     - goconst
     - gocyclo
@@ -45,3 +45,8 @@ linters-settings:
   revive:
     rules:
       - name: comment-spacings
+
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes: github.com/neoaggelos/cluster-api-provider-lxc

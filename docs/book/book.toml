@@ -1,0 +1,22 @@
+[book]
+authors = ["Angelos Kolaitis"]
+language = "en"
+multilingual = false
+src = "src"
+title = "The cluster-api-provider-lxc book"
+
+[output.html]
+smart-punctuation = true
+git-repository-url = "https://github.com/neoaggelos/cluster-api-provider-lxc"
+additional-css = ["theme/css/custom.css"]
+
+[output.html.redirect]
+
+[preprocessor.tabulate]
+command = "./util-tabulate.sh"
+
+[preprocessor.embed]
+command = "./util-embed.sh"
+
+[preprocessor.releaselink]
+command = "./util-releaselink.sh"

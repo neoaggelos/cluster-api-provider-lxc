@@ -6,9 +6,15 @@ export WORKER_MACHINE_COUNT=1
 # Name of secret with server credentials
 export LXC_SECRET_NAME=incus-secret
 
+# Ubuntu image. Note that a different base image should be used depending on Incus vs LXD.
+# - Incus: "{name: ubuntu/24.04/cloud, server: https://images.linuxcontainers.org, protocol: simplestreams}"
+# - LXD:   "{name: '24.04', server: https://cloud-images.ubuntu.com/releases, protocol: simplestreams}"
+export LXC_IMAGE="{name: ubuntu/24.04/cloud, server: https://images.linuxcontainers.org, protocol: simplestreams}"
+
 # Load balancer configuration
-export LXC_LOAD_BALANCER_ADDRESS=10.0.42.1      # unused IP to use for kube-vip
-export LXC_LOAD_BALANCER_INTERFACE=             # (optional) specify interface to bind vip
+export LXC_LOAD_BALANCER_TYPE=lxc               # 'lxc' or 'oci'
+export LXC_LOAD_BALANCER_PROFILES=default       # profiles for the lb container
+export LXC_LOAD_BALANCER_FLAVOR=c1-m1           # instance type for the lb container
 
 # Control plane machine configuration
 export CONTROL_PLANE_MACHINE_TYPE=container     # 'container' or 'virtual-machine'

@@ -5,11 +5,9 @@ metadata:
 spec:
   clusterNetwork:
     pods:
-      cidrBlocks:
-      - 10.244.0.0/16
+      cidrBlocks: ${POD_CIDR:=["10.244.0.0/16"]}
     services:
-      cidrBlocks:
-      - 10.96.0.0/12
+      cidrBlocks: ${SERVICE_CIDR:=["10.96.0.0/12"]}
     serviceDomain: cluster.local
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1beta1
@@ -30,8 +28,8 @@ spec:
   loadBalancer:
     type: ${LXC_LOAD_BALANCER_TYPE:=lxc}
     instanceSpec:
-      flavor: ${LXC_LOAD_BALANCER_MACHINE_FLAVOR:=""}
-      profiles: [${LXC_LOAD_BALANCER_MACHINE_PROFILES:=default}]
+      flavor: ${LXC_LOAD_BALANCER_FLAVOR:=""}
+      profiles: [${LXC_LOAD_BALANCER_PROFILES:=default}]
 ---
 apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: KubeadmControlPlane

@@ -84,6 +84,7 @@ spec:
                           Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
 
                           Examples:
+
                             - `t3.micro` -- match specs of an EC2 t3.micro instance
                             - `c2-m4` -- 2 cores, 4 GB RAM
                         type: string
@@ -133,6 +134,10 @@ spec:
                           No other configuration is required for "lxc" mode. The load balancer
                           instance can be configured through .spec.loadBalancer.instanceSpec.
 
+                          The load balancer container is a single point of failure to access
+                          the workload cluster control plane. Therefore, it should only be used
+                          for development clusters only.
+
                         - "external" will not create any load balancer. Should be used alongside
                           something like kube-vip, otherwise the cluster will fail to provision.
 
@@ -148,6 +153,10 @@ spec:
 
                           No other configuration is required for "oci" mode. The load balancer
                           instance can be configured through .spec.loadBalancer.instanceSpec.
+
+                          The load balancer container is a single point of failure to access
+                          the workload cluster control plane. Therefore, it should only be used
+                          for development clusters only.
 
                           Requires server extensions: "instance_oci"
 

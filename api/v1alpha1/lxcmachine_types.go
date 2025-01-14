@@ -50,6 +50,7 @@ type LXCMachineSpec struct {
 	// Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
 	//
 	// Examples:
+	//
 	//   - `t3.micro` -- match specs of an EC2 t3.micro instance
 	//   - `c2-m4` -- 2 cores, 4 GB RAM
 	//

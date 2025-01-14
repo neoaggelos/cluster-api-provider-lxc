@@ -77,13 +77,13 @@ func New(ctx context.Context, opts Options) (*Client, error) {
 	case opts.ServerCert == "":
 		log = log.WithValues("lxc.server-crt", "<unset>")
 	case opts.ServerCert != "":
-		if fingerprint, err := tls.CertFingerprintStr(opts.ServerCert); err == nil && len(fingerprint) >= 8 {
-			log = log.WithValues("lxc.server-crt", fingerprint[:8])
+		if fingerprint, err := tls.CertFingerprintStr(opts.ServerCert); err == nil && len(fingerprint) >= 12 {
+			log = log.WithValues("lxc.server-crt", fingerprint[:12])
 		}
 	}
 
-	if fingerprint, err := tls.CertFingerprintStr(opts.ClientCert); err == nil && len(fingerprint) >= 8 {
-		log = log.WithValues("lxc.client-crt", fingerprint[:8])
+	if fingerprint, err := tls.CertFingerprintStr(opts.ClientCert); err == nil && len(fingerprint) >= 12 {
+		log = log.WithValues("lxc.client-crt", fingerprint[:12])
 	}
 
 	client, err := incus.ConnectIncusWithContext(ctx, opts.ServerURL, &incus.ConnectionArgs{

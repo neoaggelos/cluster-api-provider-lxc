@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	incus "github.com/lxc/incus/v6/client"
+	"github.com/lxc/incus/v6/shared/tls"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	corev1 "k8s.io/api/core/v1"
@@ -67,7 +68,23 @@ func NewOptionsFromSecret(secret *corev1.Secret) Options {
 }
 
 func New(ctx context.Context, opts Options) (*Client, error) {
-	log := log.FromContext(ctx).WithValues("server", opts.ServerURL)
+	log := log.FromContext(ctx).WithValues("lxc.server", opts.ServerURL)
+
+	switch {
+	case opts.InsecureSkipVerify:
+		log = log.WithValues("lxc.insecure-skip-verify", true)
+		opts.ServerCert = ""
+	case opts.ServerCert == "":
+		log = log.WithValues("lxc.server-crt", "<unset>")
+	case opts.ServerCert != "":
+		if fingerprint, err := tls.CertFingerprintStr(opts.ServerCert); err == nil && len(fingerprint) >= 8 {
+			log = log.WithValues("lxc.server-crt", fingerprint[:8])
+		}
+	}
+
+	if fingerprint, err := tls.CertFingerprintStr(opts.ClientCert); err == nil && len(fingerprint) >= 8 {
+		log = log.WithValues("lxc.client-crt", fingerprint[:8])
+	}
 
 	client, err := incus.ConnectIncusWithContext(ctx, opts.ServerURL, &incus.ConnectionArgs{
 		TLSServerCert:      opts.ServerCert,
@@ -81,7 +98,7 @@ func New(ctx context.Context, opts Options) (*Client, error) {
 	}
 
 	if opts.Project != "" {
-		log = log.WithValues("project", opts.Project)
+		log = log.WithValues("lxc.project", opts.Project)
 		client = client.UseProject(opts.Project)
 	}
 

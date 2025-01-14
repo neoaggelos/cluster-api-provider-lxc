@@ -62,7 +62,7 @@ spec:
         - /manager
         args:
           - --leader-elect
-          - --health-probe-bind-address=:8081
+          - --health-addr=:9440
         image: controller:latest
         name: manager
         securityContext:
@@ -73,13 +73,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8081
+            port: 9440
           initialDelaySeconds: 15
           periodSeconds: 20
         readinessProbe:
           httpGet:
             path: /readyz
-            port: 8081
+            port: 9440
           initialDelaySeconds: 5
           periodSeconds: 10
         # TODO(user): Configure the resources accordingly based on the project requirements.

@@ -64,7 +64,7 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 		return nil, fmt.Errorf("failed to CreateNetworkLoadBalancer: %w", err)
 	}
 
-	return []string{l.networkName}, nil
+	return []string{l.listenAddress}, nil
 }
 
 // Delete implements loadBalancerManager.

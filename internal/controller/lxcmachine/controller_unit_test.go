@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controller
+package lxcmachine_test
 
 import (
 	"context"
@@ -30,6 +30,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxcmachine"
 )
 
 type cluster struct {
@@ -153,7 +154,7 @@ func TestLXCMachineReconciler_LXCClusterToLXCMachines(t *testing.T) {
 		// machine5.lxcMachine,  // NOTE(neoaggelos): omitted to test Machines without an InstructureRef
 	}
 	c := fake.NewClientBuilder().WithObjects(objects...).Build()
-	r := LXCMachineReconciler{
+	r := lxcmachine.LXCMachineReconciler{
 		Client: c,
 	}
 	g.Expect(r.LXCClusterToLXCMachines(context.TODO(), cluster0.lxcCluster)).To(ConsistOf(

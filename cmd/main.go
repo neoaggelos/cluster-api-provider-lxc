@@ -52,7 +52,8 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxccluster"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxcmachine"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -331,7 +332,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 		os.Exit(1)
 	}
 
-	if err := (&controller.LXCClusterReconciler{
+	if err := (&lxccluster.LXCClusterReconciler{
 		Client:           mgr.GetClient(),
 		CachingClient:    secretCachingClient,
 		WatchFilterValue: watchFilterValue,
@@ -340,7 +341,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 		os.Exit(1)
 	}
 
-	if err := (&controller.LXCMachineReconciler{
+	if err := (&lxcmachine.LXCMachineReconciler{
 		Client:           mgr.GetClient(),
 		CachingClient:    secretCachingClient,
 		ClusterCache:     clusterCache,

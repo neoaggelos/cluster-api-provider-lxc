@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controller
+package lxccluster_test
 
 import (
 	"context"
@@ -28,9 +28,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxccluster"
 )
 
-var _ = Describe("LXCMachine Controller", func() {
+var _ = Describe("LXCCluster Controller", func() {
 	Context("When reconciling a resource", func() {
 		const resourceName = "test-resource"
 
@@ -40,13 +41,13 @@ var _ = Describe("LXCMachine Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		lxcmachine := &infrav1.LXCMachine{}
+		lxcCluster := &infrav1.LXCCluster{}
 
 		BeforeEach(func() {
-			By("creating the custom resource for the Kind LXCMachine")
-			err := k8sClient.Get(ctx, typeNamespacedName, lxcmachine)
+			By("creating the custom resource for the Kind LXCCluster")
+			err := k8sClient.Get(ctx, typeNamespacedName, lxcCluster)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &infrav1.LXCMachine{
+				resource := &infrav1.LXCCluster{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,16 +60,16 @@ var _ = Describe("LXCMachine Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &infrav1.LXCMachine{}
+			resource := &infrav1.LXCCluster{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
-			By("Cleanup the specific resource instance LXCMachine")
+			By("Cleanup the specific resource instance LXCCluster")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
-			controllerReconciler := &LXCMachineReconciler{
+			controllerReconciler := &lxccluster.LXCClusterReconciler{
 				Client: k8sClient,
 			}
 

@@ -23,16 +23,22 @@ func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operatio
 		return fmt.Errorf("failed to %s: %w", name, err)
 	}
 
-	// log progress of LXC operation. Note that this will be very verbose and should only be enabled while actively troubleshooting issues
+	// log progress of LXC operation. Note that this will be very verbose and but will be very useful to troubleshoot potential issues
 	operationLogger := log.FromContext(ctx).V(2).WithValues("operation.name", name)
-	if operationLogger.Enabled() {
-		target, _ := op.AddHandler(func(o api.Operation) {
-			operationLogger.WithValues("operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status).Info("Operation in progress")
-		})
-		defer func() {
-			_ = op.RemoveHandler(target)
-		}()
-	}
+	target, _ := op.AddHandler(func(o api.Operation) {
+		log := operationLogger.WithValues("operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status, "operation.error", o.Err)
+		switch {
+		case o.StatusCode == api.Failure:
+			log.Error(err, "Operation failed")
+		case o.StatusCode.IsFinal():
+			log.Info("Operation finished")
+		default:
+			log.Info("Operation in progress")
+		}
+	})
+	defer func() {
+		_ = op.RemoveHandler(target)
+	}()
 
 	if err := op.WaitContext(ctx); err != nil && !strings.Contains(err.Error(), "Operation not found") {
 		return fmt.Errorf("failed to wait for %s operation: %w", name, err)

@@ -3,12 +3,12 @@ package incus
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 	"time"
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
@@ -193,10 +193,11 @@ func (c *Client) getLoadBalancerConfiguration(ctx context.Context, clusterName s
 }
 
 // The built-in Client.HasExtension() from Incus cannot be trusted, as it returns true if we skip the GetServer call
-func (c *Client) serverSupportsExtension(name string) (bool, error) {
+// Return the list of extensions that are NOT supported by the server, if any
+func (c *Client) serverSupportsExtensions(extensions ...string) ([]string, error) {
 	if server, _, err := c.Client.GetServer(); err != nil {
-		return false, fmt.Errorf("failed to retrieve server information: %w", err)
+		return nil, fmt.Errorf("failed to retrieve server information: %w", err)
 	} else {
-		return slices.Contains(server.APIExtensions, name), nil
+		return sets.New(server.APIExtensions...).Difference(sets.New(extensions...)).UnsortedList(), nil
 	}
 }

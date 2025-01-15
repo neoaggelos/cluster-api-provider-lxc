@@ -13,7 +13,7 @@ const (
 	loadBalancerReconfigureTimeout = 60 * time.Second
 
 	// instanceCreateTimeout is the timeout for creating and starting an instance.
-	instanceCreateTimeout = 60 * time.Second
+	instanceCreateTimeout = 180 * time.Second
 
 	// instanceDeleteTimeout is the timeout for stopping and deleting an instance.
 	instanceDeleteTimeout = 30 * time.Second

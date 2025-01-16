@@ -145,9 +145,7 @@ After this step, you should now have your infrastructure ready and a Kubernetes 
 > **TODO**: this should be replaced with `clusterctl init -i lxc` once we have a public release
 
 ```bash
-make docker-build IMG=image:v1
-kind image load-docker image:v1
-make deploy IMG=image:v1
+kubectl apply -f https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/infrastructure-components.yaml
 ```
 
 Then, wait for `capl-controller-manager` to become healthy
@@ -165,14 +163,12 @@ capl-controller-manager-b6f789559-vtdvw   1/1     Running   0          4m20s
 
 ## Generate cluster manifest
 
-> **NOTE**: this should be done with `clusterctl generate cluster c1 --flavor development`
+> **TODO**: this should be replaced with `clusterctl generate cluster c1 --flavor development` once we have a public release
 
 List the cluster template variables:
 
 ```bash
-cd cluster-api-provider-lxc/
-
-clusterctl generate cluster --from templates/development.yaml --list-variables
+clusterctl generate cluster c1 --list-variables --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/cluster-template-development.yaml
 ```
 
 Example output:
@@ -208,7 +204,12 @@ Set configuration values:
 Then generate the cluster manifest using:
 
 ```bash
-clusterctl generate cluster c1 --from templates/development.yaml > cluster.yaml
+clusterctl generate cluster c1 \
+  --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/cluster-template-development.yaml \
+  --kubernetes-version v1.32.0 \
+  --control-plane-machine-count 1 \
+  --worker-machine-count 1 \
+  > cluster.yaml
 ```
 
 ## Deploy cluster
@@ -262,20 +263,20 @@ lxcmachine.infrastructure.cluster.x-k8s.io/c1-md-0-7jls6-p268m      c1        c1
 First retrieve the kubeconfig file for the workload cluster
 
 ```bash
-clusterctl get kubeconfig c1 > ~/.kube/config.c1
+clusterctl get kubeconfig c1 > ~/.kube/c1.config
 ```
 
 Optionally, deploy kube-flannel on the cluster:
 
 ```bash
-KUBECONFIG=~/.kube/config.c1 kubectl apply -f \
+KUBECONFIG=~/.kube/c1.config kubectl apply -f \
     https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
 Then, retrieve the list of pods and nodes on the cluster with:
 
 ```bash
-KUBECONFIG=~/.kube/config.c1 kubectl get pod,node -A -o wide
+KUBECONFIG=~/.kube/c1.config kubectl get pod,node -A -o wide
 ```
 
 Output should look similar to:

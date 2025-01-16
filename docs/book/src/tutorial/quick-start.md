@@ -2,6 +2,10 @@
 
 In this tutorial, we will deploy a single-node Incus (or Canonical LXD) server, use a local kind as a management cluster, deploy cluster-api-provider-lxc and create a secret with credentials. Finally, we will provision a development workload cluster and interact with it.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Requirements
 
 1. A host running Ubuntu 24.04

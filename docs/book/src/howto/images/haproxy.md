@@ -6,6 +6,10 @@ The `haproxy` image will be used for the cluster load balancer when using the de
 
 We will go over the steps of launching a builder instance with the appropriate base image, installing haproxy, cleaning up and publishing a snapshot of the image, as well as steps for using it.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Launch builder instance
 
 We must start a `container` instance with the base Operating System that we want to have. Ubuntu 24.04 and Debian 12 have been tested and are known to work.

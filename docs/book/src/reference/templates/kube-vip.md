@@ -2,6 +2,10 @@
 
 The kube-vip cluster-template will create a static pod running [kube-vip] in the control plane nodes. The control plane endpoint will be the VIP address managed by kube-vip.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Requirements
 
 1. A free IP address in the workload cluster network.

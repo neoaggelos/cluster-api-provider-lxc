@@ -2,6 +2,10 @@
 
 This cluster template will provision an [OVN network load balancer] to forward traffic to control plane machines on the cluster. The control plane endpoint will be the listen IP address of the network load balancer.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Requirements
 
 1. Incus configured with OVN.

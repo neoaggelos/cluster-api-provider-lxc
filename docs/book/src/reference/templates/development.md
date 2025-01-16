@@ -4,6 +4,10 @@ The development cluster template will create an LXC or OCI container running a h
 
 > **WARNING**: The load balancer container is a single point of failure for the control plane of the workload cluster, therefore should only be used for development or evaluation purposes.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Requirements
 
 1. The instance network is reachable by the management controller.

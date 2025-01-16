@@ -17,6 +17,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 TOOLS_DIR := $(realpath ../../hack/tools)
 TOOLS_BIN_DIR := $(TOOLS_DIR)/bin
 MDBOOK_INSTALL := $(realpath ../../hack/scripts/install-mdbook.sh)
+TOC_INSTALL := $(realpath ../../hack/scripts/install-mdbook-toc.sh)
 
 export PATH := $(TOOLS_BIN_DIR):$(PATH)
 
@@ -44,6 +45,11 @@ MDBOOK ?= $(TOOLS_BIN_DIR)/mdbook
 $(MDBOOK):
 	$(MDBOOK_INSTALL) v0.4.43 $(TOOLS_BIN_DIR)
 
+# Only set TOC if it's not set as an environment variable
+TOC ?= $(TOOLS_BIN_DIR)/mdbook-toc
+$(TOC):
+	$(TOC_INSTALL) 0.14.2 $(TOOLS_BIN_DIR)
+
 .PHONY: generate-api-docs clean-api-docs
 generate-api-docs: src/reference/api/v1alpha1/api.md
 clean-api-docs: clean-api-docs-v1alpha1
@@ -59,9 +65,9 @@ clean-api-docs-%:
 	rm src/reference/api/$*/api.md
 
 .PHONY: serve
-serve: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) generate-api-docs
+serve: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) $(TOC) generate-api-docs
 	$(MDBOOK) serve
 
 .PHONY: build
-build: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) generate-api-docs
+build: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) $(TOC) generate-api-docs
 	$(MDBOOK) build

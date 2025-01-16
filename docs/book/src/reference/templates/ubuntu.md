@@ -6,6 +6,10 @@ The ubuntu cluster template is the same as the [development](./development.md) c
 
 > **WARNING**: cloud-init will download all binaries on all nodes while deploying the cluster. This is wasteful and will take longer than using a base image.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Requirements
 
 1. The instance network is reachable by the management controller.

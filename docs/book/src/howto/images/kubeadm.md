@@ -6,6 +6,10 @@ The `kubeadm` image will be used to launch cluster nodes.
 
 We will go over the steps of launching a builder instance with the appropriate base image, installing Kubernetes and other necessary tools, cleaning up and publishing a snapshot of the image, as well as steps for using it.
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Launch builder instance
 
 We must start a builder instance that matches the instance type (`container` or `virtual-machine`) and base Operating System that we want to have. Ubuntu 24.04 and Debian 12 have been tested and are known to work.

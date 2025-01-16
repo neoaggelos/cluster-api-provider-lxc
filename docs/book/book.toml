@@ -20,3 +20,6 @@ command = "./util-embed.sh"
 
 [preprocessor.releaselink]
 command = "./util-releaselink.sh"
+
+[preprocessor.toc]
+command = "./util-toc.sh"

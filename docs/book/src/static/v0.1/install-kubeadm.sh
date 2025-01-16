@@ -8,12 +8,13 @@ set -xeu
 KUBERNETES_VERSION="${KUBERNETES_VERSION:-$1}"
 CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.6.0}"
 CRICTL_VERSION="${CRICTL_VERSION:-v1.31.0}"
-KREL_VERSION="${KREL_VERSION:-v0.16.2}"
 CONTAINERD_VERSION="${CONTAINERD_VERSION:-v1.7.24}"
 RUNC_VERSION="${RUNC_VERSION:-v1.2.3}"    # must match https://raw.githubusercontent.com/containerd/containerd/${CONTAINERD_VERSION}/script/setup/runc-version
 
-CONTAINERD_CONFIG_URL="${CONTAINERD_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/reference/static/config.toml"}"
-CONTAINERD_SERVICE_URL="${CONTAINERD_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/reference/static/containerd.service"}"
+KUBELET_SERVICE_URL="${KUBELET_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/kubelet.service"}"
+KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL="${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/10-kubeadm.conf"}"
+CONTAINERD_CONFIG_URL="${CONTAINERD_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/config.toml"}"
+CONTAINERD_SERVICE_URL="${CONTAINERD_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/containerd.service"}"
 
 # infer ARCH
 ARCH="$(uname -m)"
@@ -69,8 +70,8 @@ chmod +x /usr/bin/kubeadm /usr/bin/kubelet /usr/bin/kubectl
 # kubelet service
 mkdir -p /usr/lib/systemd/system/kubelet.service.d
 if ! systemctl list-unit-files kubelet.service &>/dev/null; then
-  curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${KREL_VERSION}/cmd/krel/templates/latest/kubelet/kubelet.service" | tee /usr/lib/systemd/system/kubelet.service
-  curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${KREL_VERSION}/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf" | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+  curl -sSL "${KUBELET_SERVICE_URL}" | tee /usr/lib/systemd/system/kubelet.service
+  curl -sSL "${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL}" | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 fi
 systemctl enable kubelet.service
 

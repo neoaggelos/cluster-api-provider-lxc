@@ -47,9 +47,7 @@ Launch any commands you might need _before_ installing haproxy.
 ## Install haproxy
 
 ```bash
-# cluster-api-provider-lxc/hack/image-generation/scripts/50-install-haproxy.sh
-
-{{#include ../../../../../hack/image-generation/scripts/50-install-haproxy.sh }}
+{{#include ../../static/v0.1/install-haproxy.sh }}
 ```
 
 {{#tabs name:"install" tabs:"Incus,Canonical LXD" }}
@@ -57,7 +55,7 @@ Launch any commands you might need _before_ installing haproxy.
 {{#tab Incus }}
 
 ```bash
-cat 50-install-haproxy.sh | sudo incus exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | sudo incus exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -65,7 +63,7 @@ cat 50-install-haproxy.sh | sudo incus exec haproxy-builder -- bash
 {{#tab Canonical LXD }}
 
 ```bash
-cat 50-install-haproxy.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | sudo lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -81,9 +79,7 @@ Launch any commands you might need _after_ installing haproxy and adjusting the 
 We use the script below to cleanup package archives, deb packages, bash history files and local user configurations. Most importantly, we also reset `cloud-init` status, so that we can use it as a base image.
 
 ```bash
-# cluster-api-provider-lxc/hack/image-generation/scripts/99-cleanup.sh
-
-{{#include ../../../../../hack/image-generation/scripts/99-cleanup.sh }}
+{{#include ../../static/v0.1/image-cleanup.sh }}
 ```
 
 {{#tabs name:"cleanup" tabs:"Incus,Canonical LXD" }}
@@ -91,7 +87,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-cat 99-cleanup.sh | sudo incus exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -99,7 +95,7 @@ cat 99-cleanup.sh | sudo incus exec haproxy-builder -- bash
 {{#tab Canonical LXD }}
 
 ```bash
-cat 99-cleanup.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}

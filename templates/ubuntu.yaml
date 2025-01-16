@@ -53,7 +53,7 @@ spec:
       fi
     # Install kubeadm
     - apt update && apt install curl -y
-    - curl https://gist.githubusercontent.com/neoaggelos/0506b6640a4259dd87e5c41a5c9176ee/raw/26cdb0eeefdec19d5ccf7b209aa6612d61f62b81/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
+    - curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
     clusterConfiguration:
       apiServer:
         certSANs:
@@ -139,7 +139,7 @@ spec:
       - set -x
       # Install kubeadm
       - apt update && apt install curl -y
-      - curl https://gist.githubusercontent.com/neoaggelos/0506b6640a4259dd87e5c41a5c9176ee/raw/26cdb0eeefdec19d5ccf7b209aa6612d61f62b81/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
+      - curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
       joinConfiguration:
         nodeRegistration:
           kubeletExtraArgs:

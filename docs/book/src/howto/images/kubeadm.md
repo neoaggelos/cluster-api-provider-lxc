@@ -78,9 +78,7 @@ Launch any commands you might need _before_ installing the Kubernetes binaries a
 We will use the following script to install runc, containerd, cni-plugins, crictl and Kubernetes binaries on the instance. Feel free to adjust component versions as required.
 
 ```bash
-# cluster-api-provider-lxc/hack/image-generation/scripts/50-install-kubeadm.sh
-
-{{#include ../../../../../hack/image-generation/scripts/50-install-kubeadm.sh }}
+{{#include ../../static/v0.1/install-kubeadm.sh }}
 ```
 
 Run the script on the instance using the command below. Make sure to specify the Kubernetes version you want to use, e.g. `v1.31.4`:
@@ -90,7 +88,7 @@ Run the script on the instance using the command below. Make sure to specify the
 {{#tab Incus }}
 
 ```bash
-cat 50-install-kubeadm.sh | sudo incus exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | sudo incus exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -98,7 +96,7 @@ cat 50-install-kubeadm.sh | sudo incus exec kubeadm-builder -- bash -s -- v1.31.
 {{#tab Canonical LXD }}
 
 ```bash
-cat 50-install-kubeadm.sh | sudo lxc exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | sudo lxc exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -113,10 +111,9 @@ Launch any commands you might need _after_ installing the Kubernetes and adjusti
 
 We use the script below to cleanup package archives, deb packages, bash history files and local user configurations. Most importantly, we also reset `cloud-init` status, so that we can use it as a base image.
 
-```bash
-# cluster-api-provider-lxc/hack/image-generation/scripts/99-cleanup.sh
 
-{{#include ../../../../../hack/image-generation/scripts/99-cleanup.sh }}
+```bash
+{{#include ../../static/v0.1/image-cleanup.sh }}
 ```
 
 {{#tabs name:"cleanup" tabs:"Incus,Canonical LXD" }}
@@ -124,7 +121,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-cat 99-cleanup.sh | sudo incus exec kubeadm-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -132,7 +129,7 @@ cat 99-cleanup.sh | sudo incus exec kubeadm-builder -- bash
 {{#tab Canonical LXD }}
 
 ```bash
-cat 99-cleanup.sh | sudo lxc exec kubeadm-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}

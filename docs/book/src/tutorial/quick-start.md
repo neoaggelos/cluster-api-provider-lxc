@@ -84,11 +84,18 @@ incus remote generate-certificate
 sudo incus config trust add-certificate ~/.config/incus/client.crt
 ```
 
+Configure HTTPS remote to use `incus` without sudo:
+
+```bash
+incus remote add local-https "https://$(sudo incus config get core.https_address)" --accept-certificate
+incus remote set-default local-https
+```
+
 Generate a Kubernetes secret `lxc-secret` with credentials to access the Incus HTTPS endpoint:
 
 ```bash
 kubectl create secret generic lxc-secret \
-  --from-literal=server="https://$(sudo incus config get core.https_address)" \
+  --from-literal=server="https://$(incus config get core.https_address)" \
   --from-literal=server-crt="$(sudo cat /var/lib/incus/cluster.crt)" \
   --from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
   --from-literal=client-key="$(cat ~/.config/incus/client.key)" \
@@ -120,15 +127,16 @@ Generate a client certificate and key, and add it as a trusted client certificat
 ```bash
 token="$(sudo lxc config trust add --name client | tail -1)"
 
-lxc remote add lxd "https://$(sudo lxc config get core.https_address)" \
+lxc remote add local-https "https://$(sudo lxc config get core.https_address)" \
     --accept-certificate --token "$token"
+lxc remote set-default local-https
 ```
 
 Generate a Kubernetes secret `lxc-secret` with credentials to access the LXD HTTPS endpoint:
 
 ```bash
 kubectl create secret generic lxc-secret \
-  --from-literal=server="https://$(sudo lxc config get core.https_address)" \
+  --from-literal=server="https://$(lxc config get core.https_address)" \
   --from-literal=server-crt="$(sudo cat /var/snap/lxd/common/lxd/cluster.crt)" \
   --from-literal=client-crt="$(cat ~/snap/lxd/common/config/client.crt)" \
   --from-literal=client-key="$(cat ~/snap/lxd/common/config/client.key)" \

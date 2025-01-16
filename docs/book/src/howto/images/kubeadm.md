@@ -22,10 +22,10 @@ Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.l
 
 ```bash
 # Ubuntu 24.04 base image
-sudo incus launch images:ubuntu/24.04/cloud kubeadm-builder --vm
+incus launch images:ubuntu/24.04/cloud kubeadm-builder --vm
 
 # [OR] Debian 12 base image
-sudo incus launch images:debian/12/cloud kubeadm-builder --vm
+incus launch images:debian/12/cloud kubeadm-builder --vm
 ```
 
 {{#/tab }}
@@ -36,10 +36,10 @@ Launch a new Container using the Ubuntu 24.04 image from [https://images.linuxco
 
 ```bash
 # Ubuntu 24.04 base image
-sudo incus launch images:ubuntu/24.04/cloud kubeadm-builder
+incus launch images:ubuntu/24.04/cloud kubeadm-builder
 
 # [OR] Debian 12 base image
-sudo incus launch images:debian/12/cloud kubeadm-builder
+incus launch images:debian/12/cloud kubeadm-builder
 ```
 
 {{#/tab }}
@@ -50,7 +50,7 @@ sudo incus launch images:debian/12/cloud kubeadm-builder
 Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/). The image comes with support for cloud-init.
 
 ```bash
-sudo lxc launch ubuntu:24.04 kubeadm-builder --vm
+lxc launch ubuntu:24.04 kubeadm-builder --vm
 ```
 
 {{#/tab }}
@@ -60,7 +60,7 @@ sudo lxc launch ubuntu:24.04 kubeadm-builder --vm
 Launch a new Container using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/). The image comes with support for cloud-init.
 
 ```bash
-sudo lxc launch ubuntu:24.04 kubeadm-builder
+lxc launch ubuntu:24.04 kubeadm-builder
 ```
 
 {{#/tab }}
@@ -88,7 +88,7 @@ Run the script on the instance using the command below. Make sure to specify the
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | sudo incus exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | incus exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -96,7 +96,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-k
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | sudo lxc exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | lxc exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -121,7 +121,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | incus exec kubeadm-builder -- bash
 ```
 
 {{#/tab }}
@@ -129,7 +129,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cle
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -145,11 +145,11 @@ At this point, our image root filesystem is ready. Final steps are to shutdown t
 {{#tab Incus }}
 
 ```bash
-sudo incus stop kubeadm-builder
-sudo incus snapshot create kubeadm-builder snapshot-0
+incus stop kubeadm-builder
+incus snapshot create kubeadm-builder snapshot-0
 
 # publish snapshot as image, using alias "kubeadm/v1.31.4/ubuntu/24.04"
-sudo incus publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
+incus publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
 ```
 
 {{#/tab }}
@@ -157,11 +157,11 @@ sudo incus publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.
 {{#tab Canonical LXD }}
 
 ```bash
-sudo lxc stop kubeadm-builder
-sudo lxc snapshot kubeadm-builder snapshot-0
+lxc stop kubeadm-builder
+lxc snapshot kubeadm-builder snapshot-0
 
 # publish snapshot as image, using alias "kubeadm/v1.31.4/ubuntu/24.04"
-sudo lxc publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
+lxc publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
 ```
 
 {{#/tab }}
@@ -175,7 +175,7 @@ sudo lxc publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
 {{#tab Incus }}
 
 ```bash
-sudo incus image list kubeadm
+incus image list kubeadm
 ```
 
 {{#/tab }}
@@ -183,7 +183,7 @@ sudo incus image list kubeadm
 {{#tab Canonical LXD }}
 
 ```bash
-sudo lxc image list kubeadm
+lxc image list kubeadm
 ```
 
 {{#/tab }}

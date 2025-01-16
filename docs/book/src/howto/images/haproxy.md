@@ -20,10 +20,10 @@ Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.l
 
 ```bash
 # Ubuntu 24.04 base image
-sudo incus launch images:ubuntu/24.04 haproxy-builder
+incus launch images:ubuntu/24.04 haproxy-builder
 
 # [OR] Debian 12 base image
-sudo incus launch images:debian/12 haproxy-builder
+incus launch images:debian/12 haproxy-builder
 ```
 
 {{#/tab }}
@@ -33,7 +33,7 @@ sudo incus launch images:debian/12 haproxy-builder
 Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/).
 
 ```bash
-sudo lxc launch ubuntu:24.04 haproxy-builder
+lxc launch ubuntu:24.04 haproxy-builder
 ```
 
 {{#/tab }}
@@ -55,7 +55,7 @@ Launch any commands you might need _before_ installing haproxy.
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | sudo incus exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | incus exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -63,7 +63,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-h
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -87,7 +87,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -95,7 +95,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cle
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | sudo lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -111,11 +111,11 @@ At this point, our image root filesystem is ready. Final steps are to shutdown t
 {{#tab Incus }}
 
 ```bash
-sudo incus stop haproxy-builder
-sudo incus snapshot create haproxy-builder snapshot-0
+incus stop haproxy-builder
+incus snapshot create haproxy-builder snapshot-0
 
 # publish snapshot as image, using alias "haproxy/ubuntu/24.04"
-sudo incus publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
+incus publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
 ```
 
 {{#/tab }}
@@ -123,11 +123,11 @@ sudo incus publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
 {{#tab Canonical LXD }}
 
 ```bash
-sudo lxc stop haproxy-builder
-sudo lxc snapshot haproxy-builder snapshot-0
+lxc stop haproxy-builder
+lxc snapshot haproxy-builder snapshot-0
 
 # publish snapshot as image, using alias "haproxy/ubuntu/24.04"
-sudo lxc publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
+lxc publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
 ```
 
 {{#/tab }}
@@ -141,7 +141,7 @@ sudo lxc publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
 {{#tab Incus }}
 
 ```bash
-sudo incus image list haproxy
+incus image list haproxy
 ```
 
 {{#/tab }}
@@ -149,7 +149,7 @@ sudo incus image list haproxy
 {{#tab Canonical LXD }}
 
 ```bash
-sudo lxc image list haproxy
+lxc image list haproxy
 ```
 
 {{#/tab }}

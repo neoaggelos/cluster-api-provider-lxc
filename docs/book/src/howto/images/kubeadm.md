@@ -133,7 +133,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cle
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
+curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec kubeadm-builder -- bash
 ```
 
 {{#/tab }}
@@ -206,9 +206,22 @@ The output should look similar to this:
 
 ## Use the image in LXCMachineTemplate
 
-Set `spec.image.name` on the LXCMachineTemplate resources of your workload cluster. When launching the cluster, this will now use our custom image to provision the instances.
+### Using the default cluster templates
 
-Make sure to set `.spec.instanceType` to `container` or `virtual-machine` accordingly (depending on the kind of image you built).
+When using the example [Cluster Templates](../../reference/templates/), you need to set:
+
+```bash
+export CONTROL_PLANE_MACHINE_TYPE=container         # 'container' or 'virtual-machine'
+export WORKER_MACHINE_TYPE=container                # must match type of built image
+
+export LXC_IMAGE_NAME=kubeadm/v1.31.4/ubuntu/24.40  # exported image alias name
+```
+
+### Editing LXCImageTemplate manually
+
+The image name must be set on the `spec.image.name` field on the LXCMachineTemplate resources of your workload cluster. When launching the cluster, this will now use our custom image to provision the instances.
+
+Make sure to set `.spec.instanceType` to `container` or `virtual-machine` accordingly (depending on the kind of image you built), for example:
 
 ```yaml,hidelines=#
 ---

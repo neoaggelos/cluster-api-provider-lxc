@@ -2,7 +2,7 @@
 
 ---
 
-- [Tutorial](./tutorial/quick-start.md)
+- [Quick Start](./tutorial/quick-start.md)
 
 ---
 

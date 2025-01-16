@@ -6,6 +6,10 @@ The default simplestreams server is available through an Amazon CloudFront distr
 
 Running infrastructure costs are kindly subsidized by the [National Technical University Of Athens].
 
+## Table Of Contents
+
+<!-- toc -->
+
 ## Support-level disclaimer
 
 - The simplestreams server may terminate at any time, and should only be used for evaluation purposes.

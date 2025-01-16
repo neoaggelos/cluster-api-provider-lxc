@@ -6,10 +6,10 @@ export WORKER_MACHINE_COUNT=1
 # Name of secret with server credentials
 export LXC_SECRET_NAME=lxc-secret
 
-# Ubuntu image. Note that a different base image should be used depending on Incus vs LXD.
-# - Incus: "{name: ubuntu/24.04/cloud, server: https://images.linuxcontainers.org, protocol: simplestreams}"
-# - LXD:   "{name: '24.04', server: https://cloud-images.ubuntu.com/releases, protocol: simplestreams}"
-export LXC_IMAGE="{name: ubuntu/24.04/cloud, server: https://images.linuxcontainers.org, protocol: simplestreams}"
+# Ubuntu image to use. You can use `ubuntu:VERSION`, which resolves to:
+# - Incus:  Image `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
+# - LXD:    Image `VERSION` from https://cloud-images.ubuntu.com/releases
+export LXC_IMAGE_NAME="ubuntu:24.04"
 
 # Load balancer configuration
 export LXC_LOAD_BALANCER_TYPE=lxc               # 'lxc' or 'oci'

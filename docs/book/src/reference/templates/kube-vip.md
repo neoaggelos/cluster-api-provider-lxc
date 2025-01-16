@@ -17,6 +17,13 @@ The kube-vip cluster-template will create a static pod running [kube-vip] in the
 {{#include ../../../../../templates/kube-vip.rc }}
 ```
 
+## Generate cluster
+
+```bash
+clusterctl generate cluster example-cluster \
+    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/templates/kube-vip.yaml
+```
+
 ## Cluster Template
 
 ```yaml

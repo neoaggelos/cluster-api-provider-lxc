@@ -21,6 +21,13 @@ The ubuntu cluster template is the same as the [development](./development.md) c
 {{#include ../../../../../templates/ubuntu.rc }}
 ```
 
+## Generate cluster
+
+```bash
+clusterctl generate cluster example-cluster \
+    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/templates/ubuntu.yaml
+```
+
 ## Cluster Template
 
 ```yaml

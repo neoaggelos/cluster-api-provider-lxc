@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
@@ -38,14 +39,42 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profiles", profiles))
 
 	image := lxcMachine.Spec.Image
+
+	// Incus and LXD have diverged image servers for Ubuntu images, making it easy to confuse users.
+	// To address the issue, we allow a special prefix `ubuntu:VERSION` for image names:
+	if strings.HasPrefix(image.Name, "ubuntu:") {
+		server, _, err := c.Client.GetServer()
+		if err != nil {
+			log.FromContext(ctx).Error(err, "Failed to GetServer")
+		} else {
+			switch server.Environment.Server {
+			case "incus":
+				image = infrav1.LXCMachineImageSource{
+					Name:     fmt.Sprintf("ubuntu/%s/cloud", strings.TrimPrefix(image.Name, "ubuntu:")),
+					Server:   "https://images.linuxcontainers.org",
+					Protocol: "simplestreams",
+				}
+				log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://images.linuxcontainers.org")
+			case "lxd":
+				image = infrav1.LXCMachineImageSource{
+					Name:     strings.TrimPrefix(image.Name, "ubuntu:"),
+					Server:   "https://cloud-images.ubuntu.com/releases/",
+					Protocol: "simplestreams",
+				}
+				log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://cloud-images.ubuntu.com/releases/")
+			default:
+				return nil, terminalError{fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", image.Name, server.Environment.Server)}
+			}
+		}
+	}
 	if image.IsZero() {
 		if machine.Spec.Version == nil {
-			return nil, terminalError{fmt.Errorf("no image source specified on LXCMachineTemplate and machine %q does not have a Kubernetes version", machine.Name)}
+			return nil, terminalError{fmt.Errorf("no image source specified on LXCMachineTemplate and Machine %q does not have a Kubernetes version", machine.Name)}
 		}
 
 		version := *machine.Spec.Version
 
-		// test if image for version exists on default simplestreams server, fail otherwise.
+		// test if image for version exists on the default simplestreams server, fail otherwise.
 		if ssClient, err := incus.ConnectSimpleStreams(defaultSimplestreamsServer, &incus.ConnectionArgs{}); err != nil {
 			return nil, fmt.Errorf("no image source specified and failed to connect to simplestreams server %q: %w", defaultSimplestreamsServer, err)
 		} else if _, _, err := ssClient.GetImageAliasType(string(instanceType), fmt.Sprintf("kubeadm/%s", version)); err != nil {

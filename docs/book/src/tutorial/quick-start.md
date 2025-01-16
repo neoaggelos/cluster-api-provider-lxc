@@ -180,7 +180,7 @@ capl-controller-manager-b6f789559-vtdvw   1/1     Running   0          4m20s
 List the cluster template variables:
 
 ```bash
-clusterctl generate cluster c1 --list-variables --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/cluster-template-development.yaml
+clusterctl generate cluster c1 --list-variables --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/development.yaml
 ```
 
 Example output:
@@ -198,6 +198,7 @@ Optional Variables:
   - CLUSTER_NAME                    (defaults to c1)
   - CONTROL_PLANE_MACHINE_COUNT     (defaults to 1)
   - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "default")
+  - LXC_IMAGE_NAME                  (defaults to " ")
   - LXC_LOAD_BALANCER_FLAVOR        (defaults to "")
   - LXC_LOAD_BALANCER_PROFILES      (defaults to "default")
   - LXC_LOAD_BALANCER_TYPE          (defaults to "lxc")
@@ -217,7 +218,7 @@ Then generate the cluster manifest using:
 
 ```bash
 clusterctl generate cluster c1 \
-  --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/cluster-template-development.yaml \
+  --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/development.yaml \
   --kubernetes-version v1.32.0 \
   --control-plane-machine-count 1 \
   --worker-machine-count 1 \

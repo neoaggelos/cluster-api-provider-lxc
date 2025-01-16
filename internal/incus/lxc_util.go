@@ -26,7 +26,10 @@ func (c *Client) wait(ctx context.Context, name string, f func() (incus.Operatio
 	// log progress of LXC operation. Note that this will be very verbose and but will be very useful to troubleshoot potential issues
 	operationLogger := log.FromContext(ctx).V(2).WithValues("operation.name", name)
 	target, _ := op.AddHandler(func(o api.Operation) {
-		log := operationLogger.WithValues("operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status, "operation.error", o.Err)
+		log := operationLogger.WithValues("operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status)
+		if o.Err != "" {
+			log = log.WithValues("operation.err", o.Err)
+		}
 		switch {
 		case o.StatusCode == api.Failure:
 			log.Error(err, "Operation failed")

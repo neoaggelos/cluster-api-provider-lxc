@@ -17,15 +17,15 @@ type Client struct {
 }
 
 type Options struct {
-	ServerURL string `json:"serverURL"`
+	ServerURL string
 
-	Project string `json:"project"`
+	Project string
 
-	ClientCert string `json:"clientCrt"`
-	ClientKey  string `json:"clientKey"`
+	ClientCert string
+	ClientKey  string
 
-	ServerCert         string `json:"serverCrt"`
-	InsecureSkipVerify bool   `json:"insecureSkipVerify"`
+	ServerCert         string
+	InsecureSkipVerify bool
 }
 
 // NewOptionsFromSecret parses a Kubernetes secret and derives Options for connecting to Incus.

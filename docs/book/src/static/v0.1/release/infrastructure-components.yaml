@@ -1,0 +1,1482 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+    control-plane: controller-manager
+  name: capl-system
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  labels:
+    cluster.x-k8s.io/provider: infrastructure-lxc
+    cluster.x-k8s.io/v1beta1: v1alpha1
+  name: lxcclusters.infrastructure.cluster.x-k8s.io
+spec:
+  group: infrastructure.cluster.x-k8s.io
+  names:
+    kind: LXCCluster
+    listKind: LXCClusterList
+    plural: lxcclusters
+    singular: lxccluster
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Cluster
+      jsonPath: .metadata.labels.cluster\.x-k8s\.io/cluster-name
+      name: Cluster
+      type: string
+    - description: Load Balancer address
+      jsonPath: .spec.controlPlaneEndpoint.host
+      name: Load Balancer
+      type: string
+    - description: Cluster infrastructure is ready
+      jsonPath: .status.ready
+      name: Ready
+      type: string
+    - description: Time duration since creation of LXCCluster
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: LXCCluster is the Schema for the lxcclusters API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LXCClusterSpec defines the desired state of LXCCluster.
+            properties:
+              controlPlaneEndpoint:
+                description: ControlPlaneEndpoint represents the endpoint to communicate
+                  with the control plane.
+                properties:
+                  host:
+                    description: The hostname on which the API server is serving.
+                    type: string
+                  port:
+                    description: The port on which the API server is serving.
+                    format: int32
+                    type: integer
+                required:
+                - host
+                - port
+                type: object
+              loadBalancer:
+                description: LoadBalancer is configuration for provisioning the load
+                  balancer of the cluster.
+                properties:
+                  instanceSpec:
+                    description: InstanceSpec can be used to adjust the load balancer
+                      instance when using the "lxc" or "oci" load balancer type.
+                    properties:
+                      flavor:
+                        description: |-
+                          Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
+                          Examples:
+
+                            - `t3.micro` -- match specs of an EC2 t3.micro instance
+                            - `c2-m4` -- 2 cores, 4 GB RAM
+                        type: string
+                      image:
+                        description: |-
+                          Image to use for provisioning the load balancer machine. If not set,
+                          a default image based on the load balancer type will be used.
+
+                            - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+                            - "lxc": haproxy from the default simplestreams server
+                        properties:
+                          fingerprint:
+                            description: Fingerprint is the image fingerprint.
+                            type: string
+                          name:
+                            description: Name is the image name or alias.
+                            type: string
+                          protocol:
+                            description: Protocol is the protocol to use for fetching
+                              the image, e.g. "simplestreams".
+                            type: string
+                          server:
+                            description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
+                            type: string
+                        type: object
+                      profiles:
+                        description: Profiles is a list of profiles to attach to the
+                          instance.
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  ovnNetworkName:
+                    description: OVNNetworkName is the name of the OVN network to
+                      use when using the "network" load balancer type.
+                    type: string
+                  type:
+                    description: |-
+                      Type of load balancer to provision for the cluster.
+
+                        - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
+
+                          The controller will automatically update the list of backends on the
+                          haproxy configuration control plane nodes are added or removed from
+                          the cluster.
+
+                          No other configuration is required for "lxc" mode. The load balancer
+                          instance can be configured through .spec.loadBalancer.instanceSpec.
+
+                          The load balancer container is a single point of failure to access
+                          the workload cluster control plane. Therefore, it should only be used
+                          for development clusters only.
+
+                        - "external" will not create any load balancer. Should be used alongside
+                          something like kube-vip, otherwise the cluster will fail to provision.
+
+                          When using "external" mode, the load balancer address must be set in
+                          .spec.controlPlaneEndpoint.host on the LXCCluster object.
+
+                        - "oci" will spin up an OCI instance running haproxy using the kind
+                          haproxy image.
+
+                          The controller will automatically update the list of backends on the
+                          haproxy configuration control plane nodes are added or removed from
+                          the cluster.
+
+                          No other configuration is required for "oci" mode. The load balancer
+                          instance can be configured through .spec.loadBalancer.instanceSpec.
+
+                          The load balancer container is a single point of failure to access
+                          the workload cluster control plane. Therefore, it should only be used
+                          for development clusters only.
+
+                          Requires server extensions: "instance_oci"
+
+                        - "network" will create a network load balancer.
+
+                          The controller will automatically update the list of backends on the
+                          haproxy configuration control plane nodes are added or removed from
+                          the cluster.
+
+                          When using "network" mode, the load balancer address must be set in
+                          .spec.controlPlaneEndpoint.host on the LXCCluster object. In addition,
+                          the ovn network to use must be set in .spec.loadBalancer.ovnNetworkName.
+                          The cluster administrator is responsible to ensure that the OVN network
+                          is configured and that the LXCMachineTemplate objects have appropriate
+                          profiles to use the OVN network.
+
+                          Requires server extensions: "network_load_balancer"
+
+                          Optional server extensions: "network_load_balancer_health_checks"
+                    enum:
+                    - lxc
+                    - external
+                    - oci
+                    - network
+                    type: string
+                type: object
+              secretRef:
+                description: SecretRef references a secret with credentials to access
+                  the LXC (e.g. Incus, LXD) server.
+                properties:
+                  name:
+                    description: Name is the name of the secret to use. The secret
+                      must already exist in the same namespace as the parent object.
+                    type: string
+                required:
+                - name
+                type: object
+              skipCloudProviderNodePatch:
+                description: |-
+                  SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
+                  to set `.spec.providerID`. Note that this requires deploying the external
+                  incus cloud controller manager to finish deploying the cluster.
+                type: boolean
+              skipDefaultKubeadmProfile:
+                description: |-
+                  Running Kubernetes on LXC requires an LXC profile enabling privileged
+                  containers and similar configuration. By default, a profile with name
+                  "cluster-api-$namespace-$name" profile is created and associated with
+                  all LXCMachine instances.
+
+                  This option can be used to disable this behavior. In that case, the cluster
+                  administrator is responsible to create the LXC profile and specify it in
+                  the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+
+                  This is useful in cases where a limited project is used, which does not
+                  allow privileged containers.
+                type: boolean
+            required:
+            - loadBalancer
+            type: object
+          status:
+            description: LXCClusterStatus defines the observed state of LXCCluster.
+            properties:
+              conditions:
+                description: Conditions defines current service state of the LXCCluster.
+                items:
+                  description: Condition defines an observation of a Cluster API resource
+                    operational state.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        Last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed. If that is not known, then using the time when
+                        the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A human readable message indicating details about the transition.
+                        This field may be empty.
+                      type: string
+                    reason:
+                      description: |-
+                        The reason for the condition's last transition in CamelCase.
+                        The specific API may choose whether or not this field is considered a guaranteed API.
+                        This field may be empty.
+                      type: string
+                    severity:
+                      description: |-
+                        severity provides an explicit classification of Reason code, so the users or machines can immediately
+                        understand the current situation and act accordingly.
+                        The Severity field MUST be set only when Status=False.
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      type: string
+                    type:
+                      description: |-
+                        type of condition in CamelCase or in foo.example.com/CamelCase.
+                        Many .condition.type values are consistent across resources like Available, but because arbitrary conditions
+                        can be useful (see .node.status.conditions), the ability to deconflict is important.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - status
+                  - type
+                  type: object
+                type: array
+              ready:
+                description: Ready denotes that the LXC cluster (infrastructure) is
+                  ready.
+                type: boolean
+              v1beta2:
+                description: V1Beta2 groups all status fields that will be added in
+                  LXCCluster's status with the v1beta2 version.
+                properties:
+                  conditions:
+                    description: |-
+                      conditions represents the observations of a LXCCluster's current state.
+                      Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.
+                    items:
+                      description: Condition contains details for one aspect of the
+                        current state of this API Resource.
+                      properties:
+                        lastTransitionTime:
+                          description: |-
+                            lastTransitionTime is the last time the condition transitioned from one status to another.
+                            This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                          format: date-time
+                          type: string
+                        message:
+                          description: |-
+                            message is a human readable message indicating details about the transition.
+                            This may be an empty string.
+                          maxLength: 32768
+                          type: string
+                        observedGeneration:
+                          description: |-
+                            observedGeneration represents the .metadata.generation that the condition was set based upon.
+                            For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                            with respect to the current state of the instance.
+                          format: int64
+                          minimum: 0
+                          type: integer
+                        reason:
+                          description: |-
+                            reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                            Producers of specific condition types may define expected values and meanings for this field,
+                            and whether the values are considered a guaranteed API.
+                            The value should be a CamelCase string.
+                            This field may not be empty.
+                          maxLength: 1024
+                          minLength: 1
+                          pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                          type: string
+                        status:
+                          description: status of the condition, one of True, False,
+                            Unknown.
+                          enum:
+                          - "True"
+                          - "False"
+                          - Unknown
+                          type: string
+                        type:
+                          description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                          maxLength: 316
+                          pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                          type: string
+                      required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-map-keys:
+                    - type
+                    x-kubernetes-list-type: map
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  labels:
+    cluster.x-k8s.io/provider: infrastructure-lxc
+    cluster.x-k8s.io/v1beta1: v1alpha1
+  name: lxcclustertemplates.infrastructure.cluster.x-k8s.io
+spec:
+  group: infrastructure.cluster.x-k8s.io
+  names:
+    kind: LXCClusterTemplate
+    listKind: LXCClusterTemplateList
+    plural: lxcclustertemplates
+    singular: lxcclustertemplate
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Time duration since creation of LXCClusterTemplate
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: LXCClusterTemplate is the Schema for the lxcclustertemplates
+          API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LXCClusterTemplateSpec defines the desired state of LXCClusterTemplate.
+            properties:
+              template:
+                description: LXCClusterTemplateResource describes the data needed
+                  to create a LXCCluster from a template.
+                properties:
+                  metadata:
+                    description: |-
+                      Standard object's metadata.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          annotations is an unstructured key value map stored with a resource that may be
+                          set by external tools to store and retrieve arbitrary metadata. They are not
+                          queryable and should be preserved when modifying objects.
+                          More info: http://kubernetes.io/docs/user-guide/annotations
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          Map of string keys and values that can be used to organize and categorize
+                          (scope and select) objects. May match selectors of replication controllers
+                          and services.
+                          More info: http://kubernetes.io/docs/user-guide/labels
+                        type: object
+                    type: object
+                  spec:
+                    description: LXCClusterSpec defines the desired state of LXCCluster.
+                    properties:
+                      controlPlaneEndpoint:
+                        description: ControlPlaneEndpoint represents the endpoint
+                          to communicate with the control plane.
+                        properties:
+                          host:
+                            description: The hostname on which the API server is serving.
+                            type: string
+                          port:
+                            description: The port on which the API server is serving.
+                            format: int32
+                            type: integer
+                        required:
+                        - host
+                        - port
+                        type: object
+                      loadBalancer:
+                        description: LoadBalancer is configuration for provisioning
+                          the load balancer of the cluster.
+                        properties:
+                          instanceSpec:
+                            description: InstanceSpec can be used to adjust the load
+                              balancer instance when using the "lxc" or "oci" load
+                              balancer type.
+                            properties:
+                              flavor:
+                                description: |-
+                                  Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
+                                  Examples:
+
+                                    - `t3.micro` -- match specs of an EC2 t3.micro instance
+                                    - `c2-m4` -- 2 cores, 4 GB RAM
+                                type: string
+                              image:
+                                description: |-
+                                  Image to use for provisioning the load balancer machine. If not set,
+                                  a default image based on the load balancer type will be used.
+
+                                    - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+                                    - "lxc": haproxy from the default simplestreams server
+                                properties:
+                                  fingerprint:
+                                    description: Fingerprint is the image fingerprint.
+                                    type: string
+                                  name:
+                                    description: Name is the image name or alias.
+                                    type: string
+                                  protocol:
+                                    description: Protocol is the protocol to use for
+                                      fetching the image, e.g. "simplestreams".
+                                    type: string
+                                  server:
+                                    description: Server is the remote server, e.g.
+                                      "https://images.linuxcontainers.org"
+                                    type: string
+                                type: object
+                              profiles:
+                                description: Profiles is a list of profiles to attach
+                                  to the instance.
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          ovnNetworkName:
+                            description: OVNNetworkName is the name of the OVN network
+                              to use when using the "network" load balancer type.
+                            type: string
+                          type:
+                            description: |-
+                              Type of load balancer to provision for the cluster.
+
+                                - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
+
+                                  The controller will automatically update the list of backends on the
+                                  haproxy configuration control plane nodes are added or removed from
+                                  the cluster.
+
+                                  No other configuration is required for "lxc" mode. The load balancer
+                                  instance can be configured through .spec.loadBalancer.instanceSpec.
+
+                                  The load balancer container is a single point of failure to access
+                                  the workload cluster control plane. Therefore, it should only be used
+                                  for development clusters only.
+
+                                - "external" will not create any load balancer. Should be used alongside
+                                  something like kube-vip, otherwise the cluster will fail to provision.
+
+                                  When using "external" mode, the load balancer address must be set in
+                                  .spec.controlPlaneEndpoint.host on the LXCCluster object.
+
+                                - "oci" will spin up an OCI instance running haproxy using the kind
+                                  haproxy image.
+
+                                  The controller will automatically update the list of backends on the
+                                  haproxy configuration control plane nodes are added or removed from
+                                  the cluster.
+
+                                  No other configuration is required for "oci" mode. The load balancer
+                                  instance can be configured through .spec.loadBalancer.instanceSpec.
+
+                                  The load balancer container is a single point of failure to access
+                                  the workload cluster control plane. Therefore, it should only be used
+                                  for development clusters only.
+
+                                  Requires server extensions: "instance_oci"
+
+                                - "network" will create a network load balancer.
+
+                                  The controller will automatically update the list of backends on the
+                                  haproxy configuration control plane nodes are added or removed from
+                                  the cluster.
+
+                                  When using "network" mode, the load balancer address must be set in
+                                  .spec.controlPlaneEndpoint.host on the LXCCluster object. In addition,
+                                  the ovn network to use must be set in .spec.loadBalancer.ovnNetworkName.
+                                  The cluster administrator is responsible to ensure that the OVN network
+                                  is configured and that the LXCMachineTemplate objects have appropriate
+                                  profiles to use the OVN network.
+
+                                  Requires server extensions: "network_load_balancer"
+
+                                  Optional server extensions: "network_load_balancer_health_checks"
+                            enum:
+                            - lxc
+                            - external
+                            - oci
+                            - network
+                            type: string
+                        type: object
+                      secretRef:
+                        description: SecretRef references a secret with credentials
+                          to access the LXC (e.g. Incus, LXD) server.
+                        properties:
+                          name:
+                            description: Name is the name of the secret to use. The
+                              secret must already exist in the same namespace as the
+                              parent object.
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      skipCloudProviderNodePatch:
+                        description: |-
+                          SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
+                          to set `.spec.providerID`. Note that this requires deploying the external
+                          incus cloud controller manager to finish deploying the cluster.
+                        type: boolean
+                      skipDefaultKubeadmProfile:
+                        description: |-
+                          Running Kubernetes on LXC requires an LXC profile enabling privileged
+                          containers and similar configuration. By default, a profile with name
+                          "cluster-api-$namespace-$name" profile is created and associated with
+                          all LXCMachine instances.
+
+                          This option can be used to disable this behavior. In that case, the cluster
+                          administrator is responsible to create the LXC profile and specify it in
+                          the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+
+                          This is useful in cases where a limited project is used, which does not
+                          allow privileged containers.
+                        type: boolean
+                    required:
+                    - loadBalancer
+                    type: object
+                required:
+                - spec
+                type: object
+            required:
+            - template
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  labels:
+    cluster.x-k8s.io/provider: infrastructure-lxc
+    cluster.x-k8s.io/v1beta1: v1alpha1
+  name: lxcmachines.infrastructure.cluster.x-k8s.io
+spec:
+  group: infrastructure.cluster.x-k8s.io
+  names:
+    kind: LXCMachine
+    listKind: LXCMachineList
+    plural: lxcmachines
+    singular: lxcmachine
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Cluster
+      jsonPath: .metadata.labels['cluster\.x-k8s\.io/cluster-name']
+      name: Cluster
+      type: string
+    - description: Machine object which owns this LXCMachine
+      jsonPath: .metadata.ownerReferences[?(@.kind=="Machine")].name
+      name: Machine
+      type: string
+    - description: Provider ID
+      jsonPath: .spec.providerID
+      name: ProviderID
+      type: string
+    - description: Machine ready status
+      jsonPath: .status.ready
+      name: Ready
+      type: string
+    - description: Time duration since creation of LXCMachine
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: LXCMachine is the Schema for the lxcmachines API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LXCMachineSpec defines the desired state of LXCMachine.
+            properties:
+              flavor:
+                description: |-
+                  Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
+                  Examples:
+
+                    - `t3.micro` -- match specs of an EC2 t3.micro instance
+                    - `c2-m4` -- 2 cores, 4 GB RAM
+                type: string
+              image:
+                description: |-
+                  Image to use for provisioning the machine. If not set, a kubeadm image
+                  from the default upstream simplestreams source will be used, based on
+                  the version of the machine.
+
+                  Note that the default source does not support images for all Kubernetes
+                  versions, refer to the documentation for more details on which versions
+                  are supported and how to build a base image for any version.
+                properties:
+                  fingerprint:
+                    description: Fingerprint is the image fingerprint.
+                    type: string
+                  name:
+                    description: Name is the image name or alias.
+                    type: string
+                  protocol:
+                    description: Protocol is the protocol to use for fetching the
+                      image, e.g. "simplestreams".
+                    type: string
+                  server:
+                    description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
+                    type: string
+                type: object
+              instanceType:
+                description: InstanceType is "container" or "virtual-machine". Empty
+                  defaults to "container".
+                enum:
+                - container
+                - virtual-machine
+                - ""
+                type: string
+              profiles:
+                description: Profiles is a list of profiles to attach to the instance.
+                items:
+                  type: string
+                type: array
+              providerID:
+                description: ProviderID is the container name in ProviderID format
+                  (lxc:///<containername>)
+                type: string
+            type: object
+          status:
+            description: LXCMachineStatus defines the observed state of LXCMachine.
+            properties:
+              addresses:
+                description: Addresses is the list of addresses of the LXC machine.
+                items:
+                  description: MachineAddress contains information for the node's
+                    address.
+                  properties:
+                    address:
+                      description: The machine address.
+                      type: string
+                    type:
+                      description: Machine address type, one of Hostname, ExternalIP,
+                        InternalIP, ExternalDNS or InternalDNS.
+                      type: string
+                  required:
+                  - address
+                  - type
+                  type: object
+                type: array
+              conditions:
+                description: Conditions defines current service state of the LXCMachine.
+                items:
+                  description: Condition defines an observation of a Cluster API resource
+                    operational state.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        Last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed. If that is not known, then using the time when
+                        the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A human readable message indicating details about the transition.
+                        This field may be empty.
+                      type: string
+                    reason:
+                      description: |-
+                        The reason for the condition's last transition in CamelCase.
+                        The specific API may choose whether or not this field is considered a guaranteed API.
+                        This field may be empty.
+                      type: string
+                    severity:
+                      description: |-
+                        severity provides an explicit classification of Reason code, so the users or machines can immediately
+                        understand the current situation and act accordingly.
+                        The Severity field MUST be set only when Status=False.
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      type: string
+                    type:
+                      description: |-
+                        type of condition in CamelCase or in foo.example.com/CamelCase.
+                        Many .condition.type values are consistent across resources like Available, but because arbitrary conditions
+                        can be useful (see .node.status.conditions), the ability to deconflict is important.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - status
+                  - type
+                  type: object
+                type: array
+              loadBalancerConfigured:
+                description: LoadBalancerConfigured will be set to true once for each
+                  control plane node, after the load balancer instance is reconfigured.
+                type: boolean
+              ready:
+                description: Ready denotes that the LXC machine is ready.
+                type: boolean
+              v1beta2:
+                description: V1Beta2 groups all status fields that will be added in
+                  LXCMachine's status with the v1beta2 version.
+                properties:
+                  conditions:
+                    description: |-
+                      conditions represents the observations of a LXCMachine's current state.
+                      Known condition types are Ready, InstanceProvisioned, BootstrapSucceeded, Deleting, Paused.
+                    items:
+                      description: Condition contains details for one aspect of the
+                        current state of this API Resource.
+                      properties:
+                        lastTransitionTime:
+                          description: |-
+                            lastTransitionTime is the last time the condition transitioned from one status to another.
+                            This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                          format: date-time
+                          type: string
+                        message:
+                          description: |-
+                            message is a human readable message indicating details about the transition.
+                            This may be an empty string.
+                          maxLength: 32768
+                          type: string
+                        observedGeneration:
+                          description: |-
+                            observedGeneration represents the .metadata.generation that the condition was set based upon.
+                            For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                            with respect to the current state of the instance.
+                          format: int64
+                          minimum: 0
+                          type: integer
+                        reason:
+                          description: |-
+                            reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                            Producers of specific condition types may define expected values and meanings for this field,
+                            and whether the values are considered a guaranteed API.
+                            The value should be a CamelCase string.
+                            This field may not be empty.
+                          maxLength: 1024
+                          minLength: 1
+                          pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                          type: string
+                        status:
+                          description: status of the condition, one of True, False,
+                            Unknown.
+                          enum:
+                          - "True"
+                          - "False"
+                          - Unknown
+                          type: string
+                        type:
+                          description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                          maxLength: 316
+                          pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                          type: string
+                      required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-map-keys:
+                    - type
+                    x-kubernetes-list-type: map
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  labels:
+    cluster.x-k8s.io/provider: infrastructure-lxc
+    cluster.x-k8s.io/v1beta1: v1alpha1
+  name: lxcmachinetemplates.infrastructure.cluster.x-k8s.io
+spec:
+  group: infrastructure.cluster.x-k8s.io
+  names:
+    kind: LXCMachineTemplate
+    listKind: LXCMachineTemplateList
+    plural: lxcmachinetemplates
+    singular: lxcmachinetemplate
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Time duration since creation of LXCMachineTemplate
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: LXCMachineTemplate is the Schema for the lxcmachinetemplates
+          API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LXCMachineTemplateSpec defines the desired state of LXCMachineTemplate.
+            properties:
+              template:
+                description: LXCMachineTemplateResource describes the data needed
+                  to create a LXCMachine from a template.
+                properties:
+                  metadata:
+                    description: |-
+                      Standard object's metadata.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          annotations is an unstructured key value map stored with a resource that may be
+                          set by external tools to store and retrieve arbitrary metadata. They are not
+                          queryable and should be preserved when modifying objects.
+                          More info: http://kubernetes.io/docs/user-guide/annotations
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          Map of string keys and values that can be used to organize and categorize
+                          (scope and select) objects. May match selectors of replication controllers
+                          and services.
+                          More info: http://kubernetes.io/docs/user-guide/labels
+                        type: object
+                    type: object
+                  spec:
+                    description: Spec is the specification of the desired behavior
+                      of the machine.
+                    properties:
+                      flavor:
+                        description: |-
+                          Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).
+
+                          Examples:
+
+                            - `t3.micro` -- match specs of an EC2 t3.micro instance
+                            - `c2-m4` -- 2 cores, 4 GB RAM
+                        type: string
+                      image:
+                        description: |-
+                          Image to use for provisioning the machine. If not set, a kubeadm image
+                          from the default upstream simplestreams source will be used, based on
+                          the version of the machine.
+
+                          Note that the default source does not support images for all Kubernetes
+                          versions, refer to the documentation for more details on which versions
+                          are supported and how to build a base image for any version.
+                        properties:
+                          fingerprint:
+                            description: Fingerprint is the image fingerprint.
+                            type: string
+                          name:
+                            description: Name is the image name or alias.
+                            type: string
+                          protocol:
+                            description: Protocol is the protocol to use for fetching
+                              the image, e.g. "simplestreams".
+                            type: string
+                          server:
+                            description: Server is the remote server, e.g. "https://images.linuxcontainers.org"
+                            type: string
+                        type: object
+                      instanceType:
+                        description: InstanceType is "container" or "virtual-machine".
+                          Empty defaults to "container".
+                        enum:
+                        - container
+                        - virtual-machine
+                        - ""
+                        type: string
+                      profiles:
+                        description: Profiles is a list of profiles to attach to the
+                          instance.
+                        items:
+                          type: string
+                        type: array
+                      providerID:
+                        description: ProviderID is the container name in ProviderID
+                          format (lxc:///<containername>)
+                        type: string
+                    type: object
+                required:
+                - spec
+                type: object
+            required:
+            - template
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-controller-manager
+  namespace: capl-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-leader-election-role
+  namespace: capl-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxccluster-editor-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxccluster-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcclustertemplate-editor-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcclustertemplate-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclustertemplates/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcmachine-editor-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachines
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachines/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcmachine-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachines
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachines/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcmachinetemplate-editor-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-lxcmachinetemplate-viewer-role
+rules:
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcmachinetemplates/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: capl-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+- apiGroups:
+  - cluster.x-k8s.io
+  resources:
+  - clusters
+  - machines
+  - machinesets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters
+  - lxcmachines
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrastructure.cluster.x-k8s.io
+  resources:
+  - lxcclusters/finalizers
+  - lxcclusters/status
+  - lxcmachines/finalizers
+  - lxcmachines/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: capl-metrics-auth-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: capl-metrics-reader
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-leader-election-rolebinding
+  namespace: capl-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: capl-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: capl-controller-manager
+  namespace: capl-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+  name: capl-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: capl-manager-role
+subjects:
+- kind: ServiceAccount
+  name: capl-controller-manager
+  namespace: capl-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: capl-metrics-auth-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: capl-metrics-auth-role
+subjects:
+- kind: ServiceAccount
+  name: capl-controller-manager
+  namespace: capl-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+    control-plane: controller-manager
+  name: capl-controller-manager-metrics-service
+  namespace: capl-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test
+    control-plane: controller-manager
+  name: capl-controller-manager
+  namespace: capl-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --diagnostics-address=:8443
+        - --leader-elect
+        - --health-addr=:9440
+        command:
+        - /manager
+        image: ghcr.io/neoaggelos/cluster-api-provider-lxc/controller:v0.0.1-alpha.2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9440
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 9440
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: capl-controller-manager
+      terminationGracePeriodSeconds: 10

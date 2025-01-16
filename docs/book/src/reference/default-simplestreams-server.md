@@ -38,8 +38,8 @@ Note that the table above might be out of date. See [streams/v1/index.json] and 
 {{#tab Incus }}
 
 ```bash
-$ incus remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
-$ incus image list capi:
+incus remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
+incus image list capi:
 ```
 
 Example output for server that offers the `haproxy` container image, as well as kubeadm images only for `v1.32.0`:
@@ -61,8 +61,8 @@ Example output for server that offers the `haproxy` container image, as well as 
 {{#tab Canonical LXD }}
 
 ```bash
-$ lxc remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
-$ lxc image list capi:
+lxc remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
+lxc image list capi:
 ```
 Example output for server that offers the `haproxy` container image, as well as kubeadm images only for `v1.32.0`:
 

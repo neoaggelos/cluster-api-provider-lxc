@@ -16,7 +16,7 @@ Please refer to our [book](https://neoaggelos.github.io/cluster-api-provider-lxc
 
 ## Quick Start
 
-See the [Quick Start](./tutorial/quick-start.md) guide to launch a cluster on a single-node development environment.
+See [Quick Start](./tutorial/quick-start.md) to launch a cluster on a single-node development environment.
 
 ## Features
 

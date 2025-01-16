@@ -6,6 +6,9 @@ export WORKER_MACHINE_COUNT=1
 # Name of secret with server credentials
 export LXC_SECRET_NAME=lxc-secret
 
+## Kubernetes image to use (if using a custom image)
+#export LXC_IMAGE_NAME=kubeadm/v1.31.4/ubuntu/24.04
+
 # Load balancer configuration
 export LXC_LOAD_BALANCER_ADDRESS=10.0.42.1      # unused IP to use for kube-vip
 export LXC_LOAD_BALANCER_INTERFACE=             # (optional) specify interface to bind vip

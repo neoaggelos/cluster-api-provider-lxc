@@ -87,6 +87,8 @@ spec:
       instanceType: ${CONTROL_PLANE_MACHINE_TYPE}
       flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
       profiles: [${CONTROL_PLANE_MACHINE_PROFILES:=default}]
+      image:
+        name: ${LXC_IMAGE_NAME:= }
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -122,6 +124,8 @@ spec:
       instanceType: ${WORKER_MACHINE_TYPE}
       flavor: ${WORKER_MACHINE_FLAVOR}
       profiles: [${WORKER_MACHINE_PROFILES:=default}]
+      image:
+        name: ${LXC_IMAGE_NAME:= }
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate

@@ -1480,7 +1480,7 @@ spec:
         - --health-addr=:9440
         command:
         - /manager
-        image: controller:latest
+        image: ghcr.io/neoaggelos/cluster-api-provider-lxc/controller:v0.0.1-alpha.3
         livenessProbe:
           httpGet:
             path: /healthz

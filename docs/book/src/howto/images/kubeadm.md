@@ -25,11 +25,13 @@ The one requirement for our base image is that it comes with `cloud-init`, since
 Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/). Make sure to use the `cloud` variant, which supports cloud-init.
 
 ```bash
-# Ubuntu 24.04 base image
-incus launch images:ubuntu/24.04/cloud kubeadm-builder --vm
+incus launch images:ubuntu/24.04 kubeadm-builder
+```
 
-# [OR] Debian 12 base image
-incus launch images:debian/12/cloud kubeadm-builder --vm
+Or you can use Debian 12 as base image:
+
+```bash
+incus launch images:debian/12 kubeadm-builder
 ```
 
 {{#/tab }}
@@ -39,13 +41,14 @@ incus launch images:debian/12/cloud kubeadm-builder --vm
 Launch a new Container using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/). Make sure to use the `cloud` variant, which supports cloud-init.
 
 ```bash
-# Ubuntu 24.04 base image
-incus launch images:ubuntu/24.04/cloud kubeadm-builder
-
-# [OR] Debian 12 base image
-incus launch images:debian/12/cloud kubeadm-builder
+incus launch images:ubuntu/24.04 kubeadm-builder
 ```
 
+Or you can use Debian 12 as base image:
+
+```bash
+incus launch images:debian/12 kubeadm-builder
+```
 {{#/tab }}
 
 

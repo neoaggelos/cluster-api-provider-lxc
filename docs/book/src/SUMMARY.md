@@ -7,10 +7,11 @@
 ---
 
 - [Build base images](./howto/images/index.md)
-  - [Haproxy](./howto/images/haproxy.md)
   - [Kubeadm](./howto/images/kubeadm.md)
+  - [Haproxy](./howto/images/haproxy.md)
 
 ---
+
 - [Cluster Templates](./reference/templates/index.md)
   - [Development](./reference/templates/development.md)
   - [Kube VIP](./reference/templates/kube-vip.md)

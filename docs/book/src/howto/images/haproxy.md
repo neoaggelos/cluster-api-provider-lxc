@@ -23,10 +23,12 @@ We must start a `container` instance with the base Operating System that we want
 Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/).
 
 ```bash
-# Ubuntu 24.04 base image
 incus launch images:ubuntu/24.04 haproxy-builder
+```
 
-# [OR] Debian 12 base image
+Or you can use Debian 12 as base image:
+
+```bash
 incus launch images:debian/12 haproxy-builder
 ```
 

@@ -1,0 +1,37 @@
+#!/bin/bash -xeu
+
+DIR="$(dirname "$(realpath "$0")")"
+
+if ! which incus; then
+  curl https://pkgs.zabbly.com/get/incus-stable | sudo bash -x
+fi
+
+# get node IP address
+ip_address="$(ip -o route get to 1.1.1.1 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')"
+
+# Initialize LXD and configure clustering
+sudo incus admin init --auto --network-address "$ip_address"
+sudo incus network set incusbr0 ipv6.address=none
+sudo incus cluster enable "$ip_address"
+
+# Generate client certificate and key, trust certificate
+if ! incus remote switch local-https; then
+  incus remote generate-certificate
+  sudo incus config trust add-certificate ~/.config/incus/client.crt
+  incus remote add local-https "https://$(sudo incus config get core.https_address)" --accept-certificate
+  incus remote switch local-https
+fi
+
+# Write Kubernetes secret to top-level dir, ci-lxc-secret.yaml
+echo "
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ci-lxc-secret
+data:
+  project: '$(echo default | base64 -w0)'
+  server: '$(echo "https://$(lxc config get core.https_address)" | base64 -w0)'
+  server-crt: '$(sudo cat /var/lib/incus/cluster.crt | base64 -w0)'
+  client-crt: '$(cat ~/.config/incus/client.crt | base64 -w0)'
+  client-key: '$(cat ~/.config/incus/client.key | base64 -w0)'
+" | tee "${DIR}/../../ci-lxc-secret.yaml"

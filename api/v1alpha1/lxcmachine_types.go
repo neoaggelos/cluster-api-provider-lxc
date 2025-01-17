@@ -36,7 +36,7 @@ const (
 
 // LXCMachineSpec defines the desired state of LXCMachine.
 type LXCMachineSpec struct {
-	// ProviderID is the container name in ProviderID format (lxc:///<containername>)
+	// ProviderID is the container name in ProviderID format (lxc:///<containername>).
 	//
 	// +optional
 	ProviderID *string `json:"providerID,omitempty"`
@@ -76,6 +76,13 @@ type LXCMachineSpec struct {
 
 type LXCMachineImageSource struct {
 	// Name is the image name or alias.
+	//
+	// Note that Incus and Canonical LXD use incompatible image servers
+	// for Ubuntu images. To address this issue, setting image name to
+	// `ubuntu:VERSION` is a shortcut for:
+	//
+	//   - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+	//   - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
 	//
 	// +optional
 	Name string `json:"name"`

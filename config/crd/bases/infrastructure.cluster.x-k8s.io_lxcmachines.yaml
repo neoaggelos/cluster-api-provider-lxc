@@ -83,7 +83,15 @@ spec:
                     description: Fingerprint is the image fingerprint.
                     type: string
                   name:
-                    description: Name is the image name or alias.
+                    description: |-
+                      Name is the image name or alias.
+
+                      Note that Incus and Canonical LXD use incompatible image servers
+                      for Ubuntu images. To address this issue, setting image name to
+                      `ubuntu:VERSION` is a shortcut for:
+
+                        - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+                        - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
                     type: string
                   protocol:
                     description: Protocol is the protocol to use for fetching the
@@ -108,7 +116,7 @@ spec:
                 type: array
               providerID:
                 description: ProviderID is the container name in ProviderID format
-                  (lxc:///<containername>)
+                  (lxc:///<containername>).
                 type: string
             type: object
           status:

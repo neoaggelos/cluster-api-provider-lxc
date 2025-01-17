@@ -203,7 +203,7 @@ spec:
 
 The `external` load balancer type will not provision anything for the cluster load balancer. Instead, something else like `kube-vip` should be used to configure a VIP for the control plane endpoint.
 
-The cluste administrator must manually specify the control plane endpoint.
+The cluster administrator must manually specify the control plane endpoint.
 
 Consider the following scenario:
 - We have a network `incusbr0` with CIDR `10.217.28.1/24`. We have limited the DHCP ranges to `10.217.28.10-10.217.28.200`, so we are free to use the rest of the IPs without conflicts.

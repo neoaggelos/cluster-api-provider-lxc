@@ -111,7 +111,15 @@ spec:
                             description: Fingerprint is the image fingerprint.
                             type: string
                           name:
-                            description: Name is the image name or alias.
+                            description: |-
+                              Name is the image name or alias.
+
+                              Note that Incus and Canonical LXD use incompatible image servers
+                              for Ubuntu images. To address this issue, setting image name to
+                              `ubuntu:VERSION` is a shortcut for:
+
+                                - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+                                - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
                             type: string
                           protocol:
                             description: Protocol is the protocol to use for fetching
@@ -130,7 +138,8 @@ spec:
                     type: object
                   ovnNetworkName:
                     description: OVNNetworkName is the name of the OVN network to
-                      use when using the "network" load balancer type.
+                      create the network load balancer when using the "network" load
+                      balancer type.
                     type: string
                   type:
                     description: |-
@@ -139,31 +148,31 @@ spec:
                         - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
 
                           The controller will automatically update the list of backends on the
-                          haproxy configuration control plane nodes are added or removed from
+                          haproxy configuration as control plane nodes are added or removed from
                           the cluster.
 
                           No other configuration is required for "lxc" mode. The load balancer
-                          instance can be configured through .spec.loadBalancer.instanceSpec.
+                          instance can be configured through `.spec.loadBalancer.instanceSpec`.
 
                           The load balancer container is a single point of failure to access
                           the workload cluster control plane. Therefore, it should only be used
                           for development clusters only.
 
-                        - "external" will not create any load balancer. Should be used alongside
+                        - "external" will not create any load balancer. It must be used alongside
                           something like kube-vip, otherwise the cluster will fail to provision.
 
                           When using "external" mode, the load balancer address must be set in
-                          .spec.controlPlaneEndpoint.host on the LXCCluster object.
+                          `.spec.controlPlaneEndpoint.host` on the LXCCluster object.
 
-                        - "oci" will spin up an OCI instance running haproxy using the kind
+                        - "oci" will spin up an OCI instance running haproxy using the kindest
                           haproxy image.
 
                           The controller will automatically update the list of backends on the
-                          haproxy configuration control plane nodes are added or removed from
+                          haproxy configuration as control plane nodes are added or removed from
                           the cluster.
 
                           No other configuration is required for "oci" mode. The load balancer
-                          instance can be configured through .spec.loadBalancer.instanceSpec.
+                          instance can be configured through `.spec.loadBalancer.instanceSpec`.
 
                           The load balancer container is a single point of failure to access
                           the workload cluster control plane. Therefore, it should only be used
@@ -184,9 +193,8 @@ spec:
                           is configured and that the LXCMachineTemplate objects have appropriate
                           profiles to use the OVN network.
 
-                          Requires server extensions: "network_load_balancer"
-
-                          Optional server extensions: "network_load_balancer_health_checks"
+                          Requires server extensions:
+                          "network_load_balancer", "network_load_balancer_health_checks"
                     enum:
                     - lxc
                     - external
@@ -209,20 +217,19 @@ spec:
                 description: |-
                   SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
                   to set `.spec.providerID`. Note that this requires deploying the external
-                  incus cloud controller manager to finish deploying the cluster.
+                  cloud controller manager, otherwise Machines will not be able to be tied
+                  to the respective Nodes in the workload cluster.
                 type: boolean
               skipDefaultKubeadmProfile:
                 description: |-
-                  Running Kubernetes on LXC requires an LXC profile enabling privileged
-                  containers and similar configuration. By default, a profile with name
-                  "cluster-api-$namespace-$name" profile is created and associated with
-                  all LXCMachine instances.
+                  Skip creation of the default kubeadm profile "cluster-api-$namespace-$name"
+                  for LXCClusters.
 
-                  This option can be used to disable this behavior. In that case, the cluster
-                  administrator is responsible to create the LXC profile and specify it in
-                  the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+                  In this case, the cluster administrator is responsible to create the
+                  profile manually and set the `.spec.template.spec.profiles` field of all
+                  LXCMachineTemplate objects.
 
-                  This is useful in cases where a limited project is used, which does not
+                  This is useful in cases where a restricted project is used, which does not
                   allow privileged containers.
                 type: boolean
             required:
@@ -481,7 +488,15 @@ spec:
                                     description: Fingerprint is the image fingerprint.
                                     type: string
                                   name:
-                                    description: Name is the image name or alias.
+                                    description: |-
+                                      Name is the image name or alias.
+
+                                      Note that Incus and Canonical LXD use incompatible image servers
+                                      for Ubuntu images. To address this issue, setting image name to
+                                      `ubuntu:VERSION` is a shortcut for:
+
+                                        - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+                                        - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
                                     type: string
                                   protocol:
                                     description: Protocol is the protocol to use for
@@ -501,7 +516,8 @@ spec:
                             type: object
                           ovnNetworkName:
                             description: OVNNetworkName is the name of the OVN network
-                              to use when using the "network" load balancer type.
+                              to create the network load balancer when using the "network"
+                              load balancer type.
                             type: string
                           type:
                             description: |-
@@ -510,31 +526,31 @@ spec:
                                 - "lxc" will spin up a plain Ubuntu LXC with haproxy installed.
 
                                   The controller will automatically update the list of backends on the
-                                  haproxy configuration control plane nodes are added or removed from
+                                  haproxy configuration as control plane nodes are added or removed from
                                   the cluster.
 
                                   No other configuration is required for "lxc" mode. The load balancer
-                                  instance can be configured through .spec.loadBalancer.instanceSpec.
+                                  instance can be configured through `.spec.loadBalancer.instanceSpec`.
 
                                   The load balancer container is a single point of failure to access
                                   the workload cluster control plane. Therefore, it should only be used
                                   for development clusters only.
 
-                                - "external" will not create any load balancer. Should be used alongside
+                                - "external" will not create any load balancer. It must be used alongside
                                   something like kube-vip, otherwise the cluster will fail to provision.
 
                                   When using "external" mode, the load balancer address must be set in
-                                  .spec.controlPlaneEndpoint.host on the LXCCluster object.
+                                  `.spec.controlPlaneEndpoint.host` on the LXCCluster object.
 
-                                - "oci" will spin up an OCI instance running haproxy using the kind
+                                - "oci" will spin up an OCI instance running haproxy using the kindest
                                   haproxy image.
 
                                   The controller will automatically update the list of backends on the
-                                  haproxy configuration control plane nodes are added or removed from
+                                  haproxy configuration as control plane nodes are added or removed from
                                   the cluster.
 
                                   No other configuration is required for "oci" mode. The load balancer
-                                  instance can be configured through .spec.loadBalancer.instanceSpec.
+                                  instance can be configured through `.spec.loadBalancer.instanceSpec`.
 
                                   The load balancer container is a single point of failure to access
                                   the workload cluster control plane. Therefore, it should only be used
@@ -555,9 +571,8 @@ spec:
                                   is configured and that the LXCMachineTemplate objects have appropriate
                                   profiles to use the OVN network.
 
-                                  Requires server extensions: "network_load_balancer"
-
-                                  Optional server extensions: "network_load_balancer_health_checks"
+                                  Requires server extensions:
+                                  "network_load_balancer", "network_load_balancer_health_checks"
                             enum:
                             - lxc
                             - external
@@ -581,20 +596,19 @@ spec:
                         description: |-
                           SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
                           to set `.spec.providerID`. Note that this requires deploying the external
-                          incus cloud controller manager to finish deploying the cluster.
+                          cloud controller manager, otherwise Machines will not be able to be tied
+                          to the respective Nodes in the workload cluster.
                         type: boolean
                       skipDefaultKubeadmProfile:
                         description: |-
-                          Running Kubernetes on LXC requires an LXC profile enabling privileged
-                          containers and similar configuration. By default, a profile with name
-                          "cluster-api-$namespace-$name" profile is created and associated with
-                          all LXCMachine instances.
+                          Skip creation of the default kubeadm profile "cluster-api-$namespace-$name"
+                          for LXCClusters.
 
-                          This option can be used to disable this behavior. In that case, the cluster
-                          administrator is responsible to create the LXC profile and specify it in
-                          the .spec.template.spec.profiles field of the LXCMachineTemplate objects.
+                          In this case, the cluster administrator is responsible to create the
+                          profile manually and set the `.spec.template.spec.profiles` field of all
+                          LXCMachineTemplate objects.
 
-                          This is useful in cases where a limited project is used, which does not
+                          This is useful in cases where a restricted project is used, which does not
                           allow privileged containers.
                         type: boolean
                     required:
@@ -698,7 +712,15 @@ spec:
                     description: Fingerprint is the image fingerprint.
                     type: string
                   name:
-                    description: Name is the image name or alias.
+                    description: |-
+                      Name is the image name or alias.
+
+                      Note that Incus and Canonical LXD use incompatible image servers
+                      for Ubuntu images. To address this issue, setting image name to
+                      `ubuntu:VERSION` is a shortcut for:
+
+                        - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+                        - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
                     type: string
                   protocol:
                     description: Protocol is the protocol to use for fetching the
@@ -723,7 +745,7 @@ spec:
                 type: array
               providerID:
                 description: ProviderID is the container name in ProviderID format
-                  (lxc:///<containername>)
+                  (lxc:///<containername>).
                 type: string
             type: object
           status:
@@ -979,7 +1001,15 @@ spec:
                             description: Fingerprint is the image fingerprint.
                             type: string
                           name:
-                            description: Name is the image name or alias.
+                            description: |-
+                              Name is the image name or alias.
+
+                              Note that Incus and Canonical LXD use incompatible image servers
+                              for Ubuntu images. To address this issue, setting image name to
+                              `ubuntu:VERSION` is a shortcut for:
+
+                                - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+                                - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
                             type: string
                           protocol:
                             description: Protocol is the protocol to use for fetching
@@ -1005,7 +1035,7 @@ spec:
                         type: array
                       providerID:
                         description: ProviderID is the container name in ProviderID
-                          format (lxc:///<containername>)
+                          format (lxc:///<containername>).
                         type: string
                     type: object
                 required:
@@ -1450,7 +1480,7 @@ spec:
         - --health-addr=:9440
         command:
         - /manager
-        image: ghcr.io/neoaggelos/cluster-api-provider-lxc/controller:v0.0.1-alpha.2
+        image: controller:latest
         livenessProbe:
           httpGet:
             path: /healthz

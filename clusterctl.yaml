@@ -1,0 +1,4 @@
+providers:
+- name: lxc
+  type: InfrastructureProvider
+  url: https://github.com/neoaggelos/cluster-api-provider-lxc/releases/latest/infrastructure-components.yaml

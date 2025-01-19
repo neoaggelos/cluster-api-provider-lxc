@@ -154,13 +154,29 @@ After this step, you should now have your infrastructure ready and a Kubernetes 
 
 ## Deploy cluster-api-provider-lxc
 
-> **TODO**: this should be replaced with `clusterctl init -i lxc` once we have a public release
+First, we need to configure clusterctl so that it knows about cluster-api-provider-lxc:
 
-```bash
-kubectl apply -f https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/infrastructure-components.yaml
+```yaml
+# ~/.cluster-api/clusterctl.yaml
+{{#include ../static/v0.1/clusterctl.yaml }}
 ```
 
-Then, wait for `capl-controller-manager` to become healthy
+This can be done with the following commands:
+
+```bash
+mkdir -p ~/.cluster-api
+
+curl -o ~/.cluster-api/clusterctl.yaml \
+  https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/clusterctl.yaml
+```
+
+Then, initialize `lxc` infrastructure provider:
+
+```bash
+clusterctl init -i lxc
+```
+
+Wait for `capl-controller-manager` to become healthy
 
 ```bash
 kubectl get pod -n capl-system
@@ -175,12 +191,12 @@ capl-controller-manager-b6f789559-vtdvw   1/1     Running   0          4m20s
 
 ## Generate cluster manifest
 
-> **TODO**: this should be replaced with `clusterctl generate cluster c1 --flavor development` once we have a public release
+We will create a cluster manifest of the `development` flavor, which is suitable for single-node testing.
 
 List the cluster template variables:
 
 ```bash
-clusterctl generate cluster c1 --list-variables --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/development.yaml
+clusterctl generate cluster c1 -i lxc --flavor development
 ```
 
 Example output:
@@ -211,14 +227,13 @@ Optional Variables:
 Set configuration values:
 
 ```bash
-{{#include ../../../../templates/development.rc }}
+{{#include ../../../../templates/cluster-template-development.rc }}
 ```
 
 Then generate the cluster manifest using:
 
 ```bash
-clusterctl generate cluster c1 \
-  --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/development.yaml \
+clusterctl generate cluster c1 -i lxc --flavor development \
   --kubernetes-version v1.32.0 \
   --control-plane-machine-count 1 \
   --worker-machine-count 1 \

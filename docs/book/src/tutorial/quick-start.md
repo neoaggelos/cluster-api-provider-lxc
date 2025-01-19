@@ -42,7 +42,10 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 The easiest way to setup a management cluster is to use `kind`:
 
 ```bash
-kind create cluster
+mkdir -p ~/.kube
+sudo kind create cluster --kubeconfig ~/.kube/config
+
+sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
 
 Initialize kind cluster as a ClusterAPI management cluster with:
@@ -196,7 +199,7 @@ We will create a cluster manifest of the `development` flavor, which is suitable
 List the cluster template variables:
 
 ```bash
-clusterctl generate cluster c1 -i lxc --flavor development
+clusterctl generate cluster c1 -i lxc --flavor development --list-variables
 ```
 
 Example output:
@@ -261,7 +264,7 @@ kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/c1-md-0 created
 ## Wait for cluster to finish deployment
 
 ```bash
-# describe cluster and infrastructure resources
+# describe cluster and infrastructure resources, useful to track deployment progress
 clusterctl describe cluster c1
 
 # get overview of running machines
@@ -271,19 +274,71 @@ kubectl get cluster,lxccluster,machine,lxcmachine
 Once the cluster is deployed successfully, the output should look similar to:
 
 ```bash
-NAME                          CLUSTERCLASS   PHASE         AGE     VERSION
-cluster.cluster.x-k8s.io/c1                  Provisioned   6m20s
+# clusterctl describe cluster c1
+NAME                                                   READY  SEVERITY  REASON                       SINCE  MESSAGE
+Cluster/c1                                             True                                          33m
+├─ClusterInfrastructure - LXCCluster/c1                True                                          34m
+├─ControlPlane - KubeadmControlPlane/c1-control-plane  True                                          33m
+│ └─Machine/c1-control-plane-sn5ww                     True                                          34m
+└─Workers
+  └─MachineDeployment/c1-md-0                          False  Warning   WaitingForAvailableMachines  33m     Minimum availability requires 1 replicas, current 0 available
+    └─Machine/c1-md-0-zj8bf-cbwnc                      True                                          33m
 
-NAME                                            CLUSTER   LOAD BALANCER    READY   AGE
-lxccluster.infrastructure.cluster.x-k8s.io/c1   c1        10.141.186.196   true    6m20s
+# kubectl get cluster,lxccluster,machine,lxcmachine
+NAME                          CLUSTERCLASS   PHASE         AGE   VERSION
+cluster.cluster.x-k8s.io/c1                  Provisioned   19m
 
-NAME                                              CLUSTER   NODENAME                 PROVIDERID                      PHASE     AGE     VERSION
-machine.cluster.x-k8s.io/c1-control-plane-zcz86   c1        c1-control-plane-zcz86   lxc:///c1-control-plane-zcz86   Running   6m4s    v1.32.0
-machine.cluster.x-k8s.io/c1-md-0-7jls6-p268m      c1        c1-md-0-7jls6-p268m      lxc:///c1-md-0-7jls6-p268m      Running   5m50s   v1.32.0
+NAME                                            CLUSTER   LOAD BALANCER   READY   AGE
+lxccluster.infrastructure.cluster.x-k8s.io/c1   c1        10.225.32.110   true    19m
+
+NAME                                              CLUSTER   NODENAME                 PROVIDERID                      PHASE     AGE   VERSION
+machine.cluster.x-k8s.io/c1-control-plane-sn5ww   c1        c1-control-plane-sn5ww   lxc:///c1-control-plane-sn5ww   Running   18m   v1.32.0
+machine.cluster.x-k8s.io/c1-md-0-zj8bf-cbwnc      c1        c1-md-0-zj8bf-cbwnc      lxc:///c1-md-0-zj8bf-cbwnc      Running   18m   v1.32.0
 
 NAME                                                                CLUSTER   MACHINE                  PROVIDERID                      READY   AGE
-lxcmachine.infrastructure.cluster.x-k8s.io/c1-control-plane-zcz86   c1        c1-control-plane-zcz86   lxc:///c1-control-plane-zcz86   true    6m4s
-lxcmachine.infrastructure.cluster.x-k8s.io/c1-md-0-7jls6-p268m      c1        c1-md-0-7jls6-p268m      lxc:///c1-md-0-7jls6-p268m      true    5m50s
+lxcmachine.infrastructure.cluster.x-k8s.io/c1-control-plane-sn5ww   c1        c1-control-plane-sn5ww   lxc:///c1-control-plane-sn5ww   true    18m
+lxcmachine.infrastructure.cluster.x-k8s.io/c1-md-0-zj8bf-cbwnc      c1        c1-md-0-zj8bf-cbwnc      lxc:///c1-md-0-zj8bf-cbwnc      true    18m
+```
+
+> *NOTE*: The `MachineDeployment` status is expected, as no CNI has been deployed for Nodes to become Ready. We will deploy kube-flannel in the next step.
+
+We can also see the containers that have been created:
+
+{{#tabs name:"launch" tabs:"Incus,Canonical LXD" }}
+
+{{#tab Incus }}
+
+```bash
+incus list user.cluster-name=c1
+```
+
+{{#/tab }}
+
+{{#tab Canonical LXD }}
+
+```bash
+lxc list user.cluster-name=c1
+```
+
+{{#/tab }}
+
+{{#/tabs }}
+
+The output should look similar to:
+
+```bash
++------------------------+---------+------------------------+------+-----------+-----------+---------------+
+|          NAME          |  STATE  |          IPV4          | IPV6 |   TYPE    | SNAPSHOTS |   LOCATION    |
++------------------------+---------+------------------------+------+-----------+-----------+---------------+
+| c1-control-plane-sn5ww | RUNNING | 10.244.0.0 (flannel.1) |      | CONTAINER | 0         | 172.31.33.136 |
+|                        |         | 10.225.32.7 (eth0)     |      |           |           |               |
++------------------------+---------+------------------------+------+-----------+-----------+---------------+
+| c1-md-0-zj8bf-cbwnc    | RUNNING | 10.244.1.1 (cni0)      |      | CONTAINER | 0         | 172.31.33.136 |
+|                        |         | 10.244.1.0 (flannel.1) |      |           |           |               |
+|                        |         | 10.225.32.246 (eth0)   |      |           |           |               |
++------------------------+---------+------------------------+------+-----------+-----------+---------------+
+| default-c1-lb          | RUNNING | 10.225.32.110 (eth0)   |      | CONTAINER | 0         | 172.31.33.136 |
++------------------------+---------+------------------------+------+-----------+-----------+---------------+
 ```
 
 ## Access the cluster
@@ -310,21 +365,40 @@ KUBECONFIG=~/.kube/c1.config kubectl get pod,node -A -o wide
 Output should look similar to:
 
 ```bash
-NAMESPACE      NAME                                                 READY   STATUS    RESTARTS   AGE     IP               NODE                     NOMINATED NODE   READINESS GATES
-kube-flannel   pod/kube-flannel-ds-cnfnb                            1/1     Running   0          4m44s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
-kube-flannel   pod/kube-flannel-ds-r5g2c                            1/1     Running   0          4m44s   10.141.186.115   c1-md-0-7jls6-p268m      <none>           <none>
-kube-system    pod/coredns-668d6bf9bc-fnlpx                         1/1     Running   0          6m14s   10.244.0.2       c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/coredns-668d6bf9bc-z9ljw                         1/1     Running   0          6m14s   10.244.0.4       c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/etcd-c1-control-plane-zcz86                      1/1     Running   0          6m18s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/kube-apiserver-c1-control-plane-zcz86            1/1     Running   0          6m21s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/kube-controller-manager-c1-control-plane-zcz86   1/1     Running   0          6m19s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/kube-proxy-68qhk                                 1/1     Running   0          5m37s   10.141.186.115   c1-md-0-7jls6-p268m      <none>           <none>
-kube-system    pod/kube-proxy-6w9zm                                 1/1     Running   0          6m14s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
-kube-system    pod/kube-scheduler-c1-control-plane-zcz86            1/1     Running   0          6m20s   10.141.186.93    c1-control-plane-zcz86   <none>           <none>
+NAMESPACE      NAME                                                 READY   STATUS    RESTARTS   AGE   IP              NODE                     NOMINATED NODE   READINESS GATES
+kube-flannel   pod/kube-flannel-ds-5z8h5                            1/1     Running   0          38s   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
+kube-flannel   pod/kube-flannel-ds-f9qxb                            1/1     Running   0          38s   10.225.32.246   c1-md-0-zj8bf-cbwnc      <none>           <none>
+kube-system    pod/coredns-668d6bf9bc-dkv9r                         1/1     Running   0          37m   10.244.1.3      c1-md-0-zj8bf-cbwnc      <none>           <none>
+kube-system    pod/coredns-668d6bf9bc-kvc27                         1/1     Running   0          37m   10.244.1.2      c1-md-0-zj8bf-cbwnc      <none>           <none>
+kube-system    pod/etcd-c1-control-plane-sn5ww                      1/1     Running   0          37m   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
+kube-system    pod/kube-apiserver-c1-control-plane-sn5ww            1/1     Running   0          37m   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
+kube-system    pod/kube-controller-manager-c1-control-plane-sn5ww   1/1     Running   0          37m   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
+kube-system    pod/kube-proxy-f6cq7                                 1/1     Running   0          37m   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
+kube-system    pod/kube-proxy-hkpl9                                 1/1     Running   0          36m   10.225.32.246   c1-md-0-zj8bf-cbwnc      <none>           <none>
+kube-system    pod/kube-scheduler-c1-control-plane-sn5ww            1/1     Running   0          37m   10.225.32.7     c1-control-plane-sn5ww   <none>           <none>
 
-NAMESPACE   NAME                          STATUS   ROLES           AGE     VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
-            node/c1-control-plane-zcz86   Ready    control-plane   6m23s   v1.32.0   10.141.186.93    <none>        Ubuntu 24.04.1 LTS   5.15.0-130-generic   containerd://1.7.24
-            node/c1-md-0-7jls6-p268m      Ready    <none>          5m37s   v1.32.0   10.141.186.115   <none>        Ubuntu 24.04.1 LTS   5.15.0-130-generic   containerd://1.7.24
+NAMESPACE   NAME                          STATUS   ROLES           AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+            node/c1-control-plane-sn5ww   Ready    control-plane   37m   v1.32.0   10.225.32.7     <none>        Ubuntu 24.04.1 LTS   6.8.0-1021-aws   containerd://1.7.24
+            node/c1-md-0-zj8bf-cbwnc      Ready    <none>          36m   v1.32.0   10.225.32.246   <none>        Ubuntu 24.04.1 LTS   6.8.0-1021-aws   containerd://1.7.24
+```
+
+After deploying kube-flannel, check that the MachineDeployment is now healthy:
+
+```bash
+clusterctl describe cluster c1
+```
+
+The output should now look like this:
+
+```bash
+NAME                                                   READY  SEVERITY  REASON  SINCE  MESSAGE
+Cluster/c1                                             True                     40m
+├─ClusterInfrastructure - LXCCluster/c1                True                     41m
+├─ControlPlane - KubeadmControlPlane/c1-control-plane  True                     40m
+│ └─Machine/c1-control-plane-sn5ww                     True                     40m
+└─Workers
+  └─MachineDeployment/c1-md-0                          True                     86s
+    └─Machine/c1-md-0-zj8bf-cbwnc                      True                     40m
 ```
 
 ## Delete cluster

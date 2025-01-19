@@ -14,7 +14,7 @@ The kube-vip cluster-template will create a static pod running [kube-vip] in the
 ## Configuration
 
 ```bash
-{{#include ../../../../../templates/kube-vip.rc }}
+{{#include ../../../../../templates/cluster-template-kube-vip.rc }}
 ```
 
 ## Generate cluster
@@ -27,7 +27,7 @@ clusterctl generate cluster example-cluster \
 ## Cluster Template
 
 ```yaml
-{{#include ../../../../../templates/kube-vip.yaml }}
+{{#include ../../../../../templates/cluster-template-kube-vip.yaml }}
 ```
 
 <!-- links -->

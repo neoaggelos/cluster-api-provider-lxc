@@ -18,7 +18,7 @@ The ubuntu cluster template is the same as the [development](./development.md) c
 ## Configuration
 
 ```bash
-{{#include ../../../../../templates/ubuntu.rc }}
+{{#include ../../../../../templates/cluster-template-ubuntu.rc }}
 ```
 
 ## Generate cluster
@@ -31,5 +31,5 @@ clusterctl generate cluster example-cluster \
 ## Cluster Template
 
 ```yaml
-{{#include ../../../../../templates/ubuntu.yaml }}
+{{#include ../../../../../templates/cluster-template-ubuntu.yaml }}
 ```

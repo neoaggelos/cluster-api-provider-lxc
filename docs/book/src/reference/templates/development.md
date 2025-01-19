@@ -15,7 +15,7 @@ The development cluster template will create an LXC or OCI container running a h
 ## Configuration
 
 ```bash
-{{#include ../../../../../templates/development.rc }}
+{{#include ../../../../../templates/cluster-template-development.rc }}
 ```
 
 ## Generate cluster
@@ -28,5 +28,5 @@ clusterctl generate cluster example-cluster \
 ## Cluster Template
 
 ```yaml
-{{#include ../../../../../templates/development.yaml }}
+{{#include ../../../../../templates/cluster-template-development.yaml }}
 ```

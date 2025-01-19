@@ -17,7 +17,7 @@ This cluster template will provision an [OVN network load balancer] to forward t
 > *NOTE*: make sure that the instance profiles will use the OVN network for the instance networking.
 
 ```bash
-{{#include ../../../../../templates/ovn.rc }}
+{{#include ../../../../../templates/cluster-template-ovn.rc }}
 ```
 
 ## Generate cluster
@@ -30,7 +30,7 @@ clusterctl generate cluster example-cluster \
 ## Cluster Template
 
 ```yaml
-{{#include ../../../../../templates/ovn.yaml }}
+{{#include ../../../../../templates/cluster-template-ovn.yaml }}
 ```
 
 <!-- links -->

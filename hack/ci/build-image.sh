@@ -43,7 +43,7 @@ case "$MACHINE_TYPE" in
 esac
 
 "$CLIENT" launch "$IMAGE" "$BUILDER"
-while ! $CLI exec "$BUILDER" -- echo hi; do
+while ! "$CLIENT" exec "$BUILDER" -- echo hi; do
   sleep 3;
 done
 
@@ -51,6 +51,6 @@ cat "${DIR}/../images/install-kubeadm.sh" | "$CLIENT" exec "$BUILDER" -- bash -s
 cat "${DIR}/../images/image-cleanup.sh" | "$CLIENT" exec "$BUILDER" -- bash
 
 "$CLIENT" stop "$BUILDER"
-"$CLIENT" snapshot create "$BUILDER" v0 || $CLI snapshot "$BUILDER" v0    # "incus snapshot create instance v0" vs "lxc snapshot instance v0"
+"$CLIENT" snapshot create "$BUILDER" v0 || "$CLIENT" snapshot "$BUILDER" v0    # "incus snapshot create instance v0" vs "lxc snapshot instance v0"
 "$CLIENT" publish "$BUILDER/v0" --alias "$OUTPUT"
 "$CLIENT" image export "$OUTPUT" "$OUTPUT"

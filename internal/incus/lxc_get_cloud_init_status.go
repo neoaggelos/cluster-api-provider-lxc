@@ -22,9 +22,7 @@ func (c *Client) CheckCloudInitStatus(ctx context.Context, name string) (result 
 
 	reader, _, err := c.Client.GetInstanceFile(name, "/var/lib/cloud/data/status.json")
 	if err != nil || reader == nil {
-		err = fmt.Errorf("failed to GetInstanceFile: %w", err)
-		log.FromContext(ctx).Error(err, "Could not read cloud-init status file")
-		return cloudinit.StatusUnknown, nil
+		return cloudinit.StatusUnknown, fmt.Errorf("failed to read cloud-init status file: failed to GetInstanceFile: %w", err)
 	}
 	defer func() {
 		_ = reader.Close()

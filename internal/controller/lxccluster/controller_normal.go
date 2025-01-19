@@ -44,7 +44,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 	log.FromContext(ctx).Info("Creating load balancer")
 	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
 	if err != nil {
-		log.FromContext(ctx).Error(err, "Failed to provision cluster infrastructure")
+		log.FromContext(ctx).Error(err, "Failed to provision load balancer")
 		if incus.IsTerminalError(err) {
 			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "The cluster load balancer could not be provisioned. The error was: %s", err)
 			return nil

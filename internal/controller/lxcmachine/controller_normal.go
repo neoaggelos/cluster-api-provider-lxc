@@ -132,7 +132,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 	case cloudinit.StatusError:
 		err := fmt.Errorf("bootstrap failed since cloud-init finished with error status")
-		log.FromContext(ctx).Error(err, "Marking machine as failed")
+		log.FromContext(ctx).Error(err, "Bootstrap failed, marking machine as failed")
 		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrapFailedReason, clusterv1.ConditionSeverityError, "%s", err)
 		return ctrl.Result{}, nil
 	case cloudinit.StatusDone:

@@ -31,7 +31,7 @@ esac
 
 case "$MACHINE_TYPE" in
   virtual-machine)
-    EXTRA_LAUNCH_ARGS="--vm -c raw.qemu='-cpu host,-svm'"
+    EXTRA_LAUNCH_ARGS="--vm"
     ;;
   container)
     EXTRA_LAUNCH_ARGS=""
@@ -42,7 +42,7 @@ case "$MACHINE_TYPE" in
     ;;
 esac
 
-"$CLIENT" launch "$IMAGE" "$BUILDER" $EXTRA_LAUNCH_ARGS
+"$CLIENT" launch "$IMAGE" "$BUILDER" $EXTRA_LAUNCH_ARGS -c raw.qemu='-cpu host,-svm'
 while ! "$CLIENT" exec "$BUILDER" -- echo hi; do
   "$CLIENT" list
   "$CLIENT" info --show-log "$BUILDER" || true

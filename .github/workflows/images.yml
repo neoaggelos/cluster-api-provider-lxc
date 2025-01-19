@@ -42,5 +42,5 @@ jobs:
       - name: Upload image
         uses: actions/upload-artifact@v4
         with:
-          name: image-${{ matrix.infrastructure }}-${{ inputs.ubuntu }}-${{ inputs.kubernetes }}.tar.gz
+          name: image-${{ matrix.infrastructure }}-${{ matrix.type }}-ubuntu-${{ inputs.ubuntu }}-${{ inputs.kubernetes }}.tar.gz
           path: ./image.tar.gz

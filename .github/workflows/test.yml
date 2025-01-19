@@ -9,7 +9,7 @@ jobs:
     name: Run on Ubuntu
     runs-on: ubuntu-latest
     steps:
-      - name: Clone the code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Go

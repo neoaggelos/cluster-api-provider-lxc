@@ -30,7 +30,7 @@ metadata:
   name: ci-lxc-secret
 data:
   project: '$(echo default | base64 -w0)'
-  server: '$(echo "https://$(lxc config get core.https_address)" | base64 -w0)'
+  server: '$(echo "https://$(incus config get core.https_address)" | base64 -w0)'
   server-crt: '$(sudo cat /var/lib/incus/cluster.crt | base64 -w0)'
   client-crt: '$(cat ~/.config/incus/client.crt | base64 -w0)'
   client-key: '$(cat ~/.config/incus/client.key | base64 -w0)'

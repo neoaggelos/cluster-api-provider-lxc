@@ -42,7 +42,7 @@ case "$MACHINE_TYPE" in
     ;;
 esac
 
-"$CLIENT" launch "$IMAGE" "$BUILDER"
+"$CLIENT" launch "$IMAGE" "$BUILDER" $EXTRA_LAUNCH_ARGS
 while ! "$CLIENT" exec "$BUILDER" -- echo hi; do
   sleep 3;
 done

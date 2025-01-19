@@ -24,7 +24,7 @@ This cluster template will provision an [OVN network load balancer] to forward t
 
 ```bash
 clusterctl generate cluster example-cluster \
-    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/templates/ovn.yaml
+    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/ovn.yaml
 ```
 
 ## Cluster Template

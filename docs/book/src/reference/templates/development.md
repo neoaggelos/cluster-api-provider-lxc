@@ -22,7 +22,7 @@ The development cluster template will create an LXC or OCI container running a h
 
 ```bash
 clusterctl generate cluster example-cluster \
-    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/templates/development.yaml
+    --from https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/release/templates/development.yaml
 ```
 
 ## Cluster Template

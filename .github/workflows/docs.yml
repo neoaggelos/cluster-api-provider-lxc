@@ -30,6 +30,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Cache binaries
+        uses: actions/cache@v4
+        with:
+          path: hack/tools/bin
+          key: ${{ hashFiles('docs/book/Makefile', 'hack/tools/go.sum', 'hack/scripts/install-mdbook.sh', 'hack/scripts/install-mdbook-toc.sh')}}
       - name: Build book
         run: make build
         working-directory: docs/book

@@ -44,6 +44,7 @@ esac
 
 "$CLIENT" launch "$IMAGE" "$BUILDER" $EXTRA_LAUNCH_ARGS
 while ! "$CLIENT" exec "$BUILDER" -- echo hi; do
+  "$CLIENT" list
   sleep 3;
 done
 

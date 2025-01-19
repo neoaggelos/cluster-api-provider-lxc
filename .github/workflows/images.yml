@@ -1,0 +1,46 @@
+name: Build images
+
+on:
+  workflow_dispatch:
+    inputs:
+      ubuntu:
+        required: true
+        description: Ubuntu version
+        type: choice
+        options:
+          - "24.04"
+      kubernetes:
+        required: true
+        type: string
+        description: Kubernetes version to install
+        default: v1.32.1
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - { type: container, infrastructure: incus }
+          - { type: virtual-machine, infrastructure: incus }
+          # - { type: virtual-machine, infrastructure: lxd }
+
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v4
+
+      - name: Initialize infrastructure
+        run: ./hack/ci/setup-${{ matrix.infrastructure }}.sh
+
+      - name: Build image
+        run: ./hack/ci/build-image.sh image ${{ matrix.infrastructure }} ${{ matrix.type }} ${{ inputs.ubuntu }} ${{ inputs.kubernetes }}
+
+      - name: Upload image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-${{ matrix.infrastructure }}-${{ inputs.ubuntu }}-${{ inputs.kubernetes }}.tar.gz
+          path: ./image.tar.gz

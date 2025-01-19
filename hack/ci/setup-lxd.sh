@@ -3,13 +3,13 @@
 DIR="$(dirname "$(realpath "$0")")"
 
 if ! which lxd; then
-  apt update
-  apt install snapd -y
-  snap install lxd --channel 5.21/stable
+  sudo apt update
+  sudo apt install snapd -y
+  sudo snap install lxd --channel 5.21/stable
 fi
 
 if ! lxc version | grep -q "Server version: 5.21"; then
-  snap refresh lxd --channel 5.21/stable
+  sudo snap refresh lxd --channel 5.21/stable
 fi
 
 # get node IP address

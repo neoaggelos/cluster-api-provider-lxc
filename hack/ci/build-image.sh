@@ -31,7 +31,7 @@ esac
 
 case "$MACHINE_TYPE" in
   virtual-machine)
-    EXTRA_LAUNCH_ARGS="--vm"
+    EXTRA_LAUNCH_ARGS="--vm -c raw.qemu='-cpu host,-svm'"
     ;;
   container)
     EXTRA_LAUNCH_ARGS=""

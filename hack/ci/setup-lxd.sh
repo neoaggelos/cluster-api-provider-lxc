@@ -40,3 +40,6 @@ data:
   client-crt: '$(cat ~/snap/lxd/common/config/client.crt | base64 -w0)'
   client-key: '$(cat ~/snap/lxd/common/config/client.key | base64 -w0)'
 " | tee "${DIR}/../../ci-lxc-secret.yaml"
+
+# Do not drop instance traffic
+sudo iptables -P FORWARD ACCEPT

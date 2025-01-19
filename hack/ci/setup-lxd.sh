@@ -10,7 +10,6 @@ fi
 
 sudo snap refresh lxd --channel 5.21/stable
 
-dpkg -S /usr/sbin/lxd
 which lxd
 sudo bash -c 'which lxd'
 

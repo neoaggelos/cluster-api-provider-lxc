@@ -27,7 +27,7 @@ jobs:
         include:
           - { type: container, infrastructure: incus }
           - { type: virtual-machine, infrastructure: incus }
-          # - { type: virtual-machine, infrastructure: lxd }
+          - { type: virtual-machine, infrastructure: lxd }
 
     steps:
       - name: Checking out repo

@@ -2,15 +2,13 @@
 
 DIR="$(dirname "$(realpath "$0")")"
 
-if ! which lxd; then
+if ! snap list lxd; then
   sudo apt update
   sudo apt install snapd -y
   sudo snap install lxd --channel 5.21/stable
 fi
 
-if ! lxc version | grep -q "Server version: 5.21"; then
-  sudo snap refresh lxd --channel 5.21/stable
-fi
+sudo snap refresh lxd --channel 5.21/stable
 
 # get node IP address
 ip_address="$(ip -o route get to 1.1.1.1 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')"

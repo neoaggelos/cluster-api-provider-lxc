@@ -17,15 +17,17 @@ type Client struct {
 }
 
 type Options struct {
-	ServerURL string
+	// Server URL and certificate.
+	ServerURL          string `yaml:"server"`
+	ServerCrt          string `yaml:"server-crt"`
+	InsecureSkipVerify bool   `yaml:"insecure-skip-verify"`
 
-	Project string
+	// Client certificate and key.
+	ClientCrt string `yaml:"client-crt"`
+	ClientKey string `yaml:"client-key"`
 
-	ClientCert string
-	ClientKey  string
-
-	ServerCert         string
-	InsecureSkipVerify bool
+	// Project name
+	Project string `yaml:"project"`
 }
 
 // NewOptionsFromSecret parses a Kubernetes secret and derives Options for connecting to Incus.
@@ -60,9 +62,9 @@ func NewOptionsFromSecret(secret *corev1.Secret) Options {
 	return Options{
 		ServerURL:          string(secret.Data["server"]),
 		Project:            string(secret.Data["project"]),
-		ClientCert:         string(secret.Data["client-crt"]),
+		ClientCrt:          string(secret.Data["client-crt"]),
 		ClientKey:          string(secret.Data["client-key"]),
-		ServerCert:         string(secret.Data["server-crt"]),
+		ServerCrt:          string(secret.Data["server-crt"]),
 		InsecureSkipVerify: insecureSkipVerify,
 	}
 }
@@ -73,22 +75,22 @@ func New(ctx context.Context, opts Options) (*Client, error) {
 	switch {
 	case opts.InsecureSkipVerify:
 		log = log.WithValues("lxc.insecure-skip-verify", true)
-		opts.ServerCert = ""
-	case opts.ServerCert == "":
+		opts.ServerCrt = ""
+	case opts.ServerCrt == "":
 		log = log.WithValues("lxc.server-crt", "<unset>")
-	case opts.ServerCert != "":
-		if fingerprint, err := tls.CertFingerprintStr(opts.ServerCert); err == nil && len(fingerprint) >= 12 {
+	case opts.ServerCrt != "":
+		if fingerprint, err := tls.CertFingerprintStr(opts.ServerCrt); err == nil && len(fingerprint) >= 12 {
 			log = log.WithValues("lxc.server-crt", fingerprint[:12])
 		}
 	}
 
-	if fingerprint, err := tls.CertFingerprintStr(opts.ClientCert); err == nil && len(fingerprint) >= 12 {
+	if fingerprint, err := tls.CertFingerprintStr(opts.ClientCrt); err == nil && len(fingerprint) >= 12 {
 		log = log.WithValues("lxc.client-crt", fingerprint[:12])
 	}
 
 	client, err := incus.ConnectIncusWithContext(ctx, opts.ServerURL, &incus.ConnectionArgs{
-		TLSServerCert:      opts.ServerCert,
-		TLSClientCert:      opts.ClientCert,
+		TLSServerCert:      opts.ServerCrt,
+		TLSClientCert:      opts.ClientCrt,
 		TLSClientKey:       opts.ClientKey,
 		InsecureSkipVerify: opts.InsecureSkipVerify,
 		SkipGetServer:      true,

@@ -175,7 +175,7 @@ func (l *loadBalancerOCI) Inspect(ctx context.Context) map[string]string {
 	if err != nil || reader == nil {
 		result["haproxy.cfg"] = fmt.Errorf("failed to GetInstanceFile: %w", err).Error()
 	} else {
-		defer reader.Close()
+		defer func() { _ = reader.Close() }()
 		if b, err := io.ReadAll(reader); err != nil {
 			result["haproxy.cfg"] = fmt.Errorf("failed to read haproxy.cfg: %w", err).Error()
 		} else {

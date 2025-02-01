@@ -102,7 +102,7 @@ ARTIFACTS ?= $(REPO_ROOT)/_artifacts
 
 E2E_GINKGO_ARGS ?=
 .PHONY: test-e2e
-test-e2e: $(GINKGO) ## Run e2e tests
+test-e2e: ginkgo kustomize ## Run e2e tests
 	time $(GINKGO) \
 		-tags=e2e \
 		-fail-fast -timeout=3h \
@@ -118,7 +118,7 @@ test-e2e: $(GINKGO) ## Run e2e tests
 			$(E2E_ARGS)
 
 .PHONY: test-conformance
-test-conformance: $(GINKGO) ## Run conformance tests
+test-conformance: ginkgo kustomize ## Run conformance tests
 	env \
 		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance.yaml" \
 		time $(GINKGO) \
@@ -135,7 +135,7 @@ test-conformance: $(GINKGO) ## Run conformance tests
 				$(E2E_ARGS)
 
 .PHONY: test-conformance-fast
-test-conformance-fast: $(GINKGO) ## Run conformance tests (fast)
+test-conformance-fast: ginkgo kustomize ## Run conformance tests (fast)
 	env \
 		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance-fast.yaml" \
 		time $(GINKGO) \

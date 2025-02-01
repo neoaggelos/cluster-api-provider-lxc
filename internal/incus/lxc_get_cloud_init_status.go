@@ -24,9 +24,7 @@ func (c *Client) CheckCloudInitStatus(ctx context.Context, name string) (result 
 	if err != nil || reader == nil {
 		return cloudinit.StatusUnknown, fmt.Errorf("failed to read cloud-init status file: failed to GetInstanceFile: %w", err)
 	}
-	defer func() {
-		_ = reader.Close()
-	}()
+	defer func() { _ = reader.Close() }()
 
 	defer func() {
 		log.FromContext(ctx).V(2).WithValues("result", result, "error", rerr).Info("Checking cloud-init status on instance")

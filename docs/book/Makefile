@@ -71,3 +71,7 @@ serve: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) $(TOC) generate-api-docs
 .PHONY: build
 build: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) $(TOC) generate-api-docs
 	$(MDBOOK) build
+
+.PHONY: test
+test: $(MDBOOK) $(TABULATE) $(EMBED) $(RELEASELINK) $(TOC) generate-api-docs
+	$(MDBOOK) test

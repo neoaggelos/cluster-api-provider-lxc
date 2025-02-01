@@ -1,5 +1,9 @@
 # Kubernetes Cluster API Provider LXC
 
+[![Tests](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml)
+[![End to End Tests](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-full.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-full.yml)
+[![Deploy GitHub Pages](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/docs.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/docs.yml)
+
 Kubernetes-native declarative infrastructure for [Incus](https://linuxcontainers.org/incus/introduction/), [Canonical LXD](https://canonical.com/lxd) and [Canonical MicroCloud](https://canonical.com/microcloud).
 
 ## What is the Cluster API Provider LXC
@@ -28,21 +32,24 @@ See [Quick Start](./tutorial/quick-start.md) to launch a cluster on a single-nod
 
 ## Project Roadmap
 
-### v0.2.0
+### v0.3.0
 
-Rough steps for version v0.2.0:
+Rough steps for version v0.3.0:
 
 - [x] Private initial alpha testing.
 - [x] Cloud provider node patch to link Machines with workload cluster Nodes.
 - [x] Test with both [Incus](https://linuxcontainers.org/incus/introduction/) and [Canonical LXD](https://canonical.com/lxd).
 - [x] Start cluster-api-provider-lxc book with quick start guide, cluster templates, API reference.
 - [x] Publish v0.1.0 release to get initial user feedback.
+- [x] Add e2e tests using the cluster-api testing framework.
+- [x] Add PR blocking CI pipelines.
+- [x] Publish v0.2.0 release with v1alpha2 APIs.
+- [ ] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
+- [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
 - [ ] Write documentation with setting up a development environment.
 - [ ] Write documentation with common troubleshooting steps.
 - [ ] Write documentation with common cluster deployment scenarios.
-- [ ] Add e2e tests using the cluster-api testing framework.
-- [ ] Add PR blocking CI pipelines.
-- [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
+- [ ] Extend e2e suite with tests for all cluster-template types (kube-vip, ovn)
 - [ ] Gather initial user feedback.
 
 ### $Future
@@ -51,7 +58,6 @@ Rough steps for version v0.2.0:
 - [ ] Add CI to build and push kubeadm and haproxy images to the default simplestreams server.
 - [ ] Decide on project OWNERSHIP and testing infrastructure.
 - [ ] Split cloud provider node patch to external cloud-provider-incus project.
-- [ ] Explore clusters with ClusterTopology=true (clusterclass).
 - [ ] Refactor `internal/incus` package and improve consistency and log levels across the code.
 - [ ] Add to default list of providers supported by ClusterAPI.
 

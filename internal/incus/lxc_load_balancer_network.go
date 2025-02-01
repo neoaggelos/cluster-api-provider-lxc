@@ -33,10 +33,8 @@ func (l *loadBalancerNetwork) Create(ctx context.Context) ([]string, error) {
 		return nil, terminalError{fmt.Errorf("network load balancer cannot be provisioned as .spec.loadBalancer.ovnNetworkName is not specified")}
 	}
 
-	if unsupported, err := l.lxcClient.serverSupportsExtensions("network_load_balancer", "network_load_balancer_health_check"); err != nil {
-		return nil, fmt.Errorf("failed to check if server supports network load balancer extensions: %w", err)
-	} else if len(unsupported) > 0 {
-		return nil, terminalError{fmt.Errorf("server cannot create network load balancers, required extensions are missing: %v", unsupported)}
+	if err := l.lxcClient.SupportsNetworkLoadBalancer(); err != nil {
+		return nil, err
 	}
 
 	if _, _, err := l.lxcClient.Client.GetNetwork(l.networkName); err != nil {

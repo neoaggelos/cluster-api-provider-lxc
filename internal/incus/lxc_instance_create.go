@@ -8,12 +8,11 @@ import (
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 )
 
 // CreateInstance creates the LXC instance based on configuration from the machine.

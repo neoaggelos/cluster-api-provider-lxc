@@ -4,12 +4,11 @@ import (
 	"context"
 	"slices"
 
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 )
 
 func patchLXCCluster(ctx context.Context, patchHelper *patch.Helper, lxcCluster *infrav1.LXCCluster) error {

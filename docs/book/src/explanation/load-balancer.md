@@ -23,7 +23,7 @@ The only requirement to use the `lxc` load balancer type is that the management 
 An example LXCCluster spec follows:
 
 ```yaml,hidelines=#
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: example-cluster
@@ -55,7 +55,7 @@ The only requirement to use the `oci` load balancer type is that the management 
 An example LXCCluster spec follows:
 
 ```yaml,hidelines=#
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: example-cluster
@@ -182,7 +182,7 @@ name: default
 The appropriate LXCCluster spec would look like this:
 
 ```yaml,hidelines=#
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: example-cluster
@@ -233,7 +233,7 @@ managed: true
 The LXCCluster in that case would be:
 
 ```yaml,hidelines=#
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: example-cluster

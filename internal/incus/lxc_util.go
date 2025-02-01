@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
 )
 

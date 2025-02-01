@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -12,9 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/util"
 )

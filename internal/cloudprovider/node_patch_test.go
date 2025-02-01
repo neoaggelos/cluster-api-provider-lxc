@@ -4,17 +4,16 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
-
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	corev1 "k8s.io/api/core/v1"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha1"
+	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudprovider"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestPatchNode(t *testing.T) {

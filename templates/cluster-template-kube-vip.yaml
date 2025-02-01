@@ -5,20 +5,20 @@ metadata:
 spec:
   clusterNetwork:
     pods:
-      cidrBlocks: ${POD_CIDR:=["10.244.0.0/16"]}
+      cidrBlocks: ${POD_CIDR:=[10.244.0.0/16]}
     services:
-      cidrBlocks: ${SERVICE_CIDR:=["10.96.0.0/12"]}
+      cidrBlocks: ${SERVICE_CIDR:=[10.96.0.0/12]}
     serviceDomain: cluster.local
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1beta1
     kind: KubeadmControlPlane
     name: ${CLUSTER_NAME}-control-plane
   infrastructureRef:
-    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
     kind: LXCCluster
     name: ${CLUSTER_NAME}
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: ${CLUSTER_NAME}
@@ -40,7 +40,7 @@ spec:
   version: ${KUBERNETES_VERSION}
   machineTemplate:
     infrastructureRef:
-      apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+      apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
       kind: LXCMachineTemplate
       name: ${CLUSTER_NAME}-control-plane
   kubeadmConfigSpec:
@@ -166,7 +166,7 @@ spec:
       owner: root:root
       permissions: "0444"
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
   name: "${CLUSTER_NAME}-control-plane"
@@ -175,7 +175,7 @@ spec:
     spec:
       instanceType: ${CONTROL_PLANE_MACHINE_TYPE}
       flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
-      profiles: [${CONTROL_PLANE_MACHINE_PROFILES:=default}]
+      profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
       image:
         name: ${LXC_IMAGE_NAME:= }
 ---
@@ -188,7 +188,6 @@ spec:
   replicas: ${WORKER_MACHINE_COUNT}
   selector:
     matchLabels:
-      cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
   template:
     spec:
       version: ${KUBERNETES_VERSION}
@@ -199,11 +198,11 @@ spec:
           kind: KubeadmConfigTemplate
           name: ${CLUSTER_NAME}-md-0
       infrastructureRef:
-        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
         kind: LXCMachineTemplate
         name: ${CLUSTER_NAME}-md-0
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
   name: "${CLUSTER_NAME}-md-0"
@@ -212,7 +211,7 @@ spec:
     spec:
       instanceType: ${WORKER_MACHINE_TYPE}
       flavor: ${WORKER_MACHINE_FLAVOR}
-      profiles: [${WORKER_MACHINE_PROFILES:=default}]
+      profiles: ${WORKER_MACHINE_PROFILES:=[default]}
       image:
         name: ${LXC_IMAGE_NAME:= }
 ---

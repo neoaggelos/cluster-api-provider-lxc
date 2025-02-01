@@ -228,7 +228,7 @@ Make sure to set `.spec.instanceType` to `container` or `virtual-machine` accord
 
 ```yaml,hidelines=#
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
   name: "example-control-plane"
@@ -241,7 +241,7 @@ spec:
       image:
         name: kubeadm/v1.31.4/ubuntu/24.04
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
   name: "example-md-0"

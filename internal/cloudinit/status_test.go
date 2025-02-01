@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/onsi/gomega"
-
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestParseStatus(t *testing.T) {

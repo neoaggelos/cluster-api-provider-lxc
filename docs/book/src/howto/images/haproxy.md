@@ -178,7 +178,7 @@ Set `spec.loadBalancer.instanceSpec.image.name` on the LXCCluster resource of yo
 
 ```yaml,hidelines=#
 ---
-apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCCluster
 metadata:
   name: example-cluster

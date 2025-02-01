@@ -10,16 +10,16 @@ export LXC_SECRET_NAME=lxc-secret
 #export LXC_IMAGE_NAME=kubeadm/v1.31.4/ubuntu/24.04
 
 # Load balancer configuration
-export LXC_LOAD_BALANCER_TYPE=lxc               # 'lxc' or 'oci'
-export LXC_LOAD_BALANCER_PROFILES=default       # profiles for the lb container
-export LXC_LOAD_BALANCER_FLAVOR=c1-m1           # instance type for the lb container
+export LXC_LOAD_BALANCER_TYPE=lxc               # must be 'lxc' or 'oci'
+export LOAD_BALANCER_MACHINE_PROFILES=[default] # profiles for the lb container
+export LOAD_BALANCER_MACHINE_FLAVOR=c1-m1       # instance type for the lb container
 
 # Control plane machine configuration
 export CONTROL_PLANE_MACHINE_TYPE=container     # 'container' or 'virtual-machine'
-export CONTROL_PLANE_MACHINE_PROFILES=default   # profiles for control plane nodes
+export CONTROL_PLANE_MACHINE_PROFILES=[default] # profiles for control plane nodes
 export CONTROL_PLANE_MACHINE_FLAVOR=c2-m4       # instance type for control plane nodes
 
 # Worker machine configuration
 export WORKER_MACHINE_TYPE=container            # 'container' or 'virtual-machine'
-export WORKER_MACHINE_PROFILES=default          # profiles for worker nodes
+export WORKER_MACHINE_PROFILES=[default]        # profiles for worker nodes
 export WORKER_MACHINE_FLAVOR=c2-m4              # instance type for worker nodes

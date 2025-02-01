@@ -22,6 +22,7 @@ linters:
     - copyloopvar
     - dupl
     - errcheck
+    - gci
     - ginkgolinter
     - goconst
     - gocyclo
@@ -50,3 +51,10 @@ linters-settings:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
     local-prefixes: github.com/neoaggelos/cluster-api-provider-lxc
+
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/neoaggelos/cluster-api-provider-lxc)
+      - dot

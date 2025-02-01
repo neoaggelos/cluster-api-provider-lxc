@@ -26,7 +26,7 @@
 ---
 
 - [Reference](./reference/index.md)
-  - [v1alpha1 API](./reference/api/v1alpha1/api.md)
+  - [v1alpha2 API](./reference/api/v1alpha2/api.md)
   - [Default simplestreams server](./reference/default-simplestreams-server.md)
   - [Identity secret](./reference/identity-secret.md)
   - [Kubeadm profile](./reference/profile/kubeadm.md)

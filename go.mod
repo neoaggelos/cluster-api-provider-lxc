@@ -15,8 +15,8 @@ require (
 	k8s.io/client-go v0.32.0
 	k8s.io/component-base v0.31.4
 	k8s.io/klog/v2 v2.130.1
-	sigs.k8s.io/cluster-api v1.9.2
-	sigs.k8s.io/cluster-api/test v1.9.2
+	sigs.k8s.io/cluster-api v1.9.4
+	sigs.k8s.io/cluster-api/test v1.9.4
 	sigs.k8s.io/controller-runtime v0.19.4
 	sigs.k8s.io/yaml v1.4.0
 )
@@ -54,6 +54,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-logr/zapr v1.3.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
@@ -129,6 +130,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
 	golang.org/x/net v0.33.0 // indirect

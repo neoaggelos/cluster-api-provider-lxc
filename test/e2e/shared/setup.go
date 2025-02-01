@@ -12,6 +12,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	addonsv1 "sigs.k8s.io/cluster-api/exp/addons/api/v1beta1"
 	"sigs.k8s.io/cluster-api/test/e2e"
+	"sigs.k8s.io/cluster-api/test/framework"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	. "github.com/onsi/gomega"
@@ -77,7 +78,7 @@ func FixupNamespace(e2eCtx *E2EContext, namespace string, enableCredentials bool
 }
 
 // FixupWorkloadCluster patches the workload cluster object to install CNI.
-func FixupWorkloadCluster(e2eCtx *E2EContext, name string, namespace string, cni bool) {
+func FixupWorkloadCluster(e2eCtx *E2EContext, name string, namespace string) {
 	clusterClient := e2eCtx.Environment.BootstrapClusterProxy.GetClient()
 
 	clusterName := types.NamespacedName{Name: name, Namespace: namespace}
@@ -86,16 +87,12 @@ func FixupWorkloadCluster(e2eCtx *E2EContext, name string, namespace string, cni
 	e2e.Byf("Fetch workload cluster %v", clusterName)
 	Expect(clusterClient.Get(context.TODO(), clusterName, cluster)).To(Succeed(), "Failed to retrieve workload cluster")
 
-	// Label cluster to match ClusterResourceSet that deploys the CNI
-	if cni {
-		e2e.Byf("Label workload cluster %v with cni=cni-resources", clusterName)
-
-		if cluster.Labels == nil {
-			cluster.Labels = make(map[string]string, 1)
-		}
-		cluster.Labels["cni"] = "cni-resources"
-	}
-
 	e2e.Byf("Patch workload cluster %v", clusterName)
-	Expect(clusterClient.Update(context.TODO(), cluster)).To(Succeed(), "Failed to patch workload cluster with necessary labels and configs")
+	framework.PatchClusterLabel(context.TODO(), framework.PatchClusterLabelInput{
+		ClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
+		Cluster:      cluster,
+		Labels: map[string]string{
+			"cni": "cni-resources",
+		},
+	})
 }

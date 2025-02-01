@@ -89,7 +89,7 @@ type RuntimeEnvironment struct {
 func (c *E2EContext) DefaultControlPlaneWaiters() clusterctl.ControlPlaneWaiters {
 	return clusterctl.ControlPlaneWaiters{
 		WaitForControlPlaneInitialized: func(ctx context.Context, input clusterctl.ApplyCustomClusterTemplateAndWaitInput, result *clusterctl.ApplyCustomClusterTemplateAndWaitResult) {
-			FixupWorkloadCluster(c, input.ClusterName, input.Namespace, true)
+			FixupWorkloadCluster(c, input.ClusterName, input.Namespace)
 
 			result.ControlPlane = framework.DiscoveryAndWaitForControlPlaneInitialized(ctx, framework.DiscoveryAndWaitForControlPlaneInitializedInput{
 				Lister:  input.ClusterProxy.GetClient(),

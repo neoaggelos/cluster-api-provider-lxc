@@ -24,7 +24,6 @@ This cluster template will provision an [OVN network load balancer] to forward t
 
 ```bash
 clusterctl generate cluster example-cluster -i lxc --flavor ovn
-
 ```
 
 ## Cluster Template

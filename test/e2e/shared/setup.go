@@ -13,6 +13,7 @@ import (
 	addonsv1 "sigs.k8s.io/cluster-api/exp/addons/api/v1beta1"
 	"sigs.k8s.io/cluster-api/test/e2e"
 	"sigs.k8s.io/cluster-api/test/framework"
+	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	. "github.com/onsi/gomega"
@@ -84,15 +85,13 @@ func FixupWorkloadCluster(e2eCtx *E2EContext, name string, namespace string) {
 	clusterName := types.NamespacedName{Name: name, Namespace: namespace}
 	cluster := &clusterv1.Cluster{}
 
-	e2e.Byf("Fetch workload cluster %v", clusterName)
+	e2e.Byf("Fetching workload cluster %v", clusterName)
 	Expect(clusterClient.Get(context.TODO(), clusterName, cluster)).To(Succeed(), "Failed to retrieve workload cluster")
 
-	e2e.Byf("Patch workload cluster %v", clusterName)
+	e2e.Byf("Labeling workload cluster %v with cni=cni-resources", clusterName)
 	framework.PatchClusterLabel(context.TODO(), framework.PatchClusterLabelInput{
 		ClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
 		Cluster:      cluster,
-		Labels: map[string]string{
-			"cni": "cni-resources",
-		},
+		Labels:       util.MergeMap(map[string]string{"cni": "cni-resources"}, cluster.Labels),
 	})
 }

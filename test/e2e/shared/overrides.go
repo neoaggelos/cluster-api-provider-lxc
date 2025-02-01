@@ -16,7 +16,7 @@ import (
 //
 // TODO: this is working around external specs that do not expose the ClusterctlVariables input.
 // Can remove after https://github.com/kubernetes-sigs/cluster-api/pull/11780
-func OverrideVariables(e2eCtx *E2EContext, variables map[string]string) {
+func (e2eCtx *E2EContext) OverrideVariables(variables map[string]string) {
 	Expect(e2eCtx.Environment.ClusterctlConfigPath).To(BeAnExistingFile(), "clusterctlConfigPath should be an existing file and point to the clusterctl config file in use by the E2E tests.")
 
 	oldPath := e2eCtx.Environment.ClusterctlConfigPath

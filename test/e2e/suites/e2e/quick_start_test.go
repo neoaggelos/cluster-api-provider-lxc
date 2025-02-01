@@ -59,7 +59,7 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 				Skip("Server does not support OCI instances")
 			}
 
-			shared.OverrideVariables(e2eCtx, map[string]string{
+			e2eCtx.OverrideVariables(map[string]string{
 				"LXC_LOAD_BALANCER_TYPE": "oci",
 			})
 		})

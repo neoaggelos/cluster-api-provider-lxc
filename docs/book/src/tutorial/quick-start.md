@@ -216,15 +216,15 @@ Required Variables:
 Optional Variables:
   - CLUSTER_NAME                    (defaults to c1)
   - CONTROL_PLANE_MACHINE_COUNT     (defaults to 1)
-  - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "default")
+  - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "[default]")
+  - LOAD_BALANCER_MACHINE_FLAVOR    (defaults to "")
+  - LOAD_BALANCER_MACHINE_PROFILES  (defaults to "[default]")
   - LXC_IMAGE_NAME                  (defaults to " ")
-  - LXC_LOAD_BALANCER_FLAVOR        (defaults to "")
-  - LXC_LOAD_BALANCER_PROFILES      (defaults to "default")
   - LXC_LOAD_BALANCER_TYPE          (defaults to "lxc")
-  - POD_CIDR                        (defaults to "['10.244.0.0/16']")
-  - SERVICE_CIDR                    (defaults to "['10.96.0.0/12']")
+  - POD_CIDR                        (defaults to "[10.244.0.0/16]")
+  - SERVICE_CIDR                    (defaults to "[10.96.0.0/12]")
   - WORKER_MACHINE_COUNT            (defaults to 0)
-  - WORKER_MACHINE_PROFILES         (defaults to "default")
+  - WORKER_MACHINE_PROFILES         (defaults to "[default]")
 ```
 
 Set configuration values:
@@ -327,18 +327,15 @@ lxc list user.cluster-name=c1
 The output should look similar to:
 
 ```bash
-+------------------------+---------+------------------------+------+-----------+-----------+---------------+
-|          NAME          |  STATE  |          IPV4          | IPV6 |   TYPE    | SNAPSHOTS |   LOCATION    |
-+------------------------+---------+------------------------+------+-----------+-----------+---------------+
-| c1-control-plane-sn5ww | RUNNING | 10.244.0.0 (flannel.1) |      | CONTAINER | 0         | 172.31.33.136 |
-|                        |         | 10.225.32.7 (eth0)     |      |           |           |               |
-+------------------------+---------+------------------------+------+-----------+-----------+---------------+
-| c1-md-0-zj8bf-cbwnc    | RUNNING | 10.244.1.1 (cni0)      |      | CONTAINER | 0         | 172.31.33.136 |
-|                        |         | 10.244.1.0 (flannel.1) |      |           |           |               |
-|                        |         | 10.225.32.246 (eth0)   |      |           |           |               |
-+------------------------+---------+------------------------+------+-----------+-----------+---------------+
-| default-c1-lb          | RUNNING | 10.225.32.110 (eth0)   |      | CONTAINER | 0         | 172.31.33.136 |
-+------------------------+---------+------------------------+------+-----------+-----------+---------------+
++------------------------+---------+----------------------+------+-----------+-----------+---------------+
+|          NAME          |  STATE  |         IPV4         | IPV6 |   TYPE    | SNAPSHOTS |   LOCATION    |
++------------------------+---------+----------------------+------+-----------+-----------+---------------+
+| c1-control-plane-sn5ww | RUNNING | 10.225.32.7 (eth0)   |      | CONTAINER | 0         | 172.31.33.136 |
++------------------------+---------+----------------------+------+-----------+-----------+---------------+
+| c1-md-0-zj8bf-cbwnc    | RUNNING | 10.225.32.246 (eth0) |      | CONTAINER | 0         | 172.31.33.136 |
++------------------------+---------+----------------------+------+-----------+-----------+---------------+
+| default-c1-lb          | RUNNING | 10.225.32.110 (eth0) |      | CONTAINER | 0         | 172.31.33.136 |
++------------------------+---------+----------------------+------+-----------+-----------+---------------+
 ```
 
 ## Access the cluster

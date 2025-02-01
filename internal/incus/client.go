@@ -3,70 +3,14 @@ package incus
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/tls"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	corev1 "k8s.io/api/core/v1"
 )
 
 type Client struct {
 	Client incus.InstanceServer
-}
-
-type Options struct {
-	// Server URL and certificate.
-	ServerURL          string `yaml:"server"`
-	ServerCrt          string `yaml:"server-crt"`
-	InsecureSkipVerify bool   `yaml:"insecure-skip-verify"`
-
-	// Client certificate and key.
-	ClientCrt string `yaml:"client-crt"`
-	ClientKey string `yaml:"client-key"`
-
-	// Project name
-	Project string `yaml:"project"`
-}
-
-// NewOptionsFromSecret parses a Kubernetes secret and derives Options for connecting to Incus.
-//
-// The secret can be created like this:
-//
-// ```bash
-//
-//	# create a client certificate and key trusted by incus
-//	$ incus remote generate-certificate
-//	$ sudo incus config trust add-certificate ~/.config/incus/client.crt
-//
-//	# generate kubernetes secret
-//	$ kubectl create secret generic incus-secret \
-//		--from-literal=server="https://10.0.0.49:8443" \
-//		--from-literal=server-crt="$(sudo cat /var/lib/incus/cluster.crt)" \
-//		--from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
-//		--from-literal=client-key="$(cat ~/.config/incus/client.key)" \
-//		--from-literal=project="default"
-//
-//	# or with insecure skip verify
-//	$ kubectl create secret generic lxd-secret \
-//		--from-literal=server=https://10.0.1.2:8901 \
-//		--from-literal=insecure-skip-verify=true \
-//		--from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
-//		--from-literal=client-key="$(cat ~/.config/incus/client.key)" \
-//		--from-literal=project="default"
-//
-// ```
-func NewOptionsFromSecret(secret *corev1.Secret) Options {
-	insecureSkipVerify, _ := strconv.ParseBool(string(secret.Data["insecure-skip-verify"]))
-	return Options{
-		ServerURL:          string(secret.Data["server"]),
-		Project:            string(secret.Data["project"]),
-		ClientCrt:          string(secret.Data["client-crt"]),
-		ClientKey:          string(secret.Data["client-key"]),
-		ServerCrt:          string(secret.Data["server-crt"]),
-		InsecureSkipVerify: insecureSkipVerify,
-	}
 }
 
 func New(ctx context.Context, opts Options) (*Client, error) {

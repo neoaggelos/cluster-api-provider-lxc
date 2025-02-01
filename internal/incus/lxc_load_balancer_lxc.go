@@ -7,6 +7,7 @@ import (
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
+	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
@@ -120,6 +121,51 @@ func (l *loadBalancerLXC) Reconfigure(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (l *loadBalancerLXC) Inspect(ctx context.Context) map[string]string {
+	result := map[string]string{}
+
+	addInfoFor := func(name string, getter func() (any, error)) {
+		if obj, err := getter(); err != nil {
+			result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to get %s: %w", name, err).Error()
+		} else {
+			result[fmt.Sprintf("%s.txt", name)] = fmt.Sprintf("%#v\n", obj)
+			b, err := yaml.Marshal(obj)
+			if err != nil {
+				result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to marshal yaml: %w", err).Error()
+			} else {
+				result[fmt.Sprintf("%s.yaml", name)] = string(b)
+			}
+		}
+	}
+
+	addInfoFor("Instance", func() (any, error) {
+		instance, _, err := l.lxcClient.Client.GetInstanceFull(l.name)
+		return instance, err
+	})
+
+	type logItem struct {
+		name    string
+		command []string
+	}
+
+	for _, item := range []logItem{
+		{name: "ip-a.txt", command: []string{"ip", "a"}},
+		{name: "ip-r.txt", command: []string{"ip", "r"}},
+		{name: "ss-plnt.txt", command: []string{"ss", "-plnt"}},
+		{name: "haproxy.service", command: []string{"systemctl", "status", "--no-pager", "-l", "haproxy.service"}},
+		{name: "haproxy.log", command: []string{"journalctl", "--no-pager", "-u", "haproxy.service"}},
+		{name: "haproxy.cfg", command: []string{"cat", "/etc/haproxy/haproxy.cfg"}},
+	} {
+		var stdout, stderr bytes.Buffer
+		if err := l.lxcClient.RunCommand(ctx, l.name, item.command, &stdout, &stderr); err != nil {
+			result[fmt.Sprintf("%s.error", item.name)] = fmt.Errorf("failed to RunCommand %v on %s: %w", item.command, l.name, err).Error()
+		}
+		result[item.name] = fmt.Sprintf("%s\n%s\n", stdout.String(), stderr.String())
+	}
+
+	return result
 }
 
 var _ LoadBalancerManager = &loadBalancerLXC{}

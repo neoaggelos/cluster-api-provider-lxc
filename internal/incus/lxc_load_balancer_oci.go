@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"strconv"
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
+	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
@@ -144,6 +146,44 @@ func (l *loadBalancerOCI) Reconfigure(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// Inspect implements loadBalancerManager.
+func (l *loadBalancerOCI) Inspect(ctx context.Context) map[string]string {
+	result := map[string]string{}
+
+	addInfoFor := func(name string, getter func() (any, error)) {
+		if obj, err := getter(); err != nil {
+			result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to get %s: %w", name, err).Error()
+		} else {
+			result[fmt.Sprintf("%s.txt", name)] = fmt.Sprintf("%#v\n", obj)
+			b, err := yaml.Marshal(obj)
+			if err != nil {
+				result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to marshal yaml: %w", err).Error()
+			} else {
+				result[fmt.Sprintf("%s.yaml", name)] = string(b)
+			}
+		}
+	}
+
+	addInfoFor("Instance", func() (any, error) {
+		instance, _, err := l.lxcClient.Client.GetInstanceFull(l.name)
+		return instance, err
+	})
+
+	reader, _, err := l.lxcClient.Client.GetInstanceFile(l.name, "/usr/local/etc/haproxy/haproxy.cfg")
+	if err != nil || reader == nil {
+		result["haproxy.cfg"] = fmt.Errorf("failed to GetInstanceFile: %w", err).Error()
+	} else {
+		defer reader.Close()
+		if b, err := io.ReadAll(reader); err != nil {
+			result["haproxy.cfg"] = fmt.Errorf("failed to read haproxy.cfg: %w", err).Error()
+		} else {
+			result["haproxy.cfg"] = string(b)
+		}
+	}
+
+	return result
 }
 
 var _ LoadBalancerManager = &loadBalancerOCI{}

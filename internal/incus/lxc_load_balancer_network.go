@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/lxc/incus/v6/shared/api"
+	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -129,6 +130,45 @@ func (l *loadBalancerNetwork) Reconfigure(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// Inspect implements loadBalancerManager.
+func (l *loadBalancerNetwork) Inspect(ctx context.Context) map[string]string {
+	result := map[string]string{}
+
+	addInfoFor := func(name string, getter func() (any, error)) {
+		if obj, err := getter(); err != nil {
+			result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to get %s: %w", name, err).Error()
+		} else {
+			result[fmt.Sprintf("%s.txt", name)] = fmt.Sprintf("%#v\n", obj)
+			b, err := yaml.Marshal(obj)
+			if err != nil {
+				result[fmt.Sprintf("%s.err", name)] = fmt.Errorf("failed to marshal yaml: %w", err).Error()
+			} else {
+				result[fmt.Sprintf("%s.yaml", name)] = string(b)
+			}
+		}
+	}
+
+	var uplinkNetwork string
+	addInfoFor("Network", func() (any, error) {
+		network, _, err := l.lxcClient.Client.GetNetwork(l.networkName)
+		uplinkNetwork = network.Config["network"]
+		return network, err
+	})
+	addInfoFor("UplinkNetwork", func() (any, error) {
+		network, _, err := l.lxcClient.Client.GetNetwork(uplinkNetwork)
+		return network, err
+	})
+	addInfoFor("NetworkLoadBalancer", func() (any, error) {
+		lb, _, err := l.lxcClient.Client.GetNetworkLoadBalancer(l.networkName, l.listenAddress)
+		return lb, err
+	})
+	addInfoFor("NetworkLoadBalancerState", func() (any, error) {
+		return l.lxcClient.Client.GetNetworkLoadBalancerState(l.networkName, l.listenAddress)
+	})
+
+	return result
 }
 
 var _ LoadBalancerManager = &loadBalancerNetwork{}

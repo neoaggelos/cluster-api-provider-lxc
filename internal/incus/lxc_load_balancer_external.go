@@ -60,4 +60,9 @@ func (l *loadBalancerExternal) Reconfigure(ctx context.Context) error {
 	return nil
 }
 
+// Inspect implements loadBalancerManager.
+func (l *loadBalancerExternal) Inspect(ctx context.Context) map[string]string {
+	return map[string]string{"address": l.address}
+}
+
 var _ LoadBalancerManager = &loadBalancerExternal{}

@@ -186,10 +186,10 @@ spec:
   secretRef:
     name: example-secret
   loadBalancer:
-    type: lxc
-    instanceSpec:
-      #flavor: c1-m1
-      #profiles: [default]
-      image:
-        name: haproxy
+    lxc:
+      instanceSpec:
+        #flavor: c1-m1
+        #profiles: [default]
+        image:
+          name: haproxy
 ```

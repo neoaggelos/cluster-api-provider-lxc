@@ -219,7 +219,7 @@ Optional Variables:
   - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "[default]")
   - LOAD_BALANCER_MACHINE_FLAVOR    (defaults to "")
   - LOAD_BALANCER_MACHINE_PROFILES  (defaults to "[default]")
-  - LXC_IMAGE_NAME                  (defaults to " ")
+  - LXC_IMAGE_NAME                  (defaults to "")
   - LXC_LOAD_BALANCER_TYPE          (defaults to "lxc")
   - POD_CIDR                        (defaults to "[10.244.0.0/16]")
   - SERVICE_CIDR                    (defaults to "[10.96.0.0/12]")

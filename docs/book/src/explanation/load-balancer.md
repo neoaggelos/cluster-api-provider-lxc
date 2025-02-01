@@ -31,10 +31,10 @@ spec:
 #  secretRef:
 #    name: example-secret
   loadBalancer:
-    type: lxc
-    instanceSpec:
-      flavor: c1-m1
-      profiles: [default]
+    lxc:
+      instanceSpec:
+        flavor: c1-m1
+        profiles: [default]
 ```
 
 {{#/tab }}
@@ -63,10 +63,10 @@ spec:
 #  secretRef:
 #    name: example-secret
   loadBalancer:
-    type: oci
-    instanceSpec:
-      flavor: c1-m1
-      profiles: [default]
+    oci:
+      instanceSpec:
+        flavor: c1-m1
+        profiles: [default]
 ```
 
 {{#/tab }}
@@ -193,8 +193,8 @@ spec:
     host: 10.100.42.1
     port: 6443
   loadBalancer:
-    type: network
-    ovnNetworkName: OVN
+    ovn:
+      networkName: OVN
 ```
 
 {{#/tab }}
@@ -241,10 +241,10 @@ spec:
 #  secretRef:
 #    name: example-secret
   controlPlaneEndpoint:
-    host: 10.100.42.1
+    host: 10.217.28.242
     port: 6443
   loadBalancer:
-    type: external
+    external: {}
 ```
 
 > **NOTE**: More configuration is needed to deploy kube-vip. For a full example, see the [kube-vip cluster template](../reference/templates/kube-vip.md)

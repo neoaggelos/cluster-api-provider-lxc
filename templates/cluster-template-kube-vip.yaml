@@ -29,7 +29,7 @@ spec:
     host: ${LXC_LOAD_BALANCER_ADDRESS}
     port: 6443
   loadBalancer:
-    type: ${LXC_LOAD_BALANCER_TYPE:=external}
+    external: {}
 ---
 apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: KubeadmControlPlane
@@ -177,7 +177,7 @@ spec:
       flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
       profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
       image:
-        name: ${LXC_IMAGE_NAME:= }
+        name: ${LXC_IMAGE_NAME:=""}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -213,7 +213,7 @@ spec:
       flavor: ${WORKER_MACHINE_FLAVOR}
       profiles: ${WORKER_MACHINE_PROFILES:=[default]}
       image:
-        name: ${LXC_IMAGE_NAME:= }
+        name: ${LXC_IMAGE_NAME:=""}
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate

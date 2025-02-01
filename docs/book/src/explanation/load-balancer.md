@@ -8,7 +8,7 @@ Part of the responsibilities of the infrastructure provider is to provision a Lo
 
 In the LXCCluster resource, `spec.loadBalancer.type` can be one of:
 
-{{#tabs name:"load-balancer-type" tabs:"lxc,oci,network,external" }}
+{{#tabs name:"load-balancer-type" tabs:"lxc,oci,ovn,external" }}
 
 {{#tab lxc }}
 
@@ -71,18 +71,18 @@ spec:
 
 {{#/tab }}
 
-{{#tab network }}
+{{#tab ovn }}
 
 - **Required server extensions**: [`network_load_balancer`](https://linuxcontainers.org/incus/docs/main/api-extensions/#network-load-balancer), [`network_load_balancer_health_check`](https://linuxcontainers.org/incus/docs/main/api-extensions/#network-load-balancer-health-check)
 
-The `network` load balancer type will create and manage an [OVN network load balancer](https://linuxcontainers.org/incus/docs/main/howto/network_load_balancers/) for the control plane endpoint. A backend is configured for each control plane machine on the cluster. As control plane machines are added or removed from the cluster, cluster-api-provider-lxc will reconcile the backends of the network load balancer object accordingly.
+The `ovn` load balancer type will create and manage an [OVN network load balancer](https://linuxcontainers.org/incus/docs/main/howto/network_load_balancers/) for the control plane endpoint. A backend is configured for each control plane machine on the cluster. As control plane machines are added or removed from the cluster, cluster-api-provider-lxc will reconcile the backends of the network load balancer object accordingly.
 
-Using the `network` load balancer type when the `network_load_balancer` and `network_load_balancer_health_check` API extensions are not supported will raise an error during the LXCCluster provisioning process.
+Using the `ovn` load balancer type when the `network_load_balancer` and `network_load_balancer_health_check` API extensions are not supported will raise an error during the LXCCluster provisioning process.
 
 As mentioned in the documentation, network load balancers are only supported for [OVN networks](https://linuxcontainers.org/incus/docs/main/reference/network_ovn/). The load balancer address must be chosen from the uplink network. The cluster administrator must ensure that:
 
 - The management cluster can reach the OVN uplink network, so that it can connect to the workload cluster.
-- The name of the ovn network is set in `spec.loadBalancer.ovnNetworkName`.
+- The name of the ovn network is set in `spec.loadBalancer.ovn.networkName`.
 - The list of profiles used for control plane machines use the same OVN network (such that the load balancer backends can be configured).
 - The load balancer IP address is set in `spec.controlPlaneEndpoint.host`
 

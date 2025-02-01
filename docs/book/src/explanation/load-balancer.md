@@ -14,11 +14,11 @@ In the LXCCluster resource, `spec.loadBalancer.type` can be one of:
 
 When using the `lxc` load balancer type, the infrastructure provider will launch an LXC container running haproxy. As control plane machines are created and deleted, the provider will update and automatically reload the backend configuration of the haproxy instance. This is similar to the behavior of the haproxy load balancer container in cluster-api-provider-docker.
 
-The control plane endpoint of the cluster will be set to the IP address of the haproxy container. The haproxy container is a single-point-of-failure for accessing the control plane of the workload cluster, so it is not suitable for production deployments. Instead, it requires zero configuration, therefore it can be used for evaulation or development purposes.
+The control plane endpoint of the cluster will be set to the IP address of the haproxy container. The haproxy container is a single-point-of-failure for accessing the control plane of the workload cluster, so it is not suitable for production deployments. However, it requires zero configuration, therefore it can be used for evaulation or development purposes.
 
-The load balancer instance can be configured through the `spec.loadBalancer.instanceSpec` configuration fields. Unless a custom image source is set, the `haproxy` image is used from the [default simplestreams server](../reference/default-simplestreams-server.md).
+The load balancer instance can be configured through the `spec.loadBalancer.lxc.instanceSpec` configuration fields. Unless a custom image source is set, the `haproxy` image is used from the [default simplestreams server](../reference/default-simplestreams-server.md).
 
-The only requirement to use the `lxc` load balancer type is that the management cluster **must** be able to reach the LXC container through its IP.
+The only requirement to use the `lxc` load balancer type is that the management cluster **must** be able to reach the load balancer container through its IP.
 
 An example LXCCluster spec follows:
 
@@ -44,13 +44,13 @@ spec:
 
 The `oci` load balancer type is similar to `lxc`. The only difference is that an OCI container running the kindest haproxy image is used instead. Similarly to `lxc`, when control plane machines are added or removed from the cluster, the provider will keep the haproxy configuration up to date.
 
-The control plane endpoint of the cluster will be set to the IP address of the haproxy container. The haproxy container is a single-point-of-failure for accessing the control plane of the workload cluster, so it is not suitable for production deployments. Instead, it requires zero configuration, therefore it can be used for evaulation or development purposes.
+The control plane endpoint of the cluster will be set to the IP address of the haproxy container. The haproxy container is a single-point-of-failure for accessing the control plane of the workload cluster, so it is not suitable for production deployments. However, it requires zero configuration, therefore it can be used for evaulation or development purposes.
 
-The load balancer instance can be configured through the `spec.loadBalancer.instanceSpec` configuration fields. Unless a custom image source is set, the `ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1` (mirror of `kindest/haproxy`) image will be used.
+The load balancer instance can be configured through the `spec.loadBalancer.oci.instanceSpec` configuration fields. Unless a custom image source is set, the `ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1` (mirror of `kindest/haproxy`) image will be used.
 
 Support for OCI containers was first added in Incus 6.5. Using the `oci` load balancer type when the `oci_instance` API extension is not supported will raise an error during the LXCCluster provisioning process.
 
-The only requirement to use the `oci` load balancer type is that the management cluster **must** be able to reach the LXC container through its IP.
+The only requirement to use the `oci` load balancer type is that the management cluster **must** be able to reach the load balancer container through its IP.
 
 An example LXCCluster spec follows:
 

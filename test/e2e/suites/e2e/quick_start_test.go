@@ -30,4 +30,20 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 			}
 		})
 	})
+	Context("Full", func() {
+		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+			return e2e.QuickStartSpecInput{
+				E2EConfig:                e2eCtx.E2EConfig,
+				ClusterctlConfigPath:     e2eCtx.Environment.ClusterctlConfigPath,
+				BootstrapClusterProxy:    e2eCtx.Environment.BootstrapClusterProxy,
+				ArtifactFolder:           e2eCtx.Settings.ArtifactFolder,
+				Flavor:                   ptr.To(shared.FlavorDevelopment),
+				SkipCleanup:              e2eCtx.Settings.SkipCleanup,
+				ControlPlaneMachineCount: ptr.To[int64](3),
+				WorkerMachineCount:       ptr.To[int64](3),
+				PostNamespaceCreated:     e2eCtx.DefaultPostNamespaceCreated(),
+				ControlPlaneWaiters:      e2eCtx.DefaultControlPlaneWaiters(),
+			}
+		})
+	})
 })

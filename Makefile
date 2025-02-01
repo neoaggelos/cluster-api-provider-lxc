@@ -117,6 +117,40 @@ test-e2e: $(GINKGO) ## Run e2e tests
 			-data-folder="$(E2E_DATA_DIR)" \
 			$(E2E_ARGS)
 
+.PHONY: test-conformance
+test-conformance: $(GINKGO) ## Run conformance tests
+	env \
+		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance.yaml" \
+		time $(GINKGO) \
+			-tags=e2e \
+			-fail-fast -timeout=3h \
+			-v -show-node-events -trace \
+			-focus=conformance \
+			-github-output \
+			$(E2E_GINKGO_ARGS) \
+			./test/e2e/suites/conformance/... -- \
+				-config-path="$(E2E_CONFIG_PATH)" \
+				-artifacts-folder="$(ARTIFACTS)" \
+				-data-folder="$(E2E_DATA_DIR)" \
+				$(E2E_ARGS)
+
+.PHONY: test-conformance-fast
+test-conformance-fast: $(GINKGO) ## Run conformance tests (fast)
+	env \
+		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance-fast.yaml" \
+		time $(GINKGO) \
+			-tags=e2e \
+			-fail-fast -timeout=3h \
+			-v -show-node-events -trace \
+			-focus=conformance \
+			-github-output \
+			$(E2E_GINKGO_ARGS) \
+			./test/e2e/suites/conformance/... -- \
+				-config-path="$(E2E_CONFIG_PATH)" \
+				-artifacts-folder="$(ARTIFACTS)" \
+				-data-folder="$(E2E_DATA_DIR)" \
+				$(E2E_ARGS)
+
 ##@ Build
 
 .PHONY: build

@@ -34,10 +34,8 @@ func (l *loadBalancerOCI) Create(ctx context.Context) ([]string, error) {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("instance", l.name))
 
-	if unsupported, err := l.lxcClient.serverSupportsExtensions("instance_oci"); err != nil {
-		return nil, fmt.Errorf("failed to check if server supports 'instance_oci' extension: %w", err)
-	} else if len(unsupported) > 0 {
-		return nil, terminalError{fmt.Errorf("server cannot create OCI containers, required extensions are missing: %v", unsupported)}
+	if err := l.lxcClient.SupportsInstanceOCI(); err != nil {
+		return nil, err
 	}
 
 	image := l.spec.Image

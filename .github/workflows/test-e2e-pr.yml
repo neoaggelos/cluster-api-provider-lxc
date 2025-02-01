@@ -1,0 +1,35 @@
+name: End to End Tests (PR Blocking)
+
+on:
+  pull_request:
+
+jobs:
+  test-e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        infrastructure: [lxd, incus]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '~1.23'
+
+      - name: Setup infrastructure
+        run: ./hack/ci/setup-${{ matrix.infrastructure }}.sh
+
+      - name: Build the e2e controller image
+        run: make e2e-image
+
+      - name: Run e2e tests (PR Blocking)
+        run: make test-e2e E2E_GINKGO_ARGS=--label-filter=PRBlocking
+
+      - name: Upload e2e artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artifacts-${{ matrix.infrastructure }}
+          path: _artifacts

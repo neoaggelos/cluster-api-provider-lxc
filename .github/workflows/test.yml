@@ -2,11 +2,12 @@ name: Tests
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
   test:
-    name: Run on Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,7 +18,12 @@ jobs:
         with:
           go-version: '~1.23'
 
-      - name: Running Tests
-        run: |
-          go mod tidy
-          make test
+      - name: make lint
+        run: make lint
+
+      - name: make test
+        run: make test
+
+      - name: make test docs
+        working-directory: docs/book
+        run: make test

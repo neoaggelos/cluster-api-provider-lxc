@@ -201,12 +201,12 @@ func (c *Client) getLoadBalancerConfiguration(ctx context.Context, clusterName s
 	return config, nil
 }
 
-// The built-in Client.HasExtension() from Incus cannot be trusted, as it returns true if we skip the GetServer call
-// Return the list of extensions that are NOT supported by the server, if any
+// The built-in Client.HasExtension() from Incus cannot be trusted, as it returns true if we skip the GetServer call.
+// Return the list of extensions that are NOT supported by the server, if any.
 func (c *Client) serverSupportsExtensions(extensions ...string) ([]string, error) {
 	if server, _, err := c.Client.GetServer(); err != nil {
 		return nil, fmt.Errorf("failed to retrieve server information: %w", err)
 	} else {
-		return sets.New(server.APIExtensions...).Difference(sets.New(extensions...)).UnsortedList(), nil
+		return sets.New(extensions...).Difference(sets.New(server.APIExtensions...)).UnsortedList(), nil
 	}
 }

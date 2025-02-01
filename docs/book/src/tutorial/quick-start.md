@@ -414,6 +414,6 @@ kind delete cluster
 
 ## Next Steps
 
-- Expore the v1alpha1 [CRDs](../reference/api/v1alpha1/api.md)
+- Expore the v1alpha2 [CRDs](../reference/api/v1alpha2/api.md)
 - See list of example [Cluster Templates](../reference/templates/index.md)
 - Read about the [Defaul Simplestreams Server](../reference/default-simplestreams-server.md)

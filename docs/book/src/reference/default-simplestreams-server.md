@@ -22,7 +22,7 @@ Running infrastructure costs are kindly subsidized by the [National Technical Un
 - New Kubernetes versions are added on a best-effort basis, mainly as needed for development and CI testing.
 - Images for Kubernetes versions might be removed from the simplestreams after the Kubernetes version reaches [End of Life](https://kubernetes.io/releases/patch-releases/#support-period).
 
-It is recommended that production environments [build their own custom images](./../howto/build-base-images.md) instead.
+It is recommended that production environments [build their own custom images](../howto/images/index.md) instead.
 
 ## Provided images
 

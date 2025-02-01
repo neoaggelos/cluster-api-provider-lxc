@@ -23,6 +23,8 @@ CONTAINER_TOOL ?= docker
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
+REPO_ROOT := $(shell git rev-parse --show-toplevel)
+
 .PHONY: all
 all: build
 
@@ -68,23 +70,6 @@ test: manifests generate fmt vet envtest ## Run tests.
 		KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" \
 			go test $$(go list ./... | grep -v /e2e) -coverprofile cover.out
 
-# TODO(user): To use a different vendor for e2e tests, modify the setup under 'tests/e2e'.
-# The default setup assumes Kind is pre-installed and builds/loads the Manager Docker image locally.
-# Prometheus and CertManager are installed by default; skip with:
-# - PROMETHEUS_INSTALL_SKIP=true
-# - CERT_MANAGER_INSTALL_SKIP=true
-.PHONY: test-e2e
-test-e2e: manifests generate fmt vet ## Run the e2e tests. Expected an isolated environment using Kind.
-	@command -v kind >/dev/null 2>&1 || { \
-		echo "Kind is not installed. Please install Kind manually."; \
-		exit 1; \
-	}
-	@kind get clusters | grep -q 'kind' || { \
-		echo "No Kind cluster is running. Please start a Kind cluster before running the e2e tests."; \
-		exit 1; \
-	}
-	go test ./test/e2e/ -v -ginkgo.v
-
 .PHONY: lint
 lint: golangci-lint ## Run golangci-lint linter
 	$(GOLANGCI_LINT) run
@@ -92,6 +77,45 @@ lint: golangci-lint ## Run golangci-lint linter
 .PHONY: lint-fix
 lint-fix: golangci-lint ## Run golangci-lint linter and perform fixes
 	$(GOLANGCI_LINT) run --fix
+
+##@ E2E tests
+
+export CAPI_KUSTOMIZE_PATH ?= $(KUSTOMIZE)
+E2E_DATA_DIR ?= $(REPO_ROOT)/test/e2e/data
+E2E_CONFIG_PATH ?= $(E2E_DATA_DIR)/config.yaml
+
+E2E_GINKGO_PARALLEL ?= 2
+E2E_ARGS ?=
+E2E_GINKGO_FOCUS ?=
+E2E_GINKGO_SKIP ?=
+
+ifneq ($(strip $(E2E_GINKGO_SKIP)),)
+_SKIP_ARGS := $(foreach arg,$(strip $(E2E_GINKGO_SKIP)),-skip="$(arg)")
+endif
+
+.PHONY: e2e-image
+e2e-image: IMG = ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e ## Build controller image for e2e tests
+e2e-image: docker-build
+
+E2E_DATA_DIR ?= $(REPO_ROOT)/test/e2e/data
+ARTIFACTS ?= $(REPO_ROOT)/_artifacts
+
+E2E_GINKGO_ARGS ?=
+.PHONY: test-e2e
+test-e2e: $(GINKGO) ## Run e2e tests
+	time $(GINKGO) \
+		-tags=e2e \
+		-fail-fast -timeout=3h \
+		-v -show-node-events -trace \
+		-nodes=$(E2E_GINKGO_PARALLEL) \
+		-focus="$(E2E_GINKGO_FOCUS)" $(_SKIP_ARGS) \
+		-output-dir="$(ARTIFACTS)" -github-output -junit-report=junit.e2e_suite.1.xml \
+		$(E2E_GINKGO_ARGS) \
+		./test/e2e/suites/e2e/... -- \
+			-config-path="$(E2E_CONFIG_PATH)" \
+			-artifacts-folder="$(ARTIFACTS)" \
+			-data-folder="$(E2E_DATA_DIR)" \
+			$(E2E_ARGS)
 
 ##@ Build
 
@@ -181,6 +205,7 @@ KUSTOMIZE ?= $(LOCALBIN)/kustomize
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
+GINKGO = $(LOCALBIN)/ginkgo
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v5.5.0
@@ -207,6 +232,11 @@ $(ENVTEST): $(LOCALBIN)
 golangci-lint: $(GOLANGCI_LINT) ## Download golangci-lint locally if necessary.
 $(GOLANGCI_LINT): $(LOCALBIN)
 	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION))
+
+.PHONY: ginkgo
+ginkgo: $(GINKGO) ## Download ginkgo locally if necessary.
+$(GINKGO): $(LOCALBIN)
+	go build -o $@ github.com/onsi/ginkgo/v2/ginkgo
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist
 # $1 - target path with name of binary

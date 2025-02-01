@@ -32,3 +32,7 @@ dist/*
 # documentation
 hack/tools/bin
 docs/book/book
+
+# Test output and artifacts from ginkgo e2e tests
+/junit*.xml
+/_artifacts/

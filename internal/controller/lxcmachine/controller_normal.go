@@ -97,7 +97,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		return ctrl.Result{}, fmt.Errorf("failed to patch LXCMachine: %w", err)
 	}
 
-	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, lxcCluster, cloudInit)
+	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, cluster, lxcCluster, cloudInit)
 	if err != nil {
 		if incus.IsTerminalError(err) {
 			log.FromContext(ctx).Error(err, "Fatal error while creating instance")
@@ -112,7 +112,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 	// update load balancer
 	if util.IsControlPlaneMachine(machine) && !lxcMachine.Status.LoadBalancerConfigured {
-		if err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Reconfigure(ctx); err != nil {
+		if err := lxcClient.LoadBalancerManagerForCluster(cluster, lxcCluster).Reconfigure(ctx); err != nil {
 			return ctrl.Result{}, fmt.Errorf("failed to update loadbalancer configuration: %w", err)
 		}
 		lxcMachine.Status.LoadBalancerConfigured = true

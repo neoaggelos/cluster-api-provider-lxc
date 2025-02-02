@@ -38,7 +38,7 @@ func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, cluster *clu
 	// If the deleted machine is a control-plane node, remove it from the load balancer configuration (unless the cluster is getting deleted)
 	if util.IsControlPlaneMachine(machine) && cluster.ObjectMeta.DeletionTimestamp.IsZero() {
 		log.FromContext(ctx).Info("Reconfigure load balancer after removing control plane machine")
-		if err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Reconfigure(ctx); err != nil {
+		if err := lxcClient.LoadBalancerManagerForCluster(cluster, lxcCluster).Reconfigure(ctx); err != nil {
 			return fmt.Errorf("failed to reconfigure load balancer after removing control plane node: %w", err)
 		}
 	}

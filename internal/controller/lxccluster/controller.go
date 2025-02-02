@@ -129,7 +129,7 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 
 	// Handle non-deleted clusters
-	return ctrl.Result{}, r.reconcileNormal(ctx, lxcCluster, lxcClient)
+	return ctrl.Result{}, r.reconcileNormal(ctx, cluster, lxcCluster, lxcClient)
 }
 
 // SetupWithManager sets up the controller with the Manager.

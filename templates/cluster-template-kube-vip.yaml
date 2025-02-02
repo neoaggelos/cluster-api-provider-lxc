@@ -63,11 +63,6 @@ spec:
     #   if [ -f /run/kubeadm/kubeadm.yaml ]; then
     #     sed -i 's#path: /etc/kubernetes/super-admin.conf#path: /etc/kubernetes/admin.conf#' /etc/kubernetes/manifests/kube-vip.yaml
     #   fi
-    clusterConfiguration:
-      apiServer:
-        certSANs:
-        - localhost
-        - 127.0.0.1
     initConfiguration:
       nodeRegistration:
         kubeletExtraArgs:
@@ -169,7 +164,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: "${CLUSTER_NAME}-control-plane"
+  name: ${CLUSTER_NAME}-control-plane
 spec:
   template:
     spec:
@@ -205,7 +200,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: "${CLUSTER_NAME}-md-0"
+  name: ${CLUSTER_NAME}-md-0
 spec:
   template:
     spec:

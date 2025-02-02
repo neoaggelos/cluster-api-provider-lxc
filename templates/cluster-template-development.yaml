@@ -51,11 +51,6 @@ spec:
       if systemd-detect-virt -c -q 2>/dev/null; then
         cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
       fi
-    clusterConfiguration:
-      apiServer:
-        certSANs:
-        - localhost
-        - 127.0.0.1
     initConfiguration:
       nodeRegistration:
         kubeletExtraArgs:
@@ -80,7 +75,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: "${CLUSTER_NAME}-control-plane"
+  name: ${CLUSTER_NAME}-control-plane
 spec:
   template:
     spec:
@@ -116,7 +111,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: "${CLUSTER_NAME}-md-0"
+  name: ${CLUSTER_NAME}-md-0
 spec:
   template:
     spec:

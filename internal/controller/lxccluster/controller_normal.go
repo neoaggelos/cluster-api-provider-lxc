@@ -14,7 +14,7 @@ import (
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/profile"
 )
 
-func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
+func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
 	// Create the default kubeadm profile for LXC containers
 	profileName := lxcCluster.GetProfileName()
 	if lxcCluster.Spec.SkipDefaultKubeadmProfile {
@@ -41,7 +41,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, lxcCluster *
 
 	// Create the container hosting the load balancer.
 	log.FromContext(ctx).Info("Creating load balancer")
-	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(lxcCluster).Create(ctx)
+	lbIPs, err := lxcClient.LoadBalancerManagerForCluster(cluster, lxcCluster).Create(ctx)
 	if err != nil {
 		log.FromContext(ctx).Error(err, "Failed to provision load balancer")
 		if incus.IsTerminalError(err) {

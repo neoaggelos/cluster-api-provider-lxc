@@ -126,17 +126,19 @@ func (o LXCLogCollector) CollectMachinePoolLog(_ context.Context, _ client.Clien
 }
 
 // CollectInfrastructureLogs is not yet implemented for the LXC provider.
-func (o LXCLogCollector) CollectInfrastructureLogs(ctx context.Context, managementClusterClient client.Client, c *clusterv1.Cluster, outputPath string) error {
-	Logf("Collecting logs for cluster %q and storing them in %q", c.ObjectMeta.Name, outputPath)
+func (o LXCLogCollector) CollectInfrastructureLogs(ctx context.Context, managementClusterClient client.Client, cluster *clusterv1.Cluster, outputPath string) error {
+	clusterName := types.NamespacedName{Name: cluster.Name, Namespace: cluster.Namespace}
+	Logf("Collecting logs for cluster %q and storing them in %q", clusterName, outputPath)
 
 	if err := os.MkdirAll(outputPath, 0o750); err != nil {
 		return fmt.Errorf("couldn't create directory %q for logs: %s", outputPath, err)
 	}
 
-	lxcClusterName := types.NamespacedName{Name: c.Spec.InfrastructureRef.Name, Namespace: c.Spec.InfrastructureRef.Namespace}
+	lxcClusterName := types.NamespacedName{Name: cluster.Spec.InfrastructureRef.Name, Namespace: cluster.Spec.InfrastructureRef.Namespace}
+
 	lxcCluster := &infrav1.LXCCluster{}
-	if err := managementClusterClient.Get(ctx, types.NamespacedName{Name: c.Spec.InfrastructureRef.Name, Namespace: c.Spec.InfrastructureRef.Namespace}, lxcCluster); err != nil {
-		return fmt.Errorf("failed to get LXCCluster %q for Cluster: %w", lxcClusterName, err)
+	if err := managementClusterClient.Get(ctx, lxcClusterName, lxcCluster); err != nil {
+		return fmt.Errorf("failed to get LXCCluster %q for Cluster %q: %w", lxcClusterName, clusterName, err)
 	}
 
 	client, err := incus.New(ctx, o.E2EContext.Settings.LXCClientOptions)
@@ -145,7 +147,7 @@ func (o LXCLogCollector) CollectInfrastructureLogs(ctx context.Context, manageme
 	}
 
 	var errs []error
-	for k, v := range client.LoadBalancerManagerForCluster(lxcCluster).Inspect(ctx) {
+	for k, v := range client.LoadBalancerManagerForCluster(cluster, lxcCluster).Inspect(ctx) {
 		if err := os.WriteFile(filepath.Join(outputPath, k), []byte(v), 0o600); err != nil {
 			errs = append(errs, fmt.Errorf("failed to write inspection file %v: %w", k, err))
 		}

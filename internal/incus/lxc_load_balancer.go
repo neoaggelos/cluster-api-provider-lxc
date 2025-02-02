@@ -3,6 +3,8 @@ package incus
 import (
 	"context"
 
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 )
 
@@ -22,13 +24,13 @@ type LoadBalancerManager interface {
 }
 
 // LoadBalancerManagerForCluster returns the proper LoadBalancerManager based on the lxcCluster spec.
-func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) LoadBalancerManager {
+func (c *Client) LoadBalancerManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster) LoadBalancerManager {
 	switch {
 	case lxcCluster.Spec.LoadBalancer.LXC != nil:
 		return &loadBalancerLXC{
 			lxcClient:        c,
-			clusterName:      lxcCluster.Name,
-			clusterNamespace: lxcCluster.Namespace,
+			clusterName:      cluster.Name,
+			clusterNamespace: cluster.Namespace,
 
 			name: lxcCluster.GetLoadBalancerInstanceName(),
 			spec: lxcCluster.Spec.LoadBalancer.LXC.InstanceSpec,
@@ -36,8 +38,8 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 	case lxcCluster.Spec.LoadBalancer.OCI != nil:
 		return &loadBalancerOCI{
 			lxcClient:        c,
-			clusterName:      lxcCluster.Name,
-			clusterNamespace: lxcCluster.Namespace,
+			clusterName:      cluster.Name,
+			clusterNamespace: cluster.Namespace,
 
 			name: lxcCluster.GetLoadBalancerInstanceName(),
 			spec: lxcCluster.Spec.LoadBalancer.OCI.InstanceSpec,
@@ -45,8 +47,8 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 	case lxcCluster.Spec.LoadBalancer.OVN != nil:
 		return &loadBalancerNetwork{
 			lxcClient:        c,
-			clusterName:      lxcCluster.Name,
-			clusterNamespace: lxcCluster.Namespace,
+			clusterName:      cluster.Name,
+			clusterNamespace: cluster.Namespace,
 
 			networkName:   lxcCluster.Spec.LoadBalancer.OVN.NetworkName,
 			listenAddress: lxcCluster.Spec.ControlPlaneEndpoint.Host,
@@ -54,8 +56,8 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 	case lxcCluster.Spec.LoadBalancer.External != nil:
 		return &loadBalancerExternal{
 			lxcClient:        c,
-			clusterName:      lxcCluster.Name,
-			clusterNamespace: lxcCluster.Namespace,
+			clusterName:      cluster.Name,
+			clusterNamespace: cluster.Namespace,
 
 			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
 		}
@@ -64,8 +66,8 @@ func (c *Client) LoadBalancerManagerForCluster(lxcCluster *infrav1.LXCCluster) L
 		// If only Go had enums.
 		return &loadBalancerExternal{
 			lxcClient:        c,
-			clusterName:      lxcCluster.Name,
-			clusterNamespace: lxcCluster.Namespace,
+			clusterName:      cluster.Name,
+			clusterNamespace: cluster.Namespace,
 
 			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
 		}

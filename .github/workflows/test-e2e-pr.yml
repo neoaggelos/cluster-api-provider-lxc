@@ -19,7 +19,7 @@ jobs:
           go-version: '~1.23'
 
       - name: Setup infrastructure
-        run: ./hack/ci/setup-${{ matrix.infrastructure }}.sh
+        run: ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
 
       - name: Build the e2e controller image
         run: make e2e-image

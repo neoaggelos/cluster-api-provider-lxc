@@ -84,7 +84,7 @@ func (o LXCLogCollector) CollectMachineLog(ctx context.Context, managementCluste
 		{name: "containerd.log", command: []string{"journalctl", "--no-pager", "-u", "containerd.service"}},
 		{name: "var-log-pods.tar.gz", command: []string{"bash", "-c", "tar cv /var/log/pods | gzip"}},
 		// container runtime
-		{name: "crictl-info-q.json", command: []string{"crictl", "info", "-q"}},
+		{name: "crictl-info.json", command: []string{"crictl", "info"}},
 		{name: "crictl-ps-a.log", command: []string{"crictl", "ps", "-a"}},
 		{name: "crictl-pods.log", command: []string{"crictl", "pods"}},
 	}

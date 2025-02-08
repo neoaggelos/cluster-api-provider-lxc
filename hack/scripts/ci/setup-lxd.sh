@@ -25,19 +25,5 @@ if ! lxc remote switch local-https; then
   lxc remote set-default local-https
 fi
 
-# Write Kubernetes secret to top-level dir, ci-lxc-secret.yaml
-echo "
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ci-lxc-secret
-data:
-  project: '$(echo default | base64 -w0)'
-  server: '$(echo "https://$(lxc config get core.https_address)" | base64 -w0)'
-  server-crt: '$(sudo cat /var/snap/lxd/common/lxd/cluster.crt | base64 -w0)'
-  client-crt: '$(cat ~/snap/lxd/common/config/client.crt | base64 -w0)'
-  client-key: '$(cat ~/snap/lxd/common/config/client.key | base64 -w0)'
-" | tee "${DIR}/../../ci-lxc-secret.yaml"
-
 # Do not drop instance traffic
 sudo iptables -P FORWARD ACCEPT

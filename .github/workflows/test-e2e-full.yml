@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   test-e2e:
@@ -22,7 +23,7 @@ jobs:
 
       - name: Setup infrastructure
         run: |
-          ./hack/ci/setup-${{ matrix.infrastructure }}.sh
+          ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
 
       - name: Build the e2e controller image
         run: |

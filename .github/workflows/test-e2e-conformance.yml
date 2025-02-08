@@ -1,0 +1,42 @@
+name: End to End Tests [Conformance]
+
+on:
+  workflow_dispatch:
+  pull_request:    ## TODO: remove after validating
+  release:
+    types:
+      - created
+
+jobs:
+  test-e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        infrastructure: [lxd, incus]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '~1.23'
+
+      - name: Setup infrastructure
+        run: |
+          ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
+
+      - name: Build the e2e controller image
+        run: |
+          make e2e-image
+
+      - name: Run e2e tests
+        run: |
+          make test-conformance
+
+      - name: Upload e2e artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artifacts-${{ matrix.infrastructure }}
+          path: _artifacts

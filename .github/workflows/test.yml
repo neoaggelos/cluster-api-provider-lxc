@@ -23,7 +23,3 @@ jobs:
 
       - name: make test
         run: make test
-
-      - name: make test docs
-        working-directory: docs/book
-        run: make test

@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha2
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -247,7 +249,17 @@ func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
 
 // GetLoadBalancerInstanceName returns the instance name for the cluster load balancer.
 func (c *LXCCluster) GetLoadBalancerInstanceName() string {
-	return fmt.Sprintf("%s-%s-lb", c.Namespace, c.Name)
+	// NOTE(neoaggelos): use first 5 chars of hex encoded sha256 sum of the namespace name.
+	// This is because LXC instance names are limited to 63 characters.
+	//
+	// TODO(neoaggelos): in the future, consider using a generated name and metadata properties
+	// to match the load balancer instance instead, such that we do not rely on magic instance names.
+	// Load Balancer instances already have the following properties:
+	//    user.cluster-name = Cluster.Name
+	//    user.cluster-namespace = Cluster.Namespace
+	//    user.role = "loadbalancer"
+	hash := sha256.Sum256([]byte(c.Namespace))
+	return fmt.Sprintf("%s-%s-lb", c.Name, hex.EncodeToString(hash[:3])[:5])
 }
 
 // GetProfileName returns the profile name for the cluster LXC machines.

@@ -41,6 +41,7 @@ const (
 	LXCSecretName = "LXC_SECRET_NAME"
 
 	FlavorDevelopment = "development"
+	FlavorUbuntu      = "ubuntu"
 
 	FlavorDefault = FlavorDevelopment
 )

@@ -80,4 +80,4 @@ fi
 systemctl enable kubelet.service
 
 # pull images
-kubeadm config images pull
+kubeadm config images pull --kubernetes-version "${KUBERNETES_VERSION}"

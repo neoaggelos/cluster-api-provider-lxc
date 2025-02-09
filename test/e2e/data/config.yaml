@@ -68,6 +68,7 @@ providers:
     - sourcePath: "../data/shared/v1beta1_provider/metadata.yaml"
     # add cluster templates
     - sourcePath: "../../../templates/cluster-template-development.yaml"
+    - sourcePath: "../../../templates/cluster-template-ubuntu.yaml"
     replacements:
     - old: ghcr.io/neoaggelos/cluster-api-provider-lxc:latest
       new: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e

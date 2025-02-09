@@ -48,6 +48,27 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 			}
 		})
 	})
+	Context("Ubuntu", func() {
+		BeforeEach(func() {
+			e2eCtx.OverrideVariables(map[string]string{
+				"LXC_IMAGE_NAME": "ubuntu:24.04",
+			})
+		})
+		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+			return e2e.QuickStartSpecInput{
+				E2EConfig:                e2eCtx.E2EConfig,
+				ClusterctlConfigPath:     e2eCtx.Environment.ClusterctlConfigPath,
+				BootstrapClusterProxy:    e2eCtx.Environment.BootstrapClusterProxy,
+				ArtifactFolder:           e2eCtx.Settings.ArtifactFolder,
+				Flavor:                   ptr.To(shared.FlavorUbuntu),
+				SkipCleanup:              e2eCtx.Settings.SkipCleanup,
+				ControlPlaneMachineCount: ptr.To[int64](1),
+				WorkerMachineCount:       ptr.To[int64](1),
+				PostNamespaceCreated:     e2eCtx.DefaultPostNamespaceCreated(),
+				ControlPlaneWaiters:      e2eCtx.DefaultControlPlaneWaiters(),
+			}
+		})
+	})
 	Context("OCI", func() {
 		BeforeEach(func() {
 			client, err := incus.New(context.TODO(), e2eCtx.Settings.LXCClientOptions)

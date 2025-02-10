@@ -2,9 +2,10 @@ name: End to End Tests [Conformance]
 
 on:
   workflow_dispatch:
-  release:
-    types:
-      - created
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
 
 jobs:
   test-e2e:
@@ -25,6 +26,7 @@ jobs:
         run: |
           ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
 
+      # NOTE(neoaggelos): for tags, we should use the released controller image instead of building from source
       - name: Build the e2e controller image
         run: |
           make e2e-image

@@ -1,0 +1,755 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: ClusterClass
+metadata:
+  name: lxc-default
+spec:
+  controlPlane:
+    ref:
+      apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+      kind: KubeadmControlPlaneTemplate
+      name: lxc-default-control-plane
+    machineInfrastructure:
+      ref:
+        kind: LXCMachineTemplate
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+        name: lxc-default-control-plane
+    # machineHealthCheck:
+    #   unhealthyConditions:
+    #     - type: Ready
+    #       status: Unknown
+    #       timeout: 300s
+    #     - type: Ready
+    #       status: "False"
+    #       timeout: 300s
+  infrastructure:
+    ref:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+      kind: LXCClusterTemplate
+      name: lxc-default-lxc-cluster
+  workers:
+    machineDeployments:
+    - class: default-worker
+      template:
+        bootstrap:
+          ref:
+            apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+            kind: KubeadmConfigTemplate
+            name: lxc-default-default-worker
+        infrastructure:
+          ref:
+            apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+            kind: LXCMachineTemplate
+            name: lxc-default-default-worker
+      # machineHealthCheck:
+      #   unhealthyConditions:
+      #     - type: Ready
+      #       status: Unknown
+      #       timeout: 300s
+      #     - type: Ready
+      #       status: "False"
+      #       timeout: 300s
+  variables:
+  - name: secretRef
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+        example: lxc-secret
+        description: Name of secret with infrastructure credentials
+  - name: loadBalancer
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          lxc:
+            type: object
+            description: Launch an LXC instance running haproxy as load balancer (development)
+            properties:
+              flavor:
+                description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
+                type: string
+              profiles:
+                description: List of profiles to apply on the instance
+                type: array
+                items:
+                  type: string
+          oci:
+            type: object
+            description: Launch an OCI instance running haproxy as load balancer (development)
+            properties:
+              flavor:
+                type: string
+                description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
+              profiles:
+                type: array
+                description: List of profiles to apply on the instance
+                items:
+                  type: string
+          kube-vip:
+            type: object
+            description: Deploy kube-vip on the control plane nodes
+            required: [host]
+            properties:
+              host:
+                type: string
+                description: The address to use with kube-vip
+                example: 10.100.42.1
+              interface:
+                type: string
+                description: Bind the VIP address on a specific interface
+                example: eth0
+          ovn:
+            type: object
+            description: Create an OVN network load balancer
+            required: [host, networkName]
+            properties:
+              networkName:
+                type: string
+                description: Name of the OVN network where the load balancer will be created
+                example: ovn0
+              host:
+                type: string
+                description: IP address for the OVN Network Load Balancer
+                example: 10.100.42.1
+        maxProperties: 1
+        minProperties: 1
+        # oneOf:
+        #   - required: ["lxc"]
+        #   - required: ["oci"]
+        #   - required: ["kube-vip"]
+        #   - required: ["ovn"]
+  - name: instanceImage
+    schema:
+      openAPIV3Schema:
+        type: string
+        description: Override the image to use for provisioning nodes.
+        default: ""
+  - name: instanceType
+    schema:
+      openAPIV3Schema:
+        description: One of 'container' or 'virtual-machine'.
+        type: string
+        enum:
+        - container
+        - virtual-machine
+        - ""
+  - name: instanceFlavor
+    schema:
+      openAPIV3Schema:
+        type: string
+        description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
+  - name: instanceProfiles
+    schema:
+      openAPIV3Schema:
+        type: array
+        items:
+          type: string
+        description: List of profiles to apply on the instance
+  - name: instanceInstallKubeadm
+    schema:
+      openAPIV3Schema:
+        type: boolean
+        default: false
+        description: Inject preKubeadmCommands that install Kubeadm on the instance. This is useful if using a plain Ubuntu instance.
+  - name: etcdImageTag
+    schema:
+      openAPIV3Schema:
+        type: string
+        default: ""
+        example: 3.5.16-0
+        description: etcdImageTag sets the tag for the etcd image.
+  - name: coreDNSImageTag
+    schema:
+      openAPIV3Schema:
+        type: string
+        default: ""
+        example: v1.11.3
+        description: coreDNSImageTag sets the tag for the coreDNS image.
+  - name: deployKubeFlannel
+    schema:
+      openAPIV3Schema:
+        type: boolean
+        default: false
+        description: Deploy the kube-flannel CNI on the cluster.
+  patches:
+  - name: lxcCluster
+    description: LXCCluster configuration
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+        kind: LXCClusterTemplate
+        matchResources:
+          infrastructureCluster: true
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec
+        valueFrom:
+          template: |
+            secretRef:
+              name: {{ .secretRef | quote }}
+
+            {{ if hasKey .loadBalancer "lxc" }}
+            loadBalancer:
+              lxc:
+                instanceSpec: {{ if and (not .loadBalancer.lxc.flavor) (not .loadBalancer.lxc.profiles) }}{}{{ end }}
+            {{ if .loadBalancer.lxc.flavor }}
+                  flavor: {{ .loadBalancer.lxc.flavor }}
+            {{ end }}
+            {{ if .loadBalancer.lxc.profiles }}
+                  profiles: {{ .loadBalancer.lxc.profiles | toJson }}
+            {{ end }}
+            {{ end }}
+            {{ if hasKey .loadBalancer "oci" }}
+            loadBalancer:
+              oci:
+                instanceSpec: {{ if and (not .loadBalancer.oci.flavor) (not .loadBalancer.oci.profiles) }}{}{{ end }}
+            {{ if .loadBalancer.oci.flavor }}
+                  flavor: {{ .loadBalancer.oci.flavor }}
+            {{ end }}
+            {{ if .loadBalancer.oci.profiles }}
+                  profiles: {{ .loadBalancer.oci.profiles | toJson }}
+            {{ end }}
+            {{ end }}
+            {{ if hasKey .loadBalancer "ovn" }}
+            loadBalancer:
+              ovn:
+                networkName: {{ .loadBalancer.ovn.networkName | quote }}
+            controlPlaneEndpoint:
+              host: {{ .loadBalancer.ovn.host | quote }}
+              port: 6443
+            {{ end }}
+            {{ if hasKey .loadBalancer "kube-vip" }}
+            loadBalancer:
+              external: {}
+            controlPlaneEndpoint:
+              host: {{ index .loadBalancer "kube-vip" "host" | quote }}
+              port: 6443
+            {{ end }}
+  - name: controlPlaneKubeVIP
+    description: Kube-VIP static pod manifests
+    enabledIf: |
+      {{ hasKey .loadBalancer "kube-vip" }}
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/preKubeadmCommands/-
+        # Workaround for https://github.com/kube-vip/kube-vip/issues/684, see https://github.com/kube-vip/kube-vip/issues/684#issuecomment-1883955927
+        value: |
+          if [ -f /run/kubeadm/kubeadm.yaml ]; then
+            sed -i 's#path: /etc/kubernetes/admin.conf#path: /etc/kubernetes/super-admin.conf#' /etc/kubernetes/manifests/kube-vip.yaml
+          fi
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/files/-
+        valueFrom:
+          template: |
+            owner: root:root
+            path: /etc/kubernetes/manifests/kube-vip.yaml
+            permissions: "0644"
+            content: |
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                name: kube-vip
+                namespace: kube-system
+              spec:
+                containers:
+                - args:
+                  - manager
+                  env:
+                  - name: vip_arp
+                    value: "true"
+                  - name: port
+                    value: "6443"
+                  - name: vip_interface
+                    value: {{ if ( index .loadBalancer "kube-vip" "interface" ) }}{{ index .loadBalancer "kube-vip" "interface" | quote }}{{ else }}""{{ end }}
+                  - name: vip_cidr
+                    value: "32"
+                  - name: cp_enable
+                    value: "true"
+                  - name: cp_namespace
+                    value: kube-system
+                  - name: vip_ddns
+                    value: "false"
+                  - name: svc_enable
+                    value: "true"
+                  - name: svc_leasename
+                    value: plndr-svcs-lock
+                  - name: svc_election
+                    value: "true"
+                  - name: vip_leaderelection
+                    value: "true"
+                  - name: vip_leasename
+                    value: plndr-cp-lock
+                  - name: vip_leaseduration
+                    value: "15"
+                  - name: vip_renewdeadline
+                    value: "10"
+                  - name: vip_retryperiod
+                    value: "2"
+                  - name: address
+                    value: {{ index .loadBalancer "kube-vip" "host" | quote }}
+                  - name: prometheus_server
+                    value: :2112
+                  image: ghcr.io/kube-vip/kube-vip:v0.6.4
+                  imagePullPolicy: IfNotPresent
+                  name: kube-vip
+                  resources: {}
+                  securityContext:
+                    capabilities:
+                      add:
+                      - NET_ADMIN
+                      - NET_RAW
+                  volumeMounts:
+                  - mountPath: /etc/kubernetes/admin.conf
+                    name: kubeconfig
+                  - mountPath: /etc/hosts
+                    name: etchosts
+                hostNetwork: true
+                volumes:
+                - hostPath:
+                    path: /etc/kubernetes/admin.conf
+                  name: kubeconfig
+                - hostPath:
+                    path: /etc/kube-vip.hosts
+                    type: File
+                  name: etchosts
+              status: {}
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/files/-
+        valueFrom:
+          template: |
+            content: 127.0.0.1 localhost kubernetes
+            owner: root:root
+            path: /etc/kube-vip.hosts
+            permissions: "0644"
+  - name: controlPlaneKubeFlannel
+    enabledIf: "{{ .deployKubeFlannel }}"
+    description: Inject kube-flannel deploy steps for ControlPlane
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/postKubeadmCommands/-
+        value: |
+          if [ -f /run/kubeadm/kubeadm.yaml ]; then
+            kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /run/kubeadm/kube-flannel.yaml
+          fi
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/files/-
+        valueFrom:
+          template: |
+            owner: root:root
+            path: /run/kubeadm/kube-flannel.yaml
+            permissions: "0644"
+            content: |
+              # Sourced from: https://github.com/flannel-io/flannel/releases/download/v0.26.3/kube-flannel.yml
+              # Replace 10.244.0.0/16 with {{ index .builtin.cluster.network.pods 0 }}
+
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                labels:
+                  k8s-app: flannel
+                  pod-security.kubernetes.io/enforce: privileged
+                name: kube-flannel
+              ---
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                labels:
+                  k8s-app: flannel
+                name: flannel
+                namespace: kube-flannel
+              ---
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: ClusterRole
+              metadata:
+                labels:
+                  k8s-app: flannel
+                name: flannel
+              rules:
+              - apiGroups:
+                - ""
+                resources:
+                - pods
+                verbs:
+                - get
+              - apiGroups:
+                - ""
+                resources:
+                - nodes
+                verbs:
+                - get
+                - list
+                - watch
+              - apiGroups:
+                - ""
+                resources:
+                - nodes/status
+                verbs:
+                - patch
+              ---
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: ClusterRoleBinding
+              metadata:
+                labels:
+                  k8s-app: flannel
+                name: flannel
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: flannel
+              subjects:
+              - kind: ServiceAccount
+                name: flannel
+                namespace: kube-flannel
+              ---
+              apiVersion: v1
+              data:
+                cni-conf.json: |
+                  {
+                    "name": "cbr0",
+                    "cniVersion": "0.3.1",
+                    "plugins": [
+                      {
+                        "type": "flannel",
+                        "delegate": {
+                          "hairpinMode": true,
+                          "isDefaultGateway": true
+                        }
+                      },
+                      {
+                        "type": "portmap",
+                        "capabilities": {
+                          "portMappings": true
+                        }
+                      }
+                    ]
+                  }
+                net-conf.json: |
+                  {
+                    "Network": "{{ index .builtin.cluster.network.pods 0 }}",
+                    "EnableNFTables": false,
+                    "Backend": {
+                      "Type": "vxlan"
+                    }
+                  }
+              kind: ConfigMap
+              metadata:
+                labels:
+                  app: flannel
+                  k8s-app: flannel
+                  tier: node
+                name: kube-flannel-cfg
+                namespace: kube-flannel
+              ---
+              apiVersion: apps/v1
+              kind: DaemonSet
+              metadata:
+                labels:
+                  app: flannel
+                  k8s-app: flannel
+                  tier: node
+                name: kube-flannel-ds
+                namespace: kube-flannel
+              spec:
+                selector:
+                  matchLabels:
+                    app: flannel
+                    k8s-app: flannel
+                template:
+                  metadata:
+                    labels:
+                      app: flannel
+                      k8s-app: flannel
+                      tier: node
+                  spec:
+                    affinity:
+                      nodeAffinity:
+                        requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                            - key: kubernetes.io/os
+                              operator: In
+                              values:
+                              - linux
+                    containers:
+                    - args:
+                      - --ip-masq
+                      - --kube-subnet-mgr
+                      command:
+                      - /opt/bin/flanneld
+                      env:
+                      - name: POD_NAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.name
+                      - name: POD_NAMESPACE
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.namespace
+                      - name: EVENT_QUEUE_DEPTH
+                        value: "5000"
+                      image: docker.io/flannel/flannel:v0.26.3
+                      name: kube-flannel
+                      resources:
+                        requests:
+                          cpu: 100m
+                          memory: 50Mi
+                      securityContext:
+                        capabilities:
+                          add:
+                          - NET_ADMIN
+                          - NET_RAW
+                        privileged: false
+                      volumeMounts:
+                      - mountPath: /run/flannel
+                        name: run
+                      - mountPath: /etc/kube-flannel/
+                        name: flannel-cfg
+                      - mountPath: /run/xtables.lock
+                        name: xtables-lock
+                    hostNetwork: true
+                    initContainers:
+                    - args:
+                      - -f
+                      - /flannel
+                      - /opt/cni/bin/flannel
+                      command:
+                      - cp
+                      image: docker.io/flannel/flannel-cni-plugin:v1.6.0-flannel1
+                      name: install-cni-plugin
+                      volumeMounts:
+                      - mountPath: /opt/cni/bin
+                        name: cni-plugin
+                    - args:
+                      - -f
+                      - /etc/kube-flannel/cni-conf.json
+                      - /etc/cni/net.d/10-flannel.conflist
+                      command:
+                      - cp
+                      image: docker.io/flannel/flannel:v0.26.3
+                      name: install-cni
+                      volumeMounts:
+                      - mountPath: /etc/cni/net.d
+                        name: cni
+                      - mountPath: /etc/kube-flannel/
+                        name: flannel-cfg
+                    priorityClassName: system-node-critical
+                    serviceAccountName: flannel
+                    tolerations:
+                    - effect: NoSchedule
+                      operator: Exists
+                    volumes:
+                    - hostPath:
+                        path: /run/flannel
+                      name: run
+                    - hostPath:
+                        path: /opt/cni/bin
+                      name: cni-plugin
+                    - hostPath:
+                        path: /etc/cni/net.d
+                      name: cni
+                    - configMap:
+                        name: kube-flannel-cfg
+                      name: flannel-cfg
+                    - hostPath:
+                        path: /run/xtables.lock
+                        type: FileOrCreate
+                      name: xtables-lock
+  - name: controlPlaneInstanceSpec
+    description: LXCMachineTemplate configuration for ControlPlane
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+        kind: LXCMachineTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec
+        valueFrom:
+          template: |
+            profiles: {{ .instanceProfiles | toJson }}
+            instanceType: {{ .instanceType | quote }}
+            flavor: {{ .instanceFlavor | quote }}
+            image:
+              name: {{ .instanceImage | quote }}
+  - name: workerInstanceSpec
+    description: LXCMachineTemplate configuration for MachineDeployments
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+        kind: LXCMachineTemplate
+        matchResources:
+          machineDeploymentClass:
+            names:
+            - default-worker
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec
+        valueFrom:
+          template: |
+            profiles: {{ .instanceProfiles | toJson }}
+            instanceType: {{ .instanceType | quote }}
+            flavor: {{ .instanceFlavor | quote }}
+            image:
+              name: {{ .instanceImage | quote }}
+  - name: workerInstallKubeadm
+    description: Inject install-kubeadm.sh script to MachineDeployments
+    enabledIf: "{{ .instanceInstallKubeadm }}"
+    definitions:
+    - selector:
+        apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+        kind: KubeadmConfigTemplate
+        matchResources:
+          machineDeploymentClass:
+            names:
+            - default-worker
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/preKubeadmCommands/-
+        valueFrom:
+          template: |
+            apt update && apt install curl -y && curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | bash -s -- {{ .builtin.machineDeployment.version }}
+  - name: controlPlaneInstallKubeadm
+    description: Inject install-kubeadm.sh script to KubeadmControlPlane
+    enabledIf: "{{ .instanceInstallKubeadm }}"
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/preKubeadmCommands/-
+        valueFrom:
+          template: |
+            apt update && apt install curl -y && curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | bash -s -- {{ .builtin.controlPlane.version }}
+  - name: etcdImageTag
+    description: Sets tag to use for the etcd image in the KubeadmControlPlane.
+    enabledIf: "{{ not (empty .etcdImageTag) }}"
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/kubeadmConfigSpec/clusterConfiguration/etcd
+        valueFrom:
+          template: |
+            local:
+              imageTag: {{ .etcdImageTag }}
+  - name: coreDNSImageTag
+    description: Sets tag to use for the CoreDNS image in the KubeadmControlPlane.
+    enabledIf: "{{ not (empty .coreDNSImageTag) }}"
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: "/spec/template/spec/kubeadmConfigSpec/clusterConfiguration/dns"
+        valueFrom:
+          template: |
+            imageTag: {{ .coreDNSImageTag }}
+---
+kind: KubeadmControlPlaneTemplate
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+metadata:
+  name: lxc-default-control-plane
+spec:
+  template:
+    spec:
+      kubeadmConfigSpec:
+        clusterConfiguration: {}
+        initConfiguration:
+          nodeRegistration:
+            kubeletExtraArgs:
+              eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+              fail-swap-on: "false"
+        joinConfiguration:
+          nodeRegistration:
+            kubeletExtraArgs:
+              eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+              fail-swap-on: "false"
+        preKubeadmCommands:
+        - set -x
+        # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
+        - |
+          if systemd-detect-virt -c -q 2>/dev/null && [ -f /run/kubeadm/kubeadm.yaml ]; then
+            cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
+          fi
+        postKubeadmCommands:
+        - set -x
+        files:
+        - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
+          content: |
+            ---
+            kind: KubeProxyConfiguration
+            apiVersion: kubeproxy.config.k8s.io/v1alpha1
+            conntrack:
+              maxPerCore: 0
+          owner: root:root
+          permissions: "0444"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCClusterTemplate
+metadata:
+  name: lxc-default-lxc-cluster
+spec:
+  template:
+    spec:
+      loadBalancer:
+        lxc: {}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCMachineTemplate
+metadata:
+  name: lxc-default-control-plane
+spec:
+  template:
+    spec:
+      instanceType: container
+      flavor: ""
+      profiles: [default]
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCMachineTemplate
+metadata:
+  name: lxc-default-default-worker
+spec:
+  template:
+    spec:
+      instanceType: container
+      flavor: ""
+      profiles: [default]
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+kind: KubeadmConfigTemplate
+metadata:
+  name: lxc-default-default-worker
+spec:
+  template:
+    spec:
+      joinConfiguration:
+        nodeRegistration:
+          kubeletExtraArgs:
+            eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+            fail-swap-on: "false"
+      preKubeadmCommands:
+      - set -x

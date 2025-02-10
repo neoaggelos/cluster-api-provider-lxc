@@ -40,10 +40,7 @@ const (
 	// Name of secret for LXC credentials
 	LXCSecretName = "LXC_SECRET_NAME"
 
-	FlavorDevelopment = "development"
-	FlavorUbuntu      = "ubuntu"
-
-	FlavorDefault = FlavorDevelopment
+	FlavorDefault = ""
 )
 
 // DefaultScheme returns the default scheme to use for testing.

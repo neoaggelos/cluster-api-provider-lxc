@@ -40,7 +40,8 @@ jobs:
           files: |
             dist/infrastructure-components.yaml
             dist/metadata.yaml
-            dist/cluster-template-*.yaml
+            dist/cluster-template*.yaml
+            dist/clusterclass-*.yaml
           generate_release_notes: true
           draft: ${{ contains(github.ref_name, 'rc') }}
           prerelease: ${{ contains(github.ref_name, 'rc') }}

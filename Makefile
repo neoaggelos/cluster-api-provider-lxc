@@ -200,7 +200,8 @@ release: manifests generate kustomize ## Generate a consolidated YAML with CRDs 
 
 .PHONY: dist
 dist: release ## Generate release assets.
-	cp templates/cluster-template-*.yaml dist/
+	cp templates/clusterclass*.yaml dist/
+	cp templates/cluster-template*.yaml dist/
 	cp metadata.yaml dist/
 
 ##@ Deployment

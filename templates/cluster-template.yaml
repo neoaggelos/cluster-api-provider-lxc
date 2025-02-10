@@ -1,0 +1,62 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ${POD_CIDR:=[10.244.0.0/16]}
+    services:
+      cidrBlocks: ${SERVICE_CIDR:=[10.96.0.0/12]}
+    serviceDomain: cluster.local
+  topology:
+    class: lxc-default
+    version: ${KUBERNETES_VERSION}
+    controlPlane:
+      replicas: ${CONTROL_PLANE_MACHINE_COUNT:=1}
+    variables:
+    # Cluster configuration
+    - name: secretRef
+      value: ${LXC_SECRET_NAME}
+    - name: loadBalancer
+      value:
+        ${LOAD_BALANCER}
+
+        ## LOAD_BALANCER can be one of:
+        # lxc: {profiles: [default], flavor: c1-m1}
+        # oci: {profiles: [default], flavor: c1-m1}
+        # kube-vip: {host: 10.0.42.1}
+        # ovn: {host: 10.100.42.1, networkName: default}
+
+    # CNI
+    - name: deployKubeFlannel
+      value: ${DEPLOY_KUBE_FLANNEL:=false}
+
+    # Common instance configuration
+    - name: instanceImage
+      value: ${LXC_IMAGE_NAME:=""}
+    - name: instanceInstallKubeadm
+      value: ${INSTALL_KUBEADM:=false}
+
+    # Control plane instance configuration
+    - name: instanceFlavor
+      value: ${CONTROL_PLANE_MACHINE_FLAVOR:=c2-m2}
+    - name: instanceProfiles
+      value: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
+    - name: instanceType
+      value: ${CONTROL_PLANE_MACHINE_TYPE:=container}
+
+    workers:
+      machineDeployments:
+      - class: default-worker
+        name: md-0
+        replicas: ${WORKER_MACHINE_COUNT:=1}
+        variables:
+          overrides:
+          # Worker instance configuration
+          - name: instanceFlavor
+            value: ${WORKER_MACHINE_FLAVOR:=c2-m4}
+          - name: instanceProfiles
+            value: ${WORKER_MACHINE_PROFILES:=[default]}
+          - name: instanceType
+            value: ${WORKER_MACHINE_TYPE:=container}

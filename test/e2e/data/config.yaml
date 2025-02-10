@@ -66,9 +66,9 @@ providers:
     value: ../../../config/default
     files:
     - sourcePath: "../data/shared/v1beta1_provider/metadata.yaml"
-    # add cluster templates
-    - sourcePath: "../../../templates/cluster-template-development.yaml"
-    - sourcePath: "../../../templates/cluster-template-ubuntu.yaml"
+    # cluster template
+    - sourcePath: "../../../templates/clusterclass-lxc-default.yaml"
+    - sourcePath: "../../../templates/cluster-template.yaml"
     replacements:
     - old: ghcr.io/neoaggelos/cluster-api-provider-lxc:latest
       new: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e
@@ -91,6 +91,7 @@ variables:
   LXC_LOAD_REMOTE_NAME: ""
   LXC_SECRET_NAME: lxc-secret
 
+  LOAD_BALANCER: "lxc: {}"
   CONTROL_PLANE_MACHINE_FLAVOR: c2-m2
   CONTROL_PLANE_MACHINE_TYPE: container
   WORKER_MACHINE_FLAVOR: c2-m2
@@ -99,6 +100,7 @@ variables:
   KUBETEST_CONFIGURATION: ../../data/kubetest/conformance.yaml
   KUBETEST_GINKGO_NODES: "5"
 
+  CLUSTER_TOPOLOGY: "true"
   CAPI_DIAGNOSTICS_ADDRESS: ":8080"
   CAPI_INSECURE_DIAGNOSTICS: "true"
 

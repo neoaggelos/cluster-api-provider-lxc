@@ -42,6 +42,7 @@ const (
 
 	FlavorDefault     = ""
 	FlavorDevelopment = "development"
+	FlavorAutoscaler  = "autoscaler"
 )
 
 // DefaultScheme returns the default scheme to use for testing.

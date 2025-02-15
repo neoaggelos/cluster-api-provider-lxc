@@ -141,7 +141,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 	lxcClient, err := incus.New(ctx, incus.NewOptionsFromSecret(lxcSecret))
 	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to create incus client")
+		return ctrl.Result{}, fmt.Errorf("failed to create incus client: %w", err)
 	}
 
 	// Add finalizer first if not set to avoid the race condition between init and delete.

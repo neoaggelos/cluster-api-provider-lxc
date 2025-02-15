@@ -92,7 +92,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	conditions.MarkFalse(lxcCluster, infrav1.InstanceProvisionedCondition, infrav1.CreatingInstanceReason, clusterv1.ConditionSeverityInfo, "")
+	conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.CreatingInstanceReason, clusterv1.ConditionSeverityInfo, "")
 	if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to patch LXCMachine: %w", err)
 	}
@@ -103,6 +103,10 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 			log.FromContext(ctx).Error(err, "Fatal error while creating instance")
 			conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceProvisioningAbortedReason, clusterv1.ConditionSeverityError, "Failed to create instance: %s", err.Error())
 			return ctrl.Result{}, nil
+		}
+		if strings.HasSuffix(err.Error(), "context deadline exceeded") {
+			log.FromContext(ctx).Error(err, "Instance creation timed out, retrying in 10 seconds")
+			return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "Failed to create instance: %s", err.Error())
 		return ctrl.Result{}, fmt.Errorf("failed to create instance: %w", err)

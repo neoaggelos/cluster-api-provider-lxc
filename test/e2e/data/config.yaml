@@ -66,9 +66,9 @@ providers:
     value: ../../../config/default
     files:
     - sourcePath: "../data/shared/v1beta1_provider/metadata.yaml"
-    # cluster template
     - sourcePath: "../../../templates/clusterclass-lxc-default.yaml"
     - sourcePath: "../../../templates/cluster-template.yaml"
+    - sourcePath: "../../../templates/cluster-template-development.yaml"
     replacements:
     - old: ghcr.io/neoaggelos/cluster-api-provider-lxc:latest
       new: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e
@@ -81,9 +81,9 @@ providers:
 # allowing the same e2e config file to be re-used in different prow jobs e.g. each one with a K8s version permutation
 variables:
   KUBE_CONTEXT: kind-capl-e2e
-  KUBERNETES_VERSION: v1.32.1
+  KUBERNETES_VERSION: v1.32.2
   KUBERNETES_VERSION_UPGRADE_FROM: v1.31.5
-  KUBERNETES_VERSION_UPGRADE_TO: v1.32.1
+  KUBERNETES_VERSION_UPGRADE_TO: v1.32.2
 
   CNI: ../../data/cni/kube-flannel.yaml
 

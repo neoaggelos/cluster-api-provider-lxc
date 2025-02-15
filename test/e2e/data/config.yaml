@@ -69,6 +69,7 @@ providers:
     - sourcePath: "../../../templates/clusterclass-lxc-default.yaml"
     - sourcePath: "../../../templates/cluster-template.yaml"
     - sourcePath: "../../../templates/cluster-template-development.yaml"
+    - sourcePath: "../../../templates/cluster-template-autoscaler.yaml"
     replacements:
     - old: ghcr.io/neoaggelos/cluster-api-provider-lxc:latest
       new: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e
@@ -98,9 +99,14 @@ variables:
   WORKER_MACHINE_TYPE: container
   DEPLOY_KUBE_FLANNEL: "false"
 
+  # Conformance tests configuration
   KUBETEST_CONFIGURATION: ../../data/kubetest/conformance.yaml
   KUBETEST_GINKGO_NODES: "5"
 
+  # Autoscaler tests configuration
+  AUTOSCALER_WORKLOAD: ../../data/autoscaler/autoscaler-to-management-workload.yaml
+
+  # ClusterAPI providers configuration
   CLUSTER_TOPOLOGY: "true"
   CAPI_DIAGNOSTICS_ADDRESS: ":8080"
   CAPI_INSECURE_DIAGNOSTICS: "true"
@@ -124,3 +130,5 @@ intervals:
 
   default/wait-deployment-available: ["1m", "5s"]
   default/wait-machine-deleted: ["5m", "10s"]
+
+  default/wait-autoscaler: ["5m", "10s"]

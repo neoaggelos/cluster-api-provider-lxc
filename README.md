@@ -45,7 +45,7 @@ Rough steps for version v0.4.0:
 - [x] Add PR blocking CI pipelines.
 - [x] Publish v0.2.0 release with v1alpha2 APIs.
 - [x] Add e2e tests for cluster upgrades.
-- [ ] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
+- [x] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
 - [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
 - [ ] Write documentation with setting up a development environment.
 - [ ] Write documentation with common troubleshooting steps.

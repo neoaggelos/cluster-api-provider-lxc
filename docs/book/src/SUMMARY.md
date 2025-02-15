@@ -13,6 +13,7 @@
 ---
 
 - [Cluster Templates](./reference/templates/index.md)
+  - [Default](./reference/templates/default.md)
   - [Development](./reference/templates/development.md)
   - [Kube VIP](./reference/templates/kube-vip.md)
   - [OVN Load Balancer](./reference/templates/ovn.md)

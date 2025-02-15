@@ -118,39 +118,34 @@ spec:
         #   - required: ["oci"]
         #   - required: ["kube-vip"]
         #   - required: ["ovn"]
-  - name: instanceImage
+  - name: instance
     schema:
       openAPIV3Schema:
-        type: string
-        description: Override the image to use for provisioning nodes.
-        default: ""
-  - name: instanceType
-    schema:
-      openAPIV3Schema:
-        description: One of 'container' or 'virtual-machine'.
-        type: string
-        enum:
-        - container
-        - virtual-machine
-        - ""
-  - name: instanceFlavor
-    schema:
-      openAPIV3Schema:
-        type: string
-        description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
-  - name: instanceProfiles
-    schema:
-      openAPIV3Schema:
-        type: array
-        items:
-          type: string
-        description: List of profiles to apply on the instance
-  - name: instanceInstallKubeadm
-    schema:
-      openAPIV3Schema:
-        type: boolean
-        default: false
-        description: Inject preKubeadmCommands that install Kubeadm on the instance. This is useful if using a plain Ubuntu instance.
+        type: object
+        properties:
+          type:
+            description: One of 'container' or 'virtual-machine'.
+            type: string
+            enum:
+            - container
+            - virtual-machine
+            - ""
+          image:
+            type: string
+            description: Override the image to use for provisioning nodes.
+            default: ""
+          flavor:
+            type: string
+            description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
+          profiles:
+            type: array
+            items:
+              type: string
+            description: List of profiles to apply on the instance
+          installKubeadm:
+            type: boolean
+            default: false
+            description: Inject preKubeadmCommands that install Kubeadm on the instance. This is useful if using a plain Ubuntu image.
   - name: etcdImageTag
     schema:
       openAPIV3Schema:
@@ -579,11 +574,11 @@ spec:
         path: /spec/template/spec
         valueFrom:
           template: |
-            profiles: {{ .instanceProfiles | toJson }}
-            instanceType: {{ .instanceType | quote }}
-            flavor: {{ .instanceFlavor | quote }}
+            profiles: {{ .instance.profiles | toJson }}
+            instanceType: {{ .instance.type | quote }}
+            flavor: {{ .instance.flavor | quote }}
             image:
-              name: {{ .instanceImage | quote }}
+              name: {{ .instance.image | quote }}
   - name: workerInstanceSpec
     description: LXCMachineTemplate configuration for MachineDeployments
     definitions:
@@ -599,14 +594,14 @@ spec:
         path: /spec/template/spec
         valueFrom:
           template: |
-            profiles: {{ .instanceProfiles | toJson }}
-            instanceType: {{ .instanceType | quote }}
-            flavor: {{ .instanceFlavor | quote }}
+            profiles: {{ .instance.profiles | toJson }}
+            instanceType: {{ .instance.type | quote }}
+            flavor: {{ .instance.flavor | quote }}
             image:
-              name: {{ .instanceImage | quote }}
+              name: {{ .instance.image | quote }}
   - name: workerInstallKubeadm
     description: Inject install-kubeadm.sh script to MachineDeployments
-    enabledIf: "{{ .instanceInstallKubeadm }}"
+    enabledIf: "{{ .instance.installKubeadm }}"
     definitions:
     - selector:
         apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
@@ -623,7 +618,7 @@ spec:
             apt update && apt install curl -y && curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | bash -s -- {{ .builtin.machineDeployment.version }}
   - name: controlPlaneInstallKubeadm
     description: Inject install-kubeadm.sh script to KubeadmControlPlane
-    enabledIf: "{{ .instanceInstallKubeadm }}"
+    enabledIf: "{{ .instance.installKubeadm }}"
     definitions:
     - selector:
         apiVersion: controlplane.cluster.x-k8s.io/v1beta1

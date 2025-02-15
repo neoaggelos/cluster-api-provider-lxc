@@ -28,23 +28,18 @@ spec:
         # kube-vip: {host: 10.0.42.1}
         # ovn: {host: 10.100.42.1, networkName: default}
 
+    # Control plane instance configuration
+    - name: instance
+      value:
+        type: ${CONTROL_PLANE_MACHINE_TYPE:=container}
+        flavor: ${CONTROL_PLANE_MACHINE_FLAVOR:=c2-m4}
+        profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
+        image: ${LXC_IMAGE_NAME:=""}
+        installKubeadm: ${INSTALL_KUBEADM:=false}
+
     # CNI
     - name: deployKubeFlannel
       value: ${DEPLOY_KUBE_FLANNEL:=false}
-
-    # Common instance configuration
-    - name: instanceImage
-      value: ${LXC_IMAGE_NAME:=""}
-    - name: instanceInstallKubeadm
-      value: ${INSTALL_KUBEADM:=false}
-
-    # Control plane instance configuration
-    - name: instanceFlavor
-      value: ${CONTROL_PLANE_MACHINE_FLAVOR:=c2-m2}
-    - name: instanceProfiles
-      value: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
-    - name: instanceType
-      value: ${CONTROL_PLANE_MACHINE_TYPE:=container}
 
     workers:
       machineDeployments:
@@ -54,9 +49,10 @@ spec:
         variables:
           overrides:
           # Worker instance configuration
-          - name: instanceFlavor
-            value: ${WORKER_MACHINE_FLAVOR:=c2-m4}
-          - name: instanceProfiles
-            value: ${WORKER_MACHINE_PROFILES:=[default]}
-          - name: instanceType
-            value: ${WORKER_MACHINE_TYPE:=container}
+          - name: instance
+            value:
+              type: ${WORKER_MACHINE_TYPE:=container}
+              flavor: ${WORKER_MACHINE_FLAVOR:=c2-m4}
+              profiles: ${WORKER_MACHINE_PROFILES:=[default]}
+              image: ${LXC_IMAGE_NAME:=""}
+              installKubeadm: ${INSTALL_KUBEADM:=false}

@@ -96,6 +96,7 @@ variables:
   CONTROL_PLANE_MACHINE_TYPE: container
   WORKER_MACHINE_FLAVOR: c2-m2
   WORKER_MACHINE_TYPE: container
+  DEPLOY_KUBE_FLANNEL: "false"
 
   KUBETEST_CONFIGURATION: ../../data/kubetest/conformance.yaml
   KUBETEST_GINKGO_NODES: "5"

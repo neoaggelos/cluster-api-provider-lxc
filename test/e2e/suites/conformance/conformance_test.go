@@ -23,7 +23,7 @@ var _ = Describe("Conformance", Label("conformance"), func() {
 			PostNamespaceCreated:  e2eCtx.DefaultPostNamespaceCreated(),
 			ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 
-			Flavor: shared.FlavorDevelopment,
+			Flavor: shared.FlavorDefault,
 		}
 	})
 })

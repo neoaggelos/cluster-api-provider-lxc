@@ -53,8 +53,9 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 	Context("Ubuntu", func() {
 		BeforeEach(func() {
 			e2eCtx.OverrideVariables(map[string]string{
-				"LXC_IMAGE_NAME":  "ubuntu:24.04",
-				"INSTALL_KUBEADM": "true",
+				"KUBERNETES_VERSION": "v1.31.4", // Kubernetes version without pre-built images
+				"LXC_IMAGE_NAME":     "ubuntu:24.04",
+				"INSTALL_KUBEADM":    "true",
 			})
 		})
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {

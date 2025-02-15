@@ -22,8 +22,8 @@ var _ = Describe("ClusterUpgrade", func() {
 				BootstrapClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
 				ArtifactFolder:        e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:           e2eCtx.Settings.SkipCleanup,
-				ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 				PostNamespaceCreated:  e2eCtx.DefaultPostNamespaceCreated(),
+				ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 
 				Flavor: ptr.To(shared.FlavorDefault),
 
@@ -39,8 +39,8 @@ var _ = Describe("ClusterUpgrade", func() {
 				BootstrapClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
 				ArtifactFolder:        e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:           e2eCtx.Settings.SkipCleanup,
-				ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 				PostNamespaceCreated:  e2eCtx.DefaultPostNamespaceCreated(),
+				ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),

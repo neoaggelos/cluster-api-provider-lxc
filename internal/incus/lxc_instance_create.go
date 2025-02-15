@@ -111,12 +111,12 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 
 	if err := c.ensureInstanceRunning(ctx, name); err != nil {
-		return nil, fmt.Errorf("failed to ensure loadbalancer instance is running: %w", err)
+		return nil, fmt.Errorf("failed to ensure instance is running: %w", err)
 	}
 
 	addrs, err := c.waitForInstanceAddress(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get loadbalancer instance address: %w", err)
+		return nil, fmt.Errorf("failed to get instance address: %w", err)
 	}
 	return addrs, nil
 }

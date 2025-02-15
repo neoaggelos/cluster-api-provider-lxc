@@ -1,0 +1,37 @@
+## Cluster version and size
+export KUBERNETES_VERSION=v1.32.0
+export CONTROL_PLANE_MACHINE_COUNT=1
+export WORKER_MACHINE_COUNT=1
+
+## [required] Name of secret with server credentials
+#export LXC_SECRET_NAME=lxc-secret
+
+## [required] Load Balancer configuration
+#export LOAD_BALANCER="lxc: {profiles: [default], flavor: c1-m1}"
+#export LOAD_BALANCER="oci: {profiles: [default], flavor: c1-m1}"
+#export LOAD_BALANCER="kube-vip: {host: 10.0.42.1}"
+#export LOAD_BALANCER="ovn: {host: 10.100.42.1, networkName: default}"
+
+## [optional] Deploy kube-flannel on the cluster.
+#export DEPLOY_KUBE_FLANNEL=true
+
+## [optional] Base image to use. This must be set if there are no base images for your Kubernetes version.
+## See https://neoaggelos.github.io/cluster-api-provider-lxc/reference/default-simplestreams-server.html#provided-images
+##
+## You can use `ubuntu:VERSION`, which resolves to:
+## - Incus:  Image `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
+## - LXD:    Image `VERSION` from https://cloud-images.ubuntu.com/releases
+##
+## Set INSTALL_KUBEADM=true to inject preKubeadmCommands to install kubeadm for the cluster Kubernetes version.
+#export LXC_IMAGE_NAME="ubuntu:24.04"
+#export INSTALL_KUBEADM="true"
+
+## Control plane machine configuration
+export CONTROL_PLANE_MACHINE_TYPE=container     # 'container' or 'virtual-machine'
+export CONTROL_PLANE_MACHINE_PROFILES=[default] # profiles for control plane nodes
+export CONTROL_PLANE_MACHINE_FLAVOR=c2-m4       # instance type for control plane nodes
+
+## Worker machine configuration
+export WORKER_MACHINE_TYPE=container            # 'container' or 'virtual-machine'
+export WORKER_MACHINE_PROFILES=[default]        # profiles for worker nodes
+export WORKER_MACHINE_FLAVOR=c2-m4              # instance type for worker nodes

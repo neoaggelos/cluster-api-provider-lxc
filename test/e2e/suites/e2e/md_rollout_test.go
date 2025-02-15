@@ -20,10 +20,10 @@ var _ = Describe("MDRollout", Label("full"), func() {
 			BootstrapClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
 			ArtifactFolder:        e2eCtx.Settings.ArtifactFolder,
 			SkipCleanup:           e2eCtx.Settings.SkipCleanup,
+			PostNamespaceCreated:  e2eCtx.DefaultPostNamespaceCreated(),
+			ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 
-			Flavor:               shared.FlavorDevelopment,
-			ControlPlaneWaiters:  e2eCtx.DefaultControlPlaneWaiters(),
-			PostNamespaceCreated: e2eCtx.DefaultPostNamespaceCreated(),
+			Flavor: shared.FlavorDevelopment,
 		}
 	})
 })

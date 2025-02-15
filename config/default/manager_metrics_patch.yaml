@@ -1,7 +1,7 @@
 # This patch adds the args to allow exposing the metrics endpoint using HTTPS
 - op: add
   path: /spec/template/spec/containers/0/args/0
-  value: --diagnostics-address=${CAPI_DIAGNOSTICS_ADDRESS:=8443}
+  value: --diagnostics-address=${CAPI_DIAGNOSTICS_ADDRESS:=:8443}
 - op: add
   path: /spec/template/spec/containers/0/args/0
   value: --insecure-diagnostics=${CAPI_INSECURE_DIAGNOSTICS:=false}

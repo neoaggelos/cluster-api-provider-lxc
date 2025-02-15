@@ -48,9 +48,12 @@ sudo kind create cluster --kubeconfig ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
 
-Initialize kind cluster as a ClusterAPI management cluster with:
+Initialize kind cluster as a ClusterAPI management cluster:
 
 ```bash
+# Enable the ClusterTopology feature gate
+export CLUSTER_TOPOLOGY=true
+
 clusterctl init
 ```
 
@@ -103,7 +106,7 @@ Generate a Kubernetes secret `lxc-secret` with credentials to access the Incus H
 ```bash
 kubectl create secret generic lxc-secret \
   --from-literal=server="https://$(incus config get core.https_address)" \
-  --from-literal=server-crt="$(sudo cat /var/lib/incus/cluster.crt)" \
+  --from-literal=server-crt="$(cat ~/.config/incus/servercerts/local-https.crt)" \
   --from-literal=client-crt="$(cat ~/.config/incus/client.crt)" \
   --from-literal=client-key="$(cat ~/.config/incus/client.key)" \
   --from-literal=project="default"
@@ -144,7 +147,7 @@ Generate a Kubernetes secret `lxc-secret` with credentials to access the LXD HTT
 ```bash
 kubectl create secret generic lxc-secret \
   --from-literal=server="https://$(lxc config get core.https_address)" \
-  --from-literal=server-crt="$(sudo cat /var/snap/lxd/common/lxd/cluster.crt)" \
+  --from-literal=server-crt="$(cat ~/snap/lxd/common/config/servercerts/local-https.crt)" \
   --from-literal=client-crt="$(cat ~/snap/lxd/common/config/client.crt)" \
   --from-literal=client-key="$(cat ~/snap/lxd/common/config/client.key)" \
   --from-literal=project="default"
@@ -416,4 +419,4 @@ kind delete cluster
 
 - Expore the v1alpha2 [CRDs](../reference/api/v1alpha2/api.md)
 - See list of example [Cluster Templates](../reference/templates/index.md)
-- Read about the [Defaul Simplestreams Server](../reference/default-simplestreams-server.md)
+- Read about the [Default Simplestreams Server](../reference/default-simplestreams-server.md)

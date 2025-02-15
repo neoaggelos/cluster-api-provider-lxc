@@ -32,9 +32,9 @@ See [Quick Start](./tutorial/quick-start.md) to launch a cluster on a single-nod
 
 ## Project Roadmap
 
-### v0.4.0
+### v0.5.0
 
-Rough steps for version v0.4.0:
+Rough steps for version v0.5.0:
 
 - [x] Private initial alpha testing.
 - [x] Cloud provider node patch to link Machines with workload cluster Nodes.

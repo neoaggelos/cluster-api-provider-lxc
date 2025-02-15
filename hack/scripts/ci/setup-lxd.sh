@@ -35,8 +35,8 @@ kind: Secret
 metadata:
   name: lxc-secret
 data:
-  project: '$(echo default | base64 -w0)'
-  server: '$(echo "https://$(lxc config get core.https_address)" | base64 -w0)'
+  project: '$(echo -n default | base64 -w0)'
+  server: '$(echo -n "https://$(lxc config get core.https_address)" | base64 -w0)'
   server-crt: '$(cat ~/snap/lxd/common/config/servercerts/local-https.crt | base64 -w0)'
   client-crt: '$(cat ~/snap/lxd/common/config/client.crt | base64 -w0)'
   client-key: '$(cat ~/snap/lxd/common/config/client.key | base64 -w0)'

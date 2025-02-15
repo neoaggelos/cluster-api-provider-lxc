@@ -35,7 +35,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 Create a kind cluster:
 
 ```bash
-sudo kind create cluster
+sudo kind create cluster --kubeconfig ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
 
@@ -129,7 +129,7 @@ export KUBERNETES_VERSION="v1.32.2"
 export CONTROL_PLANE_MACHINE_COUNT=1
 export WORKER_MACHINE_COUNT=1
 
-clusterctl generate cluster c1 --from ./templates/cluster-template.rc > c1.yaml
+clusterctl generate cluster c1 --from ./templates/cluster-template.yaml > c1.yaml
 ```
 
 Deploy the cluster with:
@@ -141,7 +141,7 @@ kubectl apply -f c1.yaml
 ## Running unit tests
 
 ```bash
-make unit
+make test
 ```
 
 ## Running e2e tests

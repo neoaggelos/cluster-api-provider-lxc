@@ -32,8 +32,8 @@ kind: Secret
 metadata:
   name: lxc-secret
 data:
-  project: '$(echo default | base64 -w0)'
-  server: '$(echo "https://$(incus config get core.https_address)" | base64 -w0)'
+  project: '$(echo -n default | base64 -w0)'
+  server: '$(echo -n "https://$(incus config get core.https_address)" | base64 -w0)'
   server-crt: '$(cat ~/.config/incus/servercerts/local-https.crt | base64 -w0)'
   client-crt: '$(cat ~/.config/incus/client.crt | base64 -w0)'
   client-key: '$(cat ~/.config/incus/client.key | base64 -w0)'

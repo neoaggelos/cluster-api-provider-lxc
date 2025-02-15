@@ -36,3 +36,6 @@ docs/book/book
 # Test output and artifacts from ginkgo e2e tests
 /junit*.xml
 /_artifacts/
+
+# Development credentials
+lxc-secret.yaml

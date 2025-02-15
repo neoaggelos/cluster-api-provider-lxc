@@ -46,8 +46,8 @@ Rough steps for version v0.4.0:
 - [x] Publish v0.2.0 release with v1alpha2 APIs.
 - [x] Add e2e tests for cluster upgrades.
 - [x] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
+- [x] Write developer guide.
 - [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
-- [ ] Write documentation with setting up a development environment.
 - [ ] Write documentation with common troubleshooting steps.
 - [ ] Write documentation with common cluster deployment scenarios.
 - [ ] Extend e2e suite with tests for all cluster-template types (kube-vip, ovn)
@@ -67,3 +67,5 @@ Rough steps for version v0.4.0:
 The `cluster-api-provider-lxc` project would love your suggestions, contributions and help! The maintainers can be contacted at any time to learn mode about how to get involved.
 
 Remember that there are numerous effective ways to contribute to the project: raise a pull request to fix a bug, improve test coverage, improve existing documentation or even participate in GitHub issues. We want your help!
+
+Please refer to the [developer guide](./howto/developer-guide.md) in order to get started with setting up a local environment for development and testing.

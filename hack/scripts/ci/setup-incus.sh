@@ -24,3 +24,17 @@ fi
 
 # Do not drop instance traffic
 sudo iptables -P FORWARD ACCEPT
+
+# Write Kubernetes secret to top-level dir
+echo "
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lxc-secret
+data:
+  project: '$(echo -n default | base64 -w0)'
+  server: '$(echo -n "https://$(incus config get core.https_address)" | base64 -w0)'
+  server-crt: '$(cat ~/.config/incus/servercerts/local-https.crt | base64 -w0)'
+  client-crt: '$(cat ~/.config/incus/client.crt | base64 -w0)'
+  client-key: '$(cat ~/.config/incus/client.key | base64 -w0)'
+" | tee "${DIR}/../../lxc-secret.yaml"

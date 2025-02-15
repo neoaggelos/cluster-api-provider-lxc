@@ -221,7 +221,7 @@ func (c *Client) serverSupportsExtensions(extensions ...string) ([]string, error
 }
 
 // List existing server operations to find if any CreateInstance operations are pending for the target instance name.
-// If anything fails, it will return the error that occured.
+// If anything fails, it will return the error that occurred.
 // If any is active, it will return a waitable incus.Operation object.
 // If no operations are active, it will return nil.
 //

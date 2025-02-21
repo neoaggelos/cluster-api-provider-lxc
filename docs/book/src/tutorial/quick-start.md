@@ -137,8 +137,7 @@ Generate a client certificate and key, and add it as a trusted client certificat
 ```bash
 token="$(sudo lxc config trust add --name client | tail -1)"
 
-lxc remote add local-https "https://$(sudo lxc config get core.https_address)" \
-    --accept-certificate --token "$token"
+lxc remote add local-https --token "$token" "https://$(sudo lxc config get core.https_address)"
 lxc remote set-default local-https
 ```
 

@@ -21,7 +21,7 @@ sudo lxc cluster enable "$ip_address"
 # Generate client certificate and key, trust certificate
 if ! lxc remote switch local-https; then
   token="$(sudo lxc config trust add --name client | tail -1)"
-  lxc remote add local-https "https://$(sudo lxc config get core.https_address)" --accept-certificate --token "$token"
+  lxc remote add local-https "https://$(sudo lxc config get core.https_address)" --token "$token"
   lxc remote set-default local-https
 fi
 

@@ -107,9 +107,10 @@ test-e2e: ginkgo kustomize ## Run e2e tests
 		-tags=e2e \
 		-fail-fast -timeout=3h \
 		-v -show-node-events -trace \
+		-github-output \
 		-nodes=$(E2E_GINKGO_PARALLEL) \
 		-focus="$(E2E_GINKGO_FOCUS)" $(_SKIP_ARGS) \
-		-output-dir="$(ARTIFACTS)" -github-output -junit-report=junit.e2e_suite.1.xml \
+		-output-dir="$(ARTIFACTS)" -junit-report=junit.e2e_suite.1.xml \
 		$(E2E_GINKGO_ARGS) \
 		./test/e2e/suites/e2e/... -- \
 			-config-path="$(E2E_CONFIG_PATH)" \
@@ -117,16 +118,16 @@ test-e2e: ginkgo kustomize ## Run e2e tests
 			-data-folder="$(E2E_DATA_DIR)" \
 			$(E2E_ARGS)
 
-.PHONY: test-conformance
-test-conformance: ginkgo kustomize ## Run conformance tests
+.PHONY: run-test-conformance
+run-test-conformance: ginkgo kustomize
 	env \
-		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance.yaml" \
+		KUBETEST_CONFIGURATION="$(KUBETEST_CONFIGURATION)" \
 		time $(GINKGO) \
 			-tags=e2e \
 			-fail-fast -timeout=3h \
 			-v -show-node-events -trace \
-			-focus=conformance \
 			-github-output \
+			-focus=conformance \
 			$(E2E_GINKGO_ARGS) \
 			./test/e2e/suites/conformance/... -- \
 				-config-path="$(E2E_CONFIG_PATH)" \
@@ -134,22 +135,13 @@ test-conformance: ginkgo kustomize ## Run conformance tests
 				-data-folder="$(E2E_DATA_DIR)" \
 				$(E2E_ARGS)
 
+.PHONY: test-conformance
+test-conformance: KUBETEST_CONFIGURATION = $(E2E_DATA_DIR)/kubetest/conformance.yaml
+test-conformance: run-test-conformance ## Run conformance tests
+
 .PHONY: test-conformance-fast
-test-conformance-fast: ginkgo kustomize ## Run conformance tests (fast)
-	env \
-		KUBETEST_CONFIGURATION="$(E2E_DATA_DIR)/kubetest/conformance-fast.yaml" \
-		time $(GINKGO) \
-			-tags=e2e \
-			-fail-fast -timeout=3h \
-			-v -show-node-events -trace \
-			-focus=conformance \
-			-github-output \
-			$(E2E_GINKGO_ARGS) \
-			./test/e2e/suites/conformance/... -- \
-				-config-path="$(E2E_CONFIG_PATH)" \
-				-artifacts-folder="$(ARTIFACTS)" \
-				-data-folder="$(E2E_DATA_DIR)" \
-				$(E2E_ARGS)
+test-conformance-fast: KUBETEST_CONFIGURATION = $(E2E_DATA_DIR)/kubetest/conformance-fast.yaml
+test-conformance-fast: run-test-conformance ## Run conformance tests (fast)
 
 ##@ Build
 

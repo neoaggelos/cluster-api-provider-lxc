@@ -120,7 +120,7 @@ make run V=4
 
 ### Deploy a test cluster
 
-On a separate window, generate a cluster template and deploy:
+On a separate window, generate a cluster manifest and deploy:
 
 ```bash
 export LOAD_BALANCER="lxc: {}"
@@ -135,6 +135,7 @@ clusterctl generate cluster c1 --from ./templates/cluster-template.yaml > c1.yam
 Deploy the cluster with:
 
 ```bash
+kubectl apply -f ./templates/clusterclass-lxc-default.yaml
 kubectl apply -f c1.yaml
 ```
 
@@ -168,7 +169,7 @@ make test-e2e E2E_GINKGO_PARALLEL=2
 make test-e2e E2E_GINKGO_FOCUS='QuickStart OCI'
 ```
 
-Unless specified, the e2e tests will use the default `local-https` from the Incus or the LXD client configuration.
+Unless specified, the e2e tests will use the default `local-https` remote from the client configuration.
 
 ## Running conformance tests
 

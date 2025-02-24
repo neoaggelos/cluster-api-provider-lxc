@@ -9,7 +9,6 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
-	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -87,18 +86,6 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		return ctrl.Result{}, fmt.Errorf("failed to retrieve bootstrap data: %w", err)
 	}
 
-	if !conditions.Has(lxcMachine, infrav1.InstanceProvisionedCondition) {
-		// Set the InstanceProvisionedCondition and issue a patch in order to make this immediately visible to the users.
-		patchHelper, err := patch.NewHelper(lxcMachine, r.Client)
-		if err != nil {
-			return ctrl.Result{}, err
-		}
-		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.CreatingInstanceReason, clusterv1.ConditionSeverityInfo, "")
-		if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to patch LXCMachine: %w", err)
-		}
-	}
-
 	addresses, err := lxcClient.CreateInstance(ctx, machine, lxcMachine, cluster, lxcCluster, cloudInit)
 	if err != nil {
 		if incus.IsTerminalError(err) {
@@ -108,6 +95,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		}
 		if strings.HasSuffix(err.Error(), "context deadline exceeded") {
 			log.FromContext(ctx).Error(err, "Instance creation timed out, retrying in 10 seconds")
+			conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.CreatingInstanceReason, clusterv1.ConditionSeverityWarning, "Instance creation still in progress: %s", err.Error())
 			return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.InstanceProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "Failed to create instance: %s", err.Error())

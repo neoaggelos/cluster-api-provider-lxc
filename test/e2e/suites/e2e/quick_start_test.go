@@ -51,13 +51,6 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 		})
 	})
 	Context("Ubuntu", func() {
-		BeforeEach(func() {
-			e2eCtx.OverrideVariables(map[string]string{
-				"KUBERNETES_VERSION": "v1.31.4", // Kubernetes version without pre-built images
-				"LXC_IMAGE_NAME":     "ubuntu:24.04",
-				"INSTALL_KUBEADM":    "true",
-			})
-		})
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
 			return e2e.QuickStartSpecInput{
 				E2EConfig:             e2eCtx.E2EConfig,
@@ -71,6 +64,12 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](1),
+
+				ClusterctlVariables: map[string]string{
+					"KUBERNETES_VERSION": "v1.31.4", // Kubernetes version without pre-built images
+					"LXC_IMAGE_NAME":     "ubuntu:24.04",
+					"INSTALL_KUBEADM":    "true",
+				},
 			}
 		})
 	})
@@ -84,10 +83,6 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 			if err != nil {
 				Skip("Server does not support OCI instances")
 			}
-
-			e2eCtx.OverrideVariables(map[string]string{
-				"LOAD_BALANCER": "oci: {}",
-			})
 		})
 
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
@@ -103,6 +98,10 @@ var _ = Describe("QuickStart", Label("PRBlocking"), func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](0),
+
+				ClusterctlVariables: map[string]string{
+					"LOAD_BALANCER": "oci: {}",
+				},
 			}
 		})
 	})

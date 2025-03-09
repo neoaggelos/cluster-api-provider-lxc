@@ -34,6 +34,7 @@ spec:
         type: ${CONTROL_PLANE_MACHINE_TYPE:=container}
         flavor: ${CONTROL_PLANE_MACHINE_FLAVOR:=c2-m4}
         profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
+        devices: ${CONTROL_PLANE_MACHINE_DEVICES:=[]}
         image: ${LXC_IMAGE_NAME:=""}
         installKubeadm: ${INSTALL_KUBEADM:=false}
 
@@ -57,5 +58,6 @@ spec:
               type: ${WORKER_MACHINE_TYPE:=container}
               flavor: ${WORKER_MACHINE_FLAVOR:=c2-m4}
               profiles: ${WORKER_MACHINE_PROFILES:=[default]}
+              devices: ${WORKER_MACHINE_DEVICES:=[]}
               image: ${LXC_IMAGE_NAME:=""}
               installKubeadm: ${INSTALL_KUBEADM:=false}

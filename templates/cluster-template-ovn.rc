@@ -15,10 +15,12 @@ export LXC_LOAD_BALANCER_NETWORK=ovn0           # name of the ovn network used b
 
 # Control plane machine configuration
 export CONTROL_PLANE_MACHINE_TYPE=container     # 'container' or 'virtual-machine'
-export CONTROL_PLANE_MACHINE_PROFILES=[default] # profiles for control plane nodes
 export CONTROL_PLANE_MACHINE_FLAVOR=c2-m4       # instance type for control plane nodes
+export CONTROL_PLANE_MACHINE_PROFILES=[default] # profiles for control plane nodes
+export CONTROL_PLANE_MACHINE_DEVICES=[]         # override devices for control plane nodes
 
 # Worker machine configuration
 export WORKER_MACHINE_TYPE=container            # 'container' or 'virtual-machine'
-export WORKER_MACHINE_PROFILES=[default]        # profiles for worker nodes
 export WORKER_MACHINE_FLAVOR=c2-m4              # instance type for worker nodes
+export WORKER_MACHINE_PROFILES=[default]        # profiles for worker nodes
+export WORKER_MACHINE_DEVICES=[]                # override devices for worker nodes

@@ -849,6 +849,24 @@ string
 </tr>
 <tr>
 <td>
+<code>devices</code><br/>
+<em>
+[]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Devices allows overriding the configuration of the instance disk or network.</p>
+<p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
+<p>For example, to specify a different network for an instance, you can use:</p>
+<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+devices:
+- eth0,type=nic,network=my-network
+</code></pre>
+</td>
+</tr>
+<tr>
+<td>
 <code>image</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineImageSource">
@@ -1026,6 +1044,24 @@ string
 <td>
 <em>(Optional)</em>
 <p>Profiles is a list of profiles to attach to the instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>devices</code><br/>
+<em>
+[]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Devices allows overriding the configuration of the instance disk or network.</p>
+<p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
+<p>For example, to specify a different network for an instance, you can use:</p>
+<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+devices:
+- eth0,type=nic,network=my-network
+</code></pre>
 </td>
 </tr>
 <tr>
@@ -1290,6 +1326,24 @@ string
 <td>
 <em>(Optional)</em>
 <p>Profiles is a list of profiles to attach to the instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>devices</code><br/>
+<em>
+[]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Devices allows overriding the configuration of the instance disk or network.</p>
+<p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
+<p>For example, to specify a different network for an instance, you can use:</p>
+<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+devices:
+- eth0,type=nic,network=my-network
+</code></pre>
 </td>
 </tr>
 <tr>

@@ -77,6 +77,22 @@ spec:
                     description: Spec is the specification of the desired behavior
                       of the machine.
                     properties:
+                      devices:
+                        description: |-
+                          Devices allows overriding the configuration of the instance disk or network.
+
+                          Device configuration must be formatted using the syntax "<device>,<key>=<value>".
+
+                          For example, to specify a different network for an instance, you can use:
+
+                          ```yaml
+                            # override device "eth0", to be of type "nic" and use network "my-network"
+                            devices:
+                            - eth0,type=nic,network=my-network
+                          ```
+                        items:
+                          type: string
+                        type: array
                       flavor:
                         description: |-
                           Flavor is configuration for the instance size (e.g. t3.micro, or c2-m4).

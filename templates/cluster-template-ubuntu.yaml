@@ -85,6 +85,7 @@ spec:
       instanceType: ${CONTROL_PLANE_MACHINE_TYPE}
       flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
       profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
+      devices: ${CONTROL_PLANE_MACHINE_DEVICES:=[]}
       image:
         name: ${LXC_IMAGE_NAME}
 ---
@@ -121,6 +122,7 @@ spec:
       instanceType: ${WORKER_MACHINE_TYPE}
       flavor: ${WORKER_MACHINE_FLAVOR}
       profiles: ${WORKER_MACHINE_PROFILES:=[default]}
+      devices: ${WORKER_MACHINE_DEVICES:=[]}
       image:
         name: ${LXC_IMAGE_NAME}
 ---

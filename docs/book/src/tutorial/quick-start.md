@@ -218,6 +218,7 @@ Required Variables:
 Optional Variables:
   - CLUSTER_NAME                    (defaults to c1)
   - CONTROL_PLANE_MACHINE_COUNT     (defaults to 1)
+  - CONTROL_PLANE_MACHINE_DEVICES   (defaults to "[]")
   - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "[default]")
   - LOAD_BALANCER_MACHINE_FLAVOR    (defaults to "")
   - LOAD_BALANCER_MACHINE_PROFILES  (defaults to "[default]")
@@ -226,6 +227,7 @@ Optional Variables:
   - POD_CIDR                        (defaults to "[10.244.0.0/16]")
   - SERVICE_CIDR                    (defaults to "[10.96.0.0/12]")
   - WORKER_MACHINE_COUNT            (defaults to 0)
+  - WORKER_MACHINE_DEVICES          (defaults to "[]")
   - WORKER_MACHINE_PROFILES         (defaults to "[default]")
 ```
 

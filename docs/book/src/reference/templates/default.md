@@ -99,6 +99,24 @@ It is customary that clusters use `container` instances for the control plane no
 
 A list of [profile](https://linuxcontainers.org/incus/docs/main/profiles/) names to attach to the created instances. The [default kubeadm profile](../profile/kubeadm.md) will be automatically added to the list, if not already present. For local development, this should be `[default]`.
 
+### `CONTROL_PLANE_INSTANCE_DEVICES` and `WORKER_INSTANCE_DEVICES`
+
+A list of [device](https://linuxcontainers.org/incus/docs/main/reference/devices/) configuration overrides for the created instances. This can be used to override the network interface or the root disk of the instance.
+
+Devices are specified as an array of strings with the following syntax: `<device>,<key>=<value>`. For example, to override the network of the created instances, you can specify:
+
+```bash
+export CONTROL_PLANE_INSTANCE_DEVICES="['eth0,type=nic,network=my-network']"
+export WORKER_INSTANCE_DEVICES="['eth0,type=nic,network=my-network']"
+```
+
+Similarly, to override the network and also specify a custom root disk size, you can use:
+
+```bash
+export CONTROL_PLANE_INSTANCE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
+export WORKER_INSTANCE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
+```
+
 ### `CONTROL_PLANE_INSTANCE_FLAVOR` and `WORKER_INSTANCE_FLAVOR`
 
 Instance size for the control plane and worker instances. This is typically specified as `cX-mY`, in which case the instance size will be `X cores` and `Y GB RAM`.

@@ -61,6 +61,21 @@ type LXCMachineSpec struct {
 	// +optional
 	Profiles []string `json:"profiles,omitempty"`
 
+	// Devices allows overriding the configuration of the instance disk or network.
+	//
+	// Device configuration must be formatted using the syntax "<device>,<key>=<value>".
+	//
+	// For example, to specify a different network for an instance, you can use:
+	//
+	// ```yaml
+	//   # override device "eth0", to be of type "nic" and use network "my-network"
+	//   devices:
+	//   - eth0,type=nic,network=my-network
+	// ```
+	//
+	// +optional
+	Devices []string `json:"devices,omitempty"`
+
 	// Image to use for provisioning the machine. If not set, a kubeadm image
 	// from the default upstream simplestreams source will be used, based on
 	// the version of the machine.

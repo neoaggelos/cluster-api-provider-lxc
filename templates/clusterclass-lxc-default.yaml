@@ -142,6 +142,11 @@ spec:
             items:
               type: string
             description: List of profiles to apply on the instance
+          devices:
+            type: array
+            items:
+              type: string
+            description: Override device (e.g. network, storage) configuration for the instance
           installKubeadm:
             type: boolean
             default: false
@@ -575,6 +580,7 @@ spec:
         valueFrom:
           template: |
             profiles: {{ .instance.profiles | toJson }}
+            devices: {{ .instance.devices | toJson }}
             instanceType: {{ .instance.type | quote }}
             flavor: {{ .instance.flavor | quote }}
             image:
@@ -595,6 +601,7 @@ spec:
         valueFrom:
           template: |
             profiles: {{ .instance.profiles | toJson }}
+            devices: {{ .instance.devices | toJson }}
             instanceType: {{ .instance.type | quote }}
             flavor: {{ .instance.flavor | quote }}
             image:

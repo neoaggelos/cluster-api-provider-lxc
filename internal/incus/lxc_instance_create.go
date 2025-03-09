@@ -39,6 +39,32 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 
 	image := lxcMachine.Spec.Image
 
+	// Parse device configurations
+	var devices map[string]map[string]string
+	for _, deviceSpec := range lxcMachine.Spec.Devices {
+		deviceName, deviceArgs, hasSeparator := strings.Cut(deviceSpec, ",")
+		if !hasSeparator {
+			return nil, terminalError{fmt.Errorf("device spec %q is not using the expected %q format", deviceSpec, "<device>,<key>=<value>,<key2>=<value2>")}
+		}
+
+		if devices == nil {
+			devices = map[string]map[string]string{}
+		}
+
+		if _, ok := devices[deviceName]; !ok {
+			devices[deviceName] = map[string]string{}
+		}
+
+		for _, deviceArg := range strings.Split(deviceArgs, ",") {
+			key, value, hasEqual := strings.Cut(deviceArg, "=")
+			if !hasEqual {
+				return nil, terminalError{fmt.Errorf("device argument %q of device spec %q is not using the expected %q format", deviceArg, deviceSpec, "<key>=<value>")}
+			}
+
+			devices[deviceName][key] = value
+		}
+	}
+
 	// Incus and LXD have diverged image servers for Ubuntu images, making it easy to confuse users.
 	// To address the issue, we allow a special prefix `ubuntu:VERSION` for image names:
 	if strings.HasPrefix(image.Name, "ubuntu:") {
@@ -95,6 +121,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{
 			Profiles: profiles,
+			Devices:  devices,
 			Config: map[string]string{
 				configClusterNameKey:      cluster.Name,
 				configClusterNamespaceKey: cluster.Namespace,

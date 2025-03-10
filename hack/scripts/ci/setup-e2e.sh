@@ -53,3 +53,4 @@ fi
 
 # configure default profile
 "${CLI}" profile device set "${LXC_PROFILE_NAME}" eth0 type=nic network="${LXC_NETWORK_NAME}"
+"${CLI}" profile show default

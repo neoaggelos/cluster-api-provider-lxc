@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 )
 
-var _ = Describe("ClusterClassRollout", Label("PRBlocking"), func() {
+var _ = Describe("ClusterClassRollout", func() {
 	e2e.ClusterClassRolloutSpec(context.TODO(), func() e2e.ClusterClassRolloutSpecInput {
 		return e2e.ClusterClassRolloutSpecInput{
 			E2EConfig:              e2eCtx.E2EConfig,

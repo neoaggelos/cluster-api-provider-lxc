@@ -25,6 +25,13 @@ var _ = Describe("QuickStart", func() {
 		BeforeEach(func(ctx context.Context) {
 			client, err := incus.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())
+
+			err = client.SupportsNetworkLoadBalancer()
+			Expect(err).To(Or(Succeed(), MatchError(incus.IsTerminalError, "IsTerminalError")))
+			if err != nil {
+				Skip(fmt.Sprintf("Server does not support network load balancer: %v", err))
+			}
+
 			networks, err := client.Client.GetNetworks()
 			Expect(err).ToNot(HaveOccurred())
 

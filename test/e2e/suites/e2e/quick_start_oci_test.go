@@ -4,6 +4,7 @@ package e2e
 
 import (
 	"context"
+	"fmt"
 
 	"sigs.k8s.io/cluster-api/test/e2e"
 
@@ -24,7 +25,7 @@ var _ = Describe("QuickStart", func() {
 			err = client.SupportsInstanceOCI()
 			Expect(err).To(Or(Succeed(), MatchError(incus.IsTerminalError, "IsTerminalError")))
 			if err != nil {
-				Skip("Server does not support OCI instances")
+				Skip(fmt.Sprintf("Server does not support OCI instances: %v", err))
 			}
 		})
 

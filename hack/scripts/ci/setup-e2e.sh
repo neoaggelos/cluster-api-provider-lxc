@@ -20,7 +20,6 @@ LXC_NETWORK_IPV4_KUBE_VIP="10.200.1.151"
 LXC_OVN_NETWORK_NAME="testovn0"
 LXC_OVN_NETWORK_IPV6="none"
 LXC_OVN_NETWORK_IPV4="192.168.200.1/24"
-LXC_OVN_NETWORK_IPV4_DHCP="192.168.200.10-192.168.200.100"
 LXC_OVN_NETWORK_IPV4_LB="10.200.1.201"
 
 ########################################################################
@@ -49,7 +48,6 @@ if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
     network="${LXC_NETWORK_NAME}" \
     ipv4.address="${LXC_OVN_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_OVN_NETWORK_IPV6}" ipv6.nat=true \
-    ipv4.dhcp.ranges="${LXC_OVN_NETWORK_IPV4_DHCP}" \
     user.capl.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}"
 fi
 

@@ -13,10 +13,10 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 )
 
-var _ = Describe("ClusterUpgrade", func() {
-	Context("Default", Label("PRBlocking"), func() {
-		e2e.ClusterUpgradeConformanceSpec(context.TODO(), func() e2e.ClusterUpgradeConformanceSpecInput {
-			return e2e.ClusterUpgradeConformanceSpecInput{
+var _ = Describe("QuickStart", func() {
+	Context("SingleNode", Label("PRBlocking"), func() {
+		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+			return e2e.QuickStartSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,
 				ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
 				BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
@@ -28,15 +28,13 @@ var _ = Describe("ClusterUpgrade", func() {
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
-				WorkerMachineCount:       ptr.To[int64](1),
-
-				SkipConformanceTests: true,
+				WorkerMachineCount:       ptr.To[int64](0),
 			}
 		})
 	})
-	Context("HAControlPlane", func() {
-		e2e.ClusterUpgradeConformanceSpec(context.TODO(), func() e2e.ClusterUpgradeConformanceSpecInput {
-			return e2e.ClusterUpgradeConformanceSpecInput{
+	Context("Full", Label("PRBlocking"), func() {
+		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+			return e2e.QuickStartSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,
 				ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
 				BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
@@ -48,9 +46,7 @@ var _ = Describe("ClusterUpgrade", func() {
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
-				WorkerMachineCount:       ptr.To[int64](2),
-
-				SkipConformanceTests: true,
+				WorkerMachineCount:       ptr.To[int64](3),
 			}
 		})
 	})

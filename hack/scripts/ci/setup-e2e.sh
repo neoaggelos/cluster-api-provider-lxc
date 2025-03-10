@@ -52,13 +52,4 @@ if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
 fi
 
 # configure default profile
-echo "
-devices:
-  eth0:
-    type: nic
-    network: ${LXC_NETWORK_NAME}
-  root:
-    type: disk
-    path: /
-    pool: local
-" | "${CLI}" profile edit "${LXC_PROFILE_NAME}"
+"${CLI}" profile device set "${LXC_PROFILE_NAME}" eth0 type=nic network="${LXC_NETWORK_NAME}"

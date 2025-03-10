@@ -49,7 +49,7 @@ if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
     network="${LXC_NETWORK_NAME}" \
     ipv4.address="${LXC_OVN_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_OVN_NETWORK_IPV6}" ipv6.nat=true \
-    ipv4.dhcp.ranges="${LXC_NETWORK_IPV4_DHCP}" \
+    ipv4.dhcp.ranges="${LXC_OVN_NETWORK_IPV4_DHCP}" \
     user.capl.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}"
 fi
 

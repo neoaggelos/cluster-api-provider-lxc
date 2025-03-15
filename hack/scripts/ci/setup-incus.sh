@@ -9,10 +9,8 @@ fi
 # get node IP address
 ip_address="$(ip -o route get to 1.1.1.1 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')"
 
-# Initialize LXD and configure clustering
+# Initialize Incus
 sudo incus admin init --auto --network-address "$ip_address"
-sudo incus network set incusbr0 ipv6.address=none
-sudo incus cluster enable "$ip_address"
 
 # Generate client certificate and key, trust certificate
 if ! incus remote switch local-https; then

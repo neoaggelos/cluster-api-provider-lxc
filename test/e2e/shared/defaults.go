@@ -40,6 +40,9 @@ const (
 	// Name of secret for LXC credentials
 	LXCSecretName = "LXC_SECRET_NAME"
 
+	// KubeVIP address to use for kube-vip tests
+	KubeVIPAddress = "KUBE_VIP_ADDRESS"
+
 	FlavorDefault     = ""
 	FlavorDevelopment = "development"
 	FlavorAutoscaler  = "autoscaler"

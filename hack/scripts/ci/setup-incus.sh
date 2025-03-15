@@ -37,4 +37,7 @@ data:
   server-crt: '$(cat ~/.config/incus/servercerts/local-https.crt | base64 -w0)'
   client-crt: '$(cat ~/.config/incus/client.crt | base64 -w0)'
   client-key: '$(cat ~/.config/incus/client.key | base64 -w0)'
-" | tee "${DIR}/../../lxc-secret.yaml"
+" | tee "${DIR}/../../../lxc-secret.yaml"
+
+# Setup local Incus daemon for e2e tests
+CLI=incus "${DIR}/setup-e2e.sh"

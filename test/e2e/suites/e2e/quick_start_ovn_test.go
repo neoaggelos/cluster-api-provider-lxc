@@ -17,16 +17,36 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("OCI", Label("PRBlocking"), func() {
+	Context("OVN", Label("PRBlocking"), func() {
+		var (
+			lbAddress   string
+			networkName string
+		)
 		BeforeEach(func(ctx context.Context) {
 			client, err := incus.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())
 
-			err = client.SupportsInstanceOCI()
+			err = client.SupportsNetworkLoadBalancer()
 			Expect(err).To(Or(Succeed(), MatchError(incus.IsTerminalError, "IsTerminalError")))
 			if err != nil {
-				Skip(fmt.Sprintf("Server does not support OCI instances: %v", err))
+				Skip(fmt.Sprintf("Server does not support network load balancer: %v", err))
 			}
+
+			networks, err := client.Client.GetNetworks()
+			Expect(err).ToNot(HaveOccurred())
+
+			// find network with the annotations below
+			// -- user.capl.e2e.ovn-lb-address = "<ip address>"
+			for _, network := range networks {
+				if v, ok := network.Config["user.capl.e2e.ovn-lb-address"]; ok {
+					networkName = network.Name
+					lbAddress = v
+					shared.Logf("Using OVN network %q with LoadBalancer address %q", networkName, lbAddress)
+					return
+				}
+			}
+
+			Skip("Did not find any network with configuration 'user.capl.e2e.ovn-lb-address'")
 		})
 
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
@@ -45,7 +65,9 @@ var _ = Describe("QuickStart", func() {
 				WorkerMachineCount:       ptr.To[int64](0),
 
 				ClusterctlVariables: map[string]string{
-					"LOAD_BALANCER": "oci: {}",
+					"LOAD_BALANCER":                 fmt.Sprintf("ovn: {host: '%s', networkName: '%s'}", lbAddress, networkName),
+					"CONTROL_PLANE_MACHINE_DEVICES": fmt.Sprintf("['eth0,type=nic,network=%s']", networkName),
+					"WORKER_MACHINE_DEVICES":        fmt.Sprintf("['eth0,type=nic,network=%s']", networkName),
 				},
 			}
 		})

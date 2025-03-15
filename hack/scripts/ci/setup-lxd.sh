@@ -40,4 +40,7 @@ data:
   server-crt: '$(cat ~/snap/lxd/common/config/servercerts/local-https.crt | base64 -w0)'
   client-crt: '$(cat ~/snap/lxd/common/config/client.crt | base64 -w0)'
   client-key: '$(cat ~/snap/lxd/common/config/client.key | base64 -w0)'
-" | tee "${DIR}/../../lxc-secret.yaml"
+" | tee "${DIR}/../../../lxc-secret.yaml"
+
+# Setup local LXD daemon for e2e tests
+CLI=lxc "${DIR}/setup-e2e.sh"

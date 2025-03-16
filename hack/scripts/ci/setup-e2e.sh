@@ -2,8 +2,8 @@
 
 ########################################################################
 ### Usage:
-###   $ CLI=incus ./common-e2e.sh
-###   $ CLI=lxc ./common-e2e.sh
+###   $ CLI=incus ./setup-e2e.sh
+###   $ CLI=lxc ./setup-e2e.sh
 
 # instance profiles
 LXC_PROFILE_NAME=default
@@ -24,14 +24,6 @@ LXC_OVN_NETWORK_IPV4_LB="10.200.1.201"
 
 ########################################################################
 
-# install and configure OVN
-sudo apt install ovn-host ovn-central -y
-sudo ovs-vsctl set open_vswitch . external_ids:ovn-encap-ip="127.0.0.1"
-sudo ovs-vsctl set open_vswitch . external_ids:ovn-encap-type="geneve"
-sudo ovs-vsctl set open_vswitch . external_ids:ovn-remote="unix:/run/ovn/ovnsb_db.sock"
-
-########################################################################
-
 # configure default network. the user.capl.e2e.kube-vip-address annotation is used by "QuickStart KubeVIP"
 if ! "${CLI}" network show "${LXC_NETWORK_NAME}" 2> /dev/null; then
   "${CLI}" network create "${LXC_NETWORK_NAME}" --type=bridge \
@@ -48,7 +40,8 @@ if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
     network="${LXC_NETWORK_NAME}" \
     ipv4.address="${LXC_OVN_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_OVN_NETWORK_IPV6}" ipv6.nat=true \
-    user.capl.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}"
+    user.capl.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}" \
+  || echo "Failed to create OVN network, will skip OVN tests"
 fi
 
 # configure default profile

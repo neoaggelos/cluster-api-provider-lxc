@@ -28,12 +28,10 @@ jobs:
 
       # NOTE(neoaggelos): for tags, we should use the released controller image instead of building from source
       - name: Build the e2e controller image
-        run: |
-          make e2e-image
+        run: make e2e-image
 
       - name: Run e2e tests
-        run: |
-          make test-conformance
+        run: make test-conformance
 
       - name: Upload e2e artifacts
         uses: actions/upload-artifact@v4

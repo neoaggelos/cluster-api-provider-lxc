@@ -8,7 +8,7 @@ title = "The cluster-api-provider-lxc book"
 [output.html]
 smart-punctuation = true
 site-url = "/cluster-api-provider-lxc/"
-git-repository-url = "https://github.com/neoaggelos/cluster-api-provider-lxc/docs/book"
+git-repository-url = "https://github.com/neoaggelos/cluster-api-provider-lxc/"
 additional-css = ["theme/css/custom.css"]
 
 [output.html.redirect]

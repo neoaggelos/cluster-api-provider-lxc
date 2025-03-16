@@ -1,7 +1,8 @@
 # Kubernetes Cluster API Provider LXC
 
-[![Tests](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml)
 [![End to End Tests](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-full.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-full.yml)
+[![End to End Tests [Conformance]](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-conformance.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test-e2e-conformance.yml)
+[![Unit Tests](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/test.yml)
 [![Deploy GitHub Pages](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/docs.yml/badge.svg)](https://github.com/neoaggelos/cluster-api-provider-lxc/actions/workflows/docs.yml)
 
 Kubernetes-native declarative infrastructure for [Incus](https://linuxcontainers.org/incus/introduction/), [Canonical LXD](https://canonical.com/lxd) and [Canonical MicroCloud](https://canonical.com/microcloud).
@@ -20,14 +21,14 @@ Please refer to our [book](https://neoaggelos.github.io/cluster-api-provider-lxc
 
 ## Quick Start
 
-See [Quick Start](./tutorial/quick-start.md) to launch a cluster on a single-node development environment.
+See [Quick Start](https://neoaggelos.github.io/cluster-api-provider-lxc/tutorial/quick-start.html) to launch a cluster on a single-node development environment.
 
 ## Features
 
 - Supports [Incus](https://linuxcontainers.org/incus/introduction/), [Canonical LXD](https://canonical.com/lxd) and [Canonical MicroCloud](https://canonical.com/microcloud).
-- Support for [kube-vip](./reference/templates/kube-vip.md) (production), [OVN network load balancers](./reference/templates/ovn.md) or simple [haproxy containers](./reference/templates/development.md) (development) for the cluster load balancer.
-- [Default simplestreams server](./reference/default-simplestreams-server.md) with pre-built kubeadm images.
-- Supports virtual machines or LXC containers for the cluster machines. Automatically manages the [profile](./reference/profile/kubeadm.md) for Kubernetes to work in LXC containers.
+- Support for [kube-vip](https://neoaggelos.github.io/cluster-api-provider-lxc/reference/templates/kube-vip.html) (production), [OVN network load balancers](https://neoaggelos.github.io/cluster-api-provider-lxc/reference/templates/ovn.html) or simple [haproxy containers](https://neoaggelos.github.io/cluster-api-provider-lxc/reference/templates/development.html) (development) for the cluster load balancer.
+- [Default simplestreams server](https://neoaggelos.github.io/cluster-api-provider-lxc/reference/default-simplestreams-server.html) with pre-built kubeadm images.
+- Supports virtual machines or LXC containers for the cluster machines. Automatically manages the [profile](https://neoaggelos.github.io/cluster-api-provider-lxc/reference/profile/kubeadm.html) for Kubernetes to work in LXC containers.
 - Can be used for local development similar to CAPD for quickly iterating on custom bootstrap and control-plane providers, e.g. K3s, Canonical Kubernetes, etc.
 
 ## Project Roadmap

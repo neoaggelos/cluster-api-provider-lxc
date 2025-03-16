@@ -1,4 +1,4 @@
-name: End to End Tests (PR Blocking)
+name: End to End Tests [PR Blocking]
 
 on:
   pull_request:
@@ -19,7 +19,9 @@ jobs:
           go-version-file: go.mod
 
       - name: Setup infrastructure
-        run: ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
+        run: |
+          ./hack/scripts/ci/setup-ovn-localhost.sh
+          ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
 
       - name: Build the e2e controller image
         run: make e2e-image

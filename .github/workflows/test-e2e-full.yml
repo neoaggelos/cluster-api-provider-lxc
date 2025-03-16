@@ -23,15 +23,14 @@ jobs:
 
       - name: Setup infrastructure
         run: |
+          ./hack/scripts/ci/setup-ovn-localhost.sh
           ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
 
       - name: Build the e2e controller image
-        run: |
-          make e2e-image
+        run: make e2e-image
 
       - name: Run e2e tests
-        run: |
-          make test-e2e
+        run: make test-e2e
 
       - name: Upload e2e artifacts
         uses: actions/upload-artifact@v4

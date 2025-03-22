@@ -2,6 +2,9 @@ name: End to End Tests [PR Blocking]
 
 on:
   pull_request:
+  push:
+    branches:
+      - ci/debug-incus-vm
 
 jobs:
   test-e2e:
@@ -22,6 +25,9 @@ jobs:
         run: |
           ./hack/scripts/ci/setup-ovn-localhost.sh
           ./hack/scripts/ci/setup-${{ matrix.infrastructure }}.sh
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Build the e2e controller image
         run: make e2e-image

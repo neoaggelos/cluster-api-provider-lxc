@@ -89,35 +89,35 @@ Set `DEPLOY_KUBE_FLANNEL=true` to deploy the default kube-flannel CNI on the clu
 
 Alternatively, you can pick a default Ubuntu image with `ubuntu:24.04`, and set `INSTALL_KUBEADM=true` to inject `preKubeadmCommands` that install kubeadm and necessary tools on the instance prior to bootstrapping.
 
-### `CONTROL_PLANE_INSTANCE_TYPE` and `WORKER_INSTANCE_TYPE`
+### `CONTROL_PLANE_MACHINE_TYPE` and `WORKER_MACHINE_TYPE`
 
 These must be set to `container` or `virtual-machine`. Launch virtual machines requires `kvm` support on the node.
 
 It is customary that clusters use `container` instances for the control plane nodes, and `virtual-machine` for the worker nodes.
 
-### `CONTROL_PLANE_INSTANCE_PROFILES` and `WORKER_INSTANCE_PROFILES`
+### `CONTROL_PLANE_MACHINE_PROFILES` and `WORKER_MACHINE_PROFILES`
 
 A list of [profile](https://linuxcontainers.org/incus/docs/main/profiles/) names to attach to the created instances. The [default kubeadm profile](../profile/kubeadm.md) will be automatically added to the list, if not already present. For local development, this should be `[default]`.
 
-### `CONTROL_PLANE_INSTANCE_DEVICES` and `WORKER_INSTANCE_DEVICES`
+### `CONTROL_PLANE_MACHINE_DEVICES` and `WORKER_MACHINE_DEVICES`
 
 A list of [device](https://linuxcontainers.org/incus/docs/main/reference/devices/) configuration overrides for the created instances. This can be used to override the network interface or the root disk of the instance.
 
 Devices are specified as an array of strings with the following syntax: `<device>,<key>=<value>`. For example, to override the network of the created instances, you can specify:
 
 ```bash
-export CONTROL_PLANE_INSTANCE_DEVICES="['eth0,type=nic,network=my-network']"
-export WORKER_INSTANCE_DEVICES="['eth0,type=nic,network=my-network']"
+export CONTROL_PLANE_MACHINE_DEVICES="['eth0,type=nic,network=my-network']"
+export WORKER_MACHINE_DEVICES="['eth0,type=nic,network=my-network']"
 ```
 
 Similarly, to override the network and also specify a custom root disk size, you can use:
 
 ```bash
-export CONTROL_PLANE_INSTANCE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
-export WORKER_INSTANCE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
+export CONTROL_PLANE_MACHINE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
+export WORKER_MACHINE_DEVICES="['eth0,type=nic,network=my-network', 'root,type=disk,path=/,pool=local,size=50GB']"
 ```
 
-### `CONTROL_PLANE_INSTANCE_FLAVOR` and `WORKER_INSTANCE_FLAVOR`
+### `CONTROL_PLANE_MACHINE_FLAVOR` and `WORKER_MACHINE_FLAVOR`
 
 Instance size for the control plane and worker instances. This is typically specified as `cX-mY`, in which case the instance size will be `X cores` and `Y GB RAM`.
 

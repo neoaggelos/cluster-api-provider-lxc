@@ -340,6 +340,7 @@ spec:
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/postKubeadmCommands/-
         value: |
+          set -x
           if [ -f /run/kubeadm/kubeadm.yaml ]; then
             kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /run/kubeadm/kube-flannel.yaml
           fi
@@ -696,8 +697,7 @@ spec:
           if systemd-detect-virt -c -q 2>/dev/null && [ -f /run/kubeadm/kubeadm.yaml ]; then
             cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
           fi
-        postKubeadmCommands:
-        - set -x
+        postKubeadmCommands: []
         files:
         - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
           content: |

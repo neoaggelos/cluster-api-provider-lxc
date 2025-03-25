@@ -1,8 +1,6 @@
 module github.com/neoaggelos/cluster-api-provider-lxc
 
-go 1.23.0
-
-toolchain go1.23.4
+go 1.23.4
 
 require (
 	github.com/lxc/incus/v6 v6.8.0

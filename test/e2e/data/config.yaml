@@ -111,24 +111,25 @@ variables:
   CAPI_DIAGNOSTICS_ADDRESS: ":8080"
   CAPI_INSECURE_DIAGNOSTICS: "true"
 
-# TODO(neoaggelos): revisit these
 intervals:
-  conformance/wait-control-plane: ["30m", "10s"]
-  conformance/wait-worker-nodes: ["30m", "10s"]
-  default/wait-controllers: ["3m", "10s"]
-  default/wait-bastion: ["5m", "10s"]
-  default/wait-cluster: ["20m", "10s"]
-  default/wait-control-plane: ["30m", "10s"]
-  default/wait-worker-nodes: ["30m", "10s"]
-  default/wait-delete-cluster: ["5m", "10s"]
-  default/wait-alt-az: ["20m", "30s"]
-  default/wait-machine-upgrade: ["30m", "10s"]
-  default/wait-nodes-ready: ["15m", "10s"]
-  default/wait-machine-remediation: ["10m", "10s"]
-  default/wait-image-create: ["15m", "10s"]
-  default/wait-image-delete: ["2m", "10s"]
+  # [all] wait for kind cluster and capi providers
+  default/wait-controllers: ["4m", "10s"]
 
-  default/wait-deployment-available: ["1m", "5s"]
-  default/wait-machine-deleted: ["5m", "10s"]
+  # [all] wait for cluster, control plane nodes, worker nodes to come up
+  default/wait-cluster: ["1m", "10s"]
+  default/wait-control-plane: ["5m", "10s"]
+  default/wait-worker-nodes: ["3m", "10s"]
+  default/wait-delete-cluster: ["3m", "10s"]
 
+  # [conformance] override waiting for control plane nodes, worker nodes to come up
+  conformance/wait-control-plane: ["5m", "10s"]
+  conformance/wait-worker-nodes: ["5m", "10s"]
+
+  # [ClusterUpgrade, ClusterClassRollout, MDRollout] wait for versions to be upgraded
+  default/wait-machine-upgrade: ["10m", "10s"]
+
+  # [ClusterUpgrade] wait for nodes to become Ready
+  default/wait-nodes-ready: ["2m", "10s"]
+
+  # [Autoscaler] wait for autoscaler operations
   default/wait-autoscaler: ["5m", "10s"]

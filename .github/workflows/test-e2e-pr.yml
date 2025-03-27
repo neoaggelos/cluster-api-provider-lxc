@@ -7,6 +7,7 @@ jobs:
   test-e2e:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         infrastructure: [lxd, incus]
     steps:

@@ -4,8 +4,10 @@ package e2e
 
 import (
 	"context"
+	"fmt"
 
 	"sigs.k8s.io/cluster-api/test/e2e"
+	"sigs.k8s.io/cluster-api/util"
 
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
 	"github.com/neoaggelos/cluster-api-provider-lxc/test/e2e/shared"
@@ -29,6 +31,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](1),
+				ClusterName:              ptr.To(fmt.Sprintf("quick-start-ubuntu-%s", util.RandomString(6))),
 
 				ClusterctlVariables: map[string]string{
 					"KUBERNETES_VERSION": "v1.31.4", // Kubernetes version without pre-built images

@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"sigs.k8s.io/cluster-api/test/e2e"
+	"sigs.k8s.io/cluster-api/util"
 
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
@@ -63,6 +64,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](0),
+				ClusterName:              ptr.To(fmt.Sprintf("quick-start-ovn-%s", util.RandomString(6))),
 
 				ClusterctlVariables: map[string]string{
 					"LOAD_BALANCER":                 fmt.Sprintf("ovn: {host: '%s', networkName: '%s'}", lbAddress, networkName),

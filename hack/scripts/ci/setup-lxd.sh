@@ -41,4 +41,4 @@ data:
 " | tee "${DIR}/../../../lxc-secret.yaml"
 
 # Setup local LXD daemon for e2e tests
-CLI=lxc "${DIR}/setup-e2e.sh"
+CLI=lxc "${DIR}/setup-e2e-resources.sh"

@@ -38,4 +38,4 @@ data:
 " | tee "${DIR}/../../../lxc-secret.yaml"
 
 # Setup local Incus daemon for e2e tests
-CLI=incus "${DIR}/setup-e2e.sh"
+CLI=incus "${DIR}/setup-e2e-resources.sh"

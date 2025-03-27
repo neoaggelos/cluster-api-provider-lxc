@@ -130,10 +130,11 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 			},
 		},
 	}); err != nil {
-
-		// TODO: Handle the below situation as a terminalError.
+		// TODO: Handle the below situations as terminalError.
 		//
 		// E1230 21:42:45.170291 1388422 controller.go:316] "Reconciler error" err="failed to create instance: failed to ensure instance exists: failed to wait for CreateInstance operation: Requested image's type \"container\" doesn't match instance type \"virtual-machine\"" controller="lxcmachine" controllerGroup="infrastructure.cluster.x-k8s.io" controllerKind="LXCMachine" LXCMachine="default/c1-control-plane-kprl9" namespace="default" name="c1-control-plane-kprl9" reconcileID="d40dfec7-ce45-4585-9a1e-5974efbeb925"
+		//
+		// E0325 19:38:50.780759       1 controller.go:316] "Reconciler error" err="failed to create instance: failed to ensure instance exists: failed to wait for CreateInstance operation: Failed creating instance from image: Source image size (5368709120) exceeds specified volume size (5000003584)" controller="lxcmachine" controllerGroup="infrastructure.cluster.x-k8s.io" controllerKind="LXCMachine" LXCMachine="quick-start-glpgz4/quick-start-kvm-vdbzv4-md-0-f448v-b5gwd-pxntp" namespace="quick-start-glpgz4" name="quick-start-kvm-vdbzv4-md-0-f448v-b5gwd-pxntp" reconcileID="12fe1bde-889b-412f-abd3-4990f27cbf15"
 		return nil, fmt.Errorf("failed to ensure instance exists: %w", err)
 	}
 

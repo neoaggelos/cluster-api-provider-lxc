@@ -50,7 +50,7 @@ CLI=incus "${DIR}/setup-e2e-resources.sh"
 if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
   sudo apt update
   sudo apt install ovmf --no-install-recommends --yes
-  sudo cp /usr/share/OVMF/OVMF_CODE.4M.fd /opt/incus/share/qemu/fixup-ovmf-code.fd
+  sudo cp /usr/share/OVMF/OVMF_CODE_4M.fd /opt/incus/share/qemu/fixup-ovmf-code.fd
   incus profile set default raw.qemu.conf='[drive]
 file = "/opt/incus/share/qemu/fixup-ovmf-code.fd"
 '

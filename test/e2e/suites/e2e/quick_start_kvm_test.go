@@ -34,8 +34,7 @@ var _ = Describe("QuickStart", func() {
 				ClusterName:              ptr.To(fmt.Sprintf("quick-start-kvm-%s", util.RandomString(6))),
 
 				ClusterctlVariables: map[string]string{
-					"WORKER_MACHINE_TYPE":    "virtual-machine",
-					"WORKER_MACHINE_DEVICES": "['root,type=disk,path=/,pool=default,size=6GiB']",
+					"WORKER_MACHINE_TYPE": "virtual-machine",
 				},
 			}
 		})

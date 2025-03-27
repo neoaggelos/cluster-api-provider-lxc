@@ -44,3 +44,14 @@ data:
 
 # Setup local Incus daemon for e2e tests
 CLI=incus "${DIR}/setup-e2e-resources.sh"
+
+# NOTE(neoaggelos/2025-03-27): Incus KVMs are not starting in GitHub actions with ubuntu-24.04
+# https://github.com/neoaggelos/cluster-api-provider-lxc/issues/44
+if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
+  sudo apt update
+  sudo apt install ovmf --no-install-recommends --yes
+  sudo cp /usr/share/OVMF/OVMF_CODE.4M.fd /opt/incus/share/qemu/fixup-ovmf-code.fd
+  incus profile set default raw.qemu.conf='[drive]
+file = "/opt/incus/share/qemu/fixup-ovmf-code.fd"
+'
+fi

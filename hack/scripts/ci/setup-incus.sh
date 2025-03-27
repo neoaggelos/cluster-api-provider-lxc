@@ -2,6 +2,11 @@
 
 DIR="$(dirname "$(realpath "$0")")"
 
+if ! which zpool; then
+  sudo apt update
+  sudo apt install zfsutils-linux --yes --no-install-recommends
+fi
+
 if ! which incus; then
   curl https://pkgs.zabbly.com/get/incus-stable | sudo bash -x
 fi

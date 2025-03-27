@@ -8,6 +8,10 @@
 # instance profiles
 LXC_PROFILE_NAME=default
 
+# zfs storage pool
+LXC_STORAGE_POOL_NAME=zfs
+LXC_STORAGE_POOL_SIZE=20GiB
+
 # local bridge network (10.200.1.0/24)
 LXC_NETWORK_NAME="testbr0"
 LXC_NETWORK_IPV6="none"
@@ -21,6 +25,17 @@ LXC_OVN_NETWORK_NAME="testovn0"
 LXC_OVN_NETWORK_IPV6="none"
 LXC_OVN_NETWORK_IPV4="192.168.200.1/24"
 LXC_OVN_NETWORK_IPV4_LB="10.200.1.201"
+
+########################################################################
+
+# configure storage
+if ! "${CLI}" storage show "${LXC_STORAGE_POOL_NAME}" 2> /dev/null; then
+  if ! "${CLI}" storage create "${LXC_STORAGE_POOL_NAME}" zfs size="${LXC_STORAGE_POOL_SIZE}"; then
+    echo "Failed to create ZFS storage pool, will use default storage"
+  else
+    "${CLI}" profile device set "${LXC_PROFILE_NAME}" root type=disk pool="${LXC_STORAGE_POOL_NAME}"
+  fi
+fi
 
 ########################################################################
 

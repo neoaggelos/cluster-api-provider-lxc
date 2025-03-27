@@ -2,6 +2,11 @@
 
 DIR="$(dirname "$(realpath "$0")")"
 
+if ! which zpool; then
+  sudo apt update
+  sudo apt install zfsutils-linux --yes --no-install-recommends
+fi
+
 if ! which incus; then
   curl https://pkgs.zabbly.com/get/incus-stable | sudo bash -x
 fi
@@ -38,4 +43,4 @@ data:
 " | tee "${DIR}/../../../lxc-secret.yaml"
 
 # Setup local Incus daemon for e2e tests
-CLI=incus "${DIR}/setup-e2e.sh"
+CLI=incus "${DIR}/setup-e2e-resources.sh"

@@ -54,4 +54,5 @@ if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
   incus profile set default raw.qemu.conf='[drive]
 file = "/opt/incus/share/qemu/fixup-ovmf-code.fd"
 '
+  incus profile show default
 fi

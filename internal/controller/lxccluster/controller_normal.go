@@ -20,10 +20,9 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if lxcCluster.Spec.SkipDefaultKubeadmProfile {
 		conditions.MarkFalse(lxcCluster, infrav1.KubeadmProfileAvailableCondition, infrav1.KubeadmProfileDisabledReason, clusterv1.ConditionSeverityInfo, "Will not create default kubeadm profile %s", profileName)
 	} else {
-
-		ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profileName", profileName))
+		ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profileName", profileName, "privileged", !lxcCluster.Spec.Unprivileged))
 		log.FromContext(ctx).Info("Creating default kubeadm profile")
-		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: profileName, ProfilePut: profile.DefaultKubeadm}); err != nil {
+		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: profileName, ProfilePut: profile.DefaultKubeadm(!lxcCluster.Spec.Unprivileged)}); err != nil {
 			err = fmt.Errorf("failed to create default kubeadm profile %q: %w", profileName, err)
 			log.FromContext(ctx).Error(err, "Failed to create default kubeadm profile")
 

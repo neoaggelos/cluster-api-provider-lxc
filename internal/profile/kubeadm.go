@@ -11,12 +11,19 @@ var (
 	//go:embed embed/kubeadm.yaml
 	defaultKubeadmYAML []byte
 
-	// DefaultKubeadm is the default kubeadm profile to use with LXC nodes.
-	DefaultKubeadm api.ProfilePut
+	//go:embed embed/unprivileged.yaml
+	defaultKubeadmUnprivilegedYAML []byte
+
+	// defaultKubeadm is the profile to use with privileged LXC nodes.
+	defaultKubeadm api.ProfilePut
+
+	// defaultKubeadmUnprivileged is the profile to use with unprivileged LXC nodes.
+	defaultKubeadmUnprivileged api.ProfilePut
 )
 
 func init() {
-	DefaultKubeadm = mustParseProfile(defaultKubeadmYAML)
+	defaultKubeadm = mustParseProfile(defaultKubeadmYAML)
+	defaultKubeadmUnprivileged = mustParseProfile(defaultKubeadmUnprivilegedYAML)
 }
 
 func mustParseProfile(b []byte) api.ProfilePut {
@@ -25,4 +32,11 @@ func mustParseProfile(b []byte) api.ProfilePut {
 		panic(err)
 	}
 	return profile
+}
+
+func DefaultKubeadm(privileged bool) api.ProfilePut {
+	if privileged {
+		return defaultKubeadm
+	}
+	return defaultKubeadmUnprivileged
 }

@@ -761,9 +761,6 @@ spec:
   template:
     spec:
       kubeadmConfigSpec:
-        clusterConfiguration:
-          featureGates:
-            KubeletInUserNamespace: true
         initConfiguration:
           nodeRegistration:
             kubeletExtraArgs:

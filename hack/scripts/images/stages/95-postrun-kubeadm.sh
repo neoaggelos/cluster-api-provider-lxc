@@ -17,4 +17,5 @@ set -xeu
   kubeadm version -o yaml
   kubectl version -o yaml --client
   crictl images
+  ls -la /etc/containerd/
 ) 2>&1 | tee /opt/manifest.txt

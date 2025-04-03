@@ -16,6 +16,138 @@ KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL="${KUBELET_SERVICE_KUBEADM_DROPIN_CONF
 CONTAINERD_CONFIG_URL="${CONTAINERD_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/config.toml"}"
 CONTAINERD_SERVICE_URL="${CONTAINERD_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/containerd.service"}"
 
+KUBELET_SERVICE='
+# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service
+
+[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=https://kubernetes.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/kubelet
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+'
+
+KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG='
+# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf
+
+# Note: This dropin only works with kubeadm and kubelet v1.11+
+[Service]
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+# This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+# This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+EnvironmentFile=-/etc/sysconfig/kubelet
+ExecStart=
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+'
+
+CONTAINERD_CONFIG='
+version = 2
+
+[plugins."io.containerd.grpc.v1.cri"]
+  stream_server_address = "127.0.0.1"
+  stream_server_port = "10010"
+  enable_unprivileged_ports = true
+  enable_unprivileged_icmp = true
+  device_ownership_from_security_context = false
+  sandbox_image = "registry.k8s.io/pause:3.10"
+  enable_selinux = false
+
+[plugins."io.containerd.grpc.v1.cri".containerd]
+  snapshotter = "overlayfs"
+  disable_snapshot_annotations = true
+
+[plugins."io.containerd.grpc.v1.cri".cni]
+  bin_dir = "/opt/cni/bin"
+  conf_dir = "/etc/cni/net.d"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  runtime_type = "io.containerd.runc.v2"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+  SystemdCgroup = true
+
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
+'
+
+CONTAINERD_UNPRIVILEGED_CONFIG='
+version = 2
+
+[plugins."io.containerd.grpc.v1.cri"]
+  stream_server_address = "127.0.0.1"
+  stream_server_port = "10010"
+  enable_unprivileged_ports = true
+  enable_unprivileged_icmp = true
+  device_ownership_from_security_context = false
+  sandbox_image = "registry.k8s.io/pause:3.10"
+  enable_selinux = false
+
+  ## unprivileged
+  disable_apparmor = true
+  disable_hugetlb_controller = true
+  restrict_oom_score_adj = true
+
+[plugins."io.containerd.grpc.v1.cri".containerd]
+  snapshotter = "overlayfs"
+  disable_snapshot_annotations = true
+
+[plugins."io.containerd.grpc.v1.cri".cni]
+  bin_dir = "/opt/cni/bin"
+  conf_dir = "/etc/cni/net.d"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  runtime_type = "io.containerd.runc.v2"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+  ## unprivileged
+  SystemdCgroup = false
+
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
+'
+
+CONTAINERD_SERVICE='
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target local-fs.target
+
+[Service]
+#uncomment to enable the experimental sbservice (sandboxed) version of containerd/cri integration
+#Environment="ENABLE_CRI_SANDBOXES=sandboxed"
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/bin/containerd
+
+Type=notify
+Delegate=yes
+KillMode=process
+Restart=always
+RestartSec=5
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNPROC=infinity
+LimitCORE=infinity
+LimitNOFILE=infinity
+# Comment TasksMax if your systemd version does not supports it.
+# Only systemd 226 and above support this version.
+TasksMax=infinity
+OOMScoreAdjust=-999
+
+[Install]
+WantedBy=multi-user.target
+'
+
 # infer ARCH
 ARCH="$(uname -m)"
 if uname -m | grep -q x86_64; then ARCH=amd64; fi
@@ -49,10 +181,12 @@ cp /usr/bin/runc /usr/sbin/runc
 mkdir -p /etc/containerd
 curl -L "https://github.com/containerd/containerd/releases/download/${CONTAINERD_VERSION}/containerd-static-${CONTAINERD_VERSION#v}-linux-${ARCH}.tar.gz" | tar -C /usr -xz
 if [ ! -f /etc/containerd/config.toml ]; then
-  curl -L "${CONTAINERD_CONFIG_URL}" | tee /etc/containerd/config.toml
+  echo "${CONTAINERD_CONFIG}" | tee /etc/containerd/config.default.toml
+  echo "${CONTAINERD_CONFIG_UNPRIVILEGED}" | tee /etc/containerd/config.unprivileged.toml
+  ln -sf config.default.toml /etc/containerd/config.toml
 fi
 if ! systemctl list-unit-files containerd.service &>/dev/null; then
-  curl -L "${CONTAINERD_SERVICE_URL}" | tee /usr/lib/systemd/system/containerd.service
+  echo "${CONTAINERD_SERVICE}" | tee /usr/lib/systemd/system/containerd.service
 fi
 systemctl enable containerd.service
 systemctl start containerd.service
@@ -74,8 +208,8 @@ chmod +x /usr/bin/kubeadm /usr/bin/kubelet /usr/bin/kubectl
 # kubelet service
 mkdir -p /usr/lib/systemd/system/kubelet.service.d
 if ! systemctl list-unit-files kubelet.service &>/dev/null; then
-  curl -sSL "${KUBELET_SERVICE_URL}" | tee /usr/lib/systemd/system/kubelet.service
-  curl -sSL "${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL}" | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+  echo "${KUBELET_SERVICE}" | tee /usr/lib/systemd/system/kubelet.service
+  echo "${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG}" | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 fi
 systemctl enable kubelet.service
 

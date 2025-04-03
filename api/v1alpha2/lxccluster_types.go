@@ -44,6 +44,13 @@ type LXCClusterSpec struct {
 	// LoadBalancer is configuration for provisioning the load balancer of the cluster.
 	LoadBalancer LXCClusterLoadBalancer `json:"loadBalancer"`
 
+	// Unprivileged will launch unprivileged LXC containers for the cluster machines.
+	//
+	// Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).
+	//
+	// +optional
+	Unprivileged bool `json:"unprivileged"`
+
 	// Skip creation of the default kubeadm profile "cluster-api-$namespace-$name"
 	// for LXCClusters.
 	//

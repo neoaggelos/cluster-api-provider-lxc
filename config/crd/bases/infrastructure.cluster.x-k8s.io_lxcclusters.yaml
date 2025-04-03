@@ -255,6 +255,12 @@ spec:
                   This is useful in cases where a restricted project is used, which does not
                   allow privileged containers.
                 type: boolean
+              unprivileged:
+                description: |-
+                  Unprivileged will launch unprivileged LXC containers for the cluster machines.
+
+                  Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).
+                type: boolean
             required:
             - loadBalancer
             type: object

@@ -663,11 +663,13 @@ spec:
           ln -sf config.unprivileged.toml /etc/containerd/config.toml
           systemctl restart containerd
       - op: add
-        path: /spec/template/spec/kubeadmConfigSpec/initConfiguration/patches/directory
-        value: /etc/kubernetes/patches
+        path: /spec/template/spec/kubeadmConfigSpec/initConfiguration/patches
+        value:
+          directory: /etc/kubernetes/patches
       - op: add
-        path: /spec/template/spec/kubeadmConfigSpec/joinConfiguration/patches/directory
-        value: /etc/kubernetes/patches
+        path: /spec/template/spec/kubeadmConfigSpec/joinConfiguration/patches
+        value:
+          directory: /etc/kubernetes/patches
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/files/-
         value:
@@ -701,8 +703,9 @@ spec:
           ln -sf config.unprivileged.toml /etc/containerd/config.toml
           systemctl restart containerd
       - op: add
-        path: /spec/template/spec/joinConfiguration/patches/directory
-        value: /etc/kubernetes/patches
+        path: /spec/template/spec/joinConfiguration/patches
+        value:
+          directory: /etc/kubernetes/patches
       - op: add
         path: /spec/template/spec/files/-
         value:
@@ -766,11 +769,13 @@ spec:
             kubeletExtraArgs:
               eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
               fail-swap-on: "false"
+          patches: {}
         joinConfiguration:
           nodeRegistration:
             kubeletExtraArgs:
               eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
               fail-swap-on: "false"
+          patches: {}
         preKubeadmCommands:
         - set -x
         # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
@@ -835,5 +840,6 @@ spec:
           kubeletExtraArgs:
             eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
             fail-swap-on: "false"
+        patches: {}
       preKubeadmCommands:
       - set -x

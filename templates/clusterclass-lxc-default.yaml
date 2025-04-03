@@ -675,7 +675,7 @@ spec:
         value:
           path: /etc/kubernetes/patches/kubeletconfiguration0+strategic.json
           owner: root:root
-          mode: "0400"
+          permissions: "0400"
           content: |
             {
               "apiVersion": "kubelet.config.k8s.io/v1beta1",
@@ -711,7 +711,7 @@ spec:
         value:
           path: /etc/kubernetes/patches/kubeletconfiguration0+strategic.json
           owner: root:root
-          mode: "0400"
+          permissions: "0400"
           content: |
             {
               "apiVersion": "kubelet.config.k8s.io/v1beta1",
@@ -841,6 +841,10 @@ spec:
             eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
             fail-swap-on: "false"
         patches: {}
-      files: []
+      files:
+      - path: /etc/kubernetes/manifests/.placeholder
+        content: placeholder file to prevent kubelet path not found errors
+        permissions: "0400"
+        owner: "root:root"
       preKubeadmCommands:
       - set -x

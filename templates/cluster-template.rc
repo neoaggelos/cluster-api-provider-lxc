@@ -15,6 +15,9 @@ export WORKER_MACHINE_COUNT=1
 ## [optional] Deploy kube-flannel on the cluster.
 #export DEPLOY_KUBE_FLANNEL=true
 
+## [optional] Use unprivileged containers.
+#export PRIVILEGED=false
+
 ## [optional] Base image to use. This must be set if there are no base images for your Kubernetes version.
 ## See https://neoaggelos.github.io/cluster-api-provider-lxc/reference/default-simplestreams-server.html#provided-images
 ##

@@ -18,6 +18,8 @@ spec:
     # Cluster configuration
     - name: secretRef
       value: ${LXC_SECRET_NAME}
+    - name: privileged
+      value: ${PRIVILEGED:=true}
     - name: loadBalancer
       value:
         ${LOAD_BALANCER}

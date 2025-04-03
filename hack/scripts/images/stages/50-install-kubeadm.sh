@@ -182,7 +182,7 @@ mkdir -p /etc/containerd
 curl -L "https://github.com/containerd/containerd/releases/download/${CONTAINERD_VERSION}/containerd-static-${CONTAINERD_VERSION#v}-linux-${ARCH}.tar.gz" | tar -C /usr -xz
 if [ ! -f /etc/containerd/config.toml ]; then
   echo "${CONTAINERD_CONFIG}" | tee /etc/containerd/config.default.toml
-  echo "${CONTAINERD_CONFIG_UNPRIVILEGED}" | tee /etc/containerd/config.unprivileged.toml
+  echo "${CONTAINERD_UNPRIVILEGED_CONFIG}" | tee /etc/containerd/config.unprivileged.toml
   ln -sf config.default.toml /etc/containerd/config.toml
 fi
 if ! systemctl list-unit-files containerd.service &>/dev/null; then

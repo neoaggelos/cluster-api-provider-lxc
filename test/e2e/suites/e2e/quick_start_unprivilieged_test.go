@@ -34,10 +34,7 @@ var _ = Describe("QuickStart", func() {
 				ClusterName:              ptr.To(fmt.Sprintf("quick-start-unprivileged-%s", util.RandomString(6))),
 
 				ClusterctlVariables: map[string]string{
-					"KUBERNETES_VERSION": "v1.32.3",
-					"LXC_IMAGE_NAME":     "ubuntu:24.04",
-					"INSTALL_KUBEADM":    "true",
-					"PRIVILEGED":         "false",
+					"PRIVILEGED": "false",
 				},
 			}
 		})

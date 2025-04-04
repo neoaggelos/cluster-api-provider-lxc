@@ -16,7 +16,7 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("Unprivileged", Label("Unprivileged"), func() {
+	Context("Unprivileged", Label("PRBlocking"), func() {
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
 			return e2e.QuickStartSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,

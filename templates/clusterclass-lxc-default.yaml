@@ -768,6 +768,10 @@ spec:
           fi
         postKubeadmCommands: []
         files:
+        - path: /etc/kubernetes/patches/.placeholder
+          content: placeholder file to prevent kubeadm path not found errors
+          permissions: "0400"
+          owner: "root:root"
         - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
           content: |
             ---
@@ -828,6 +832,10 @@ spec:
       files:
       - path: /etc/kubernetes/manifests/.placeholder
         content: placeholder file to prevent kubelet path not found errors
+        permissions: "0400"
+        owner: "root:root"
+      - path: /etc/kubernetes/patches/.placeholder
+        content: placeholder file to prevent kubeadm path not found errors
         permissions: "0400"
         owner: "root:root"
       preKubeadmCommands:

@@ -83,6 +83,10 @@ func (o LXCLogCollector) CollectMachineLog(ctx context.Context, managementCluste
 		{name: "kubelet.log", command: []string{"journalctl", "--no-pager", "-u", "kubelet.service"}},
 		{name: "containerd.log", command: []string{"journalctl", "--no-pager", "-u", "containerd.service"}},
 		{name: "var-log-pods.tar.gz", command: []string{"bash", "-c", "tar cv /var/log/pods | gzip"}},
+		// kubernetes configuration
+		{name: "etc-containerd.tar.gz", command: []string{"bash", "-c", "tar cv /etc/containerd | gzip"}},
+		{name: "etc-kubernetes.tar.gz", command: []string{"bash", "-c", "tar cv /etc/kubernetes | gzip"}},
+		{name: "run-kubeadm.tar.gz", command: []string{"bash", "-c", "tar cv /run/kubeadm | gzip"}},
 		// container runtime
 		{name: "crictl-info.json", command: []string{"crictl", "info"}},
 		{name: "crictl-ps-a.log", command: []string{"crictl", "ps", "-a"}},

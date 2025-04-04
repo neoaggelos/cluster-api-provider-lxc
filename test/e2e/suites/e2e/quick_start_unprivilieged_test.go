@@ -9,27 +9,14 @@ import (
 	"sigs.k8s.io/cluster-api/test/e2e"
 	"sigs.k8s.io/cluster-api/util"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
 	"github.com/neoaggelos/cluster-api-provider-lxc/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("QuickStart", func() {
 	Context("Unprivileged", Label("Unprivileged"), func() {
-		BeforeEach(func(ctx context.Context) {
-			client, err := incus.New(ctx, e2eCtx.Settings.LXCClientOptions)
-			Expect(err).ToNot(HaveOccurred())
-
-			server, _, err := client.Client.GetServer()
-			Expect(err).ToNot(HaveOccurred(), "Failed to GetServer")
-
-			if server.Environment.Server != "incus" {
-				Skip(fmt.Sprintf("Unprivileged containers are only supported on Incus, but server is %q", server.Environment.Server))
-			}
-		})
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
 			return e2e.QuickStartSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,

@@ -65,31 +65,32 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		}
 	}
 
+	// Figure it which infrastructure we are targeting
+	serverName, err := c.tryFindServer()
+	if err != nil {
+		log.FromContext(ctx).Error(err, "Failed to get server information")
+	}
+
 	// Incus and LXD have diverged image servers for Ubuntu images, making it easy to confuse users.
 	// To address the issue, we allow a special prefix `ubuntu:VERSION` for image names:
 	if strings.HasPrefix(image.Name, "ubuntu:") {
-		server, _, err := c.Client.GetServer()
-		if err != nil {
-			log.FromContext(ctx).Error(err, "Failed to GetServer")
-		} else {
-			switch server.Environment.Server {
-			case "incus":
-				image = infrav1.LXCMachineImageSource{
-					Name:     fmt.Sprintf("ubuntu/%s/cloud", strings.TrimPrefix(image.Name, "ubuntu:")),
-					Server:   "https://images.linuxcontainers.org",
-					Protocol: "simplestreams",
-				}
-				log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://images.linuxcontainers.org")
-			case "lxd":
-				image = infrav1.LXCMachineImageSource{
-					Name:     strings.TrimPrefix(image.Name, "ubuntu:"),
-					Server:   "https://cloud-images.ubuntu.com/releases/",
-					Protocol: "simplestreams",
-				}
-				log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://cloud-images.ubuntu.com/releases/")
-			default:
-				return nil, terminalError{fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", image.Name, server.Environment.Server)}
+		switch serverName {
+		case "incus":
+			image = infrav1.LXCMachineImageSource{
+				Name:     fmt.Sprintf("ubuntu/%s/cloud", strings.TrimPrefix(image.Name, "ubuntu:")),
+				Server:   "https://images.linuxcontainers.org",
+				Protocol: "simplestreams",
 			}
+			log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://images.linuxcontainers.org")
+		case "lxd":
+			image = infrav1.LXCMachineImageSource{
+				Name:     strings.TrimPrefix(image.Name, "ubuntu:"),
+				Server:   "https://cloud-images.ubuntu.com/releases/",
+				Protocol: "simplestreams",
+			}
+			log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://cloud-images.ubuntu.com/releases/")
+		default:
+			return nil, terminalError{fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", image.Name, serverName)}
 		}
 	}
 	if image.IsZero() {
@@ -114,6 +115,27 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	}
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("image", image))
 
+	config := map[string]string{
+		configClusterNameKey:      cluster.Name,
+		configClusterNamespaceKey: cluster.Namespace,
+		configInstanceRoleKey:     role,
+		configCloudInitKey:        cloudInit,
+	}
+	if serverName == "lxd" && lxcCluster.Spec.Unprivileged {
+		log.FromContext(ctx).Info("Adding config to set security.nesting=true and disable apparmor service on LXD instance")
+		config["security.nesting"] = "true"
+		devices["00-disable-snapd"] = map[string]string{
+			"type":   "disk",
+			"source": "/dev/null",
+			"path":   "/usr/lib/systemd/system/snapd.service",
+		}
+		devices["00-disable-apparmor"] = map[string]string{
+			"type":   "disk",
+			"source": "/dev/null",
+			"path":   "/usr/lib/systemd/system/apparmor.service",
+		}
+	}
+
 	if err := c.createInstanceIfNotExists(ctx, api.InstancesPost{
 		Name:         name,
 		Type:         c.instanceTypeFromAPI(lxcMachine.Spec.InstanceType),
@@ -122,12 +144,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		InstancePut: api.InstancePut{
 			Profiles: profiles,
 			Devices:  devices,
-			Config: map[string]string{
-				configClusterNameKey:      cluster.Name,
-				configClusterNamespaceKey: cluster.Namespace,
-				configInstanceRoleKey:     role,
-				configCloudInitKey:        cloudInit,
-			},
+			Config:   config,
 		},
 	}); err != nil {
 		// TODO: Handle the below situations as terminalError.

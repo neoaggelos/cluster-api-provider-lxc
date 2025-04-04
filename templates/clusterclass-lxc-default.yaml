@@ -649,7 +649,7 @@ spec:
             apt update && apt install curl -y && curl https://raw.githubusercontent.com/neoaggelos/cluster-api-provider-lxc/refs/heads/feat/unprivileged-containers/hack/scripts/images/stages/50-install-kubeadm.sh | bash -s -- {{ .builtin.machineDeployment.version }}
   - name: controlPlaneConfigureUnprivileged
     description: Configure containerd for unprivileged mode in KubeadmControlPlane
-    enabledIf: "{{ not .privileged }}"
+    enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine" }}'
     definitions:
     - selector:
         apiVersion: controlplane.cluster.x-k8s.io/v1beta1
@@ -687,7 +687,7 @@ spec:
             }
   - name: workerConfigureUnprivileged
     description: Configure containerd for unprivileged mode in MachineDeployments
-    enabledIf: "{{ not .privileged }}"
+    enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine" }}'
     definitions:
     - selector:
         apiVersion: bootstrap.cluster.x-k8s.io/v1beta1

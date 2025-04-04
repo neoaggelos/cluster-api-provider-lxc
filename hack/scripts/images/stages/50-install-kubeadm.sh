@@ -148,6 +148,14 @@ OOMScoreAdjust=-999
 WantedBy=multi-user.target
 '
 
+CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE='#!/bin/bash -xeu
+
+set -xeu
+
+ln -sf config.unprivileged.toml /etc/containerd/config.toml
+systemctl restart containerd
+'
+
 # infer ARCH
 ARCH="$(uname -m)"
 if uname -m | grep -q x86_64; then ARCH=amd64; fi
@@ -190,6 +198,10 @@ if ! systemctl list-unit-files containerd.service &>/dev/null; then
 fi
 systemctl enable containerd.service
 systemctl start containerd.service
+
+# containerd unprivileged mode
+echo "${CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE}" | tee /opt/containerd-configure-unprivileged-mode.sh
+chmod +x /opt/containerd-configure-unprivileged-mode.sh
 
 # cni plugins
 mkdir -p /opt/cni/bin

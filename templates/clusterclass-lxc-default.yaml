@@ -659,9 +659,7 @@ spec:
       jsonPatches:
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/preKubeadmCommands/-
-        value: |
-          ln -sf config.unprivileged.toml /etc/containerd/config.toml
-          systemctl restart containerd
+        value: /opt/containerd-configure-unprivileged-mode.sh
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/files/-
         value:
@@ -691,9 +689,7 @@ spec:
       jsonPatches:
       - op: add
         path: /spec/template/spec/preKubeadmCommands/-
-        value: |
-          ln -sf config.unprivileged.toml /etc/containerd/config.toml
-          systemctl restart containerd
+        value: /opt/containerd-configure-unprivileged-mode.sh
       - op: add
         path: /spec/template/spec/files/-
         value:

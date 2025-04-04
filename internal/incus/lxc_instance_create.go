@@ -124,6 +124,9 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	if serverName == "lxd" && lxcCluster.Spec.Unprivileged {
 		log.FromContext(ctx).Info("Adding config to set security.nesting=true and disable apparmor service on LXD instance")
 		config["security.nesting"] = "true"
+		if devices == nil {
+			devices = make(map[string]map[string]string, 2)
+		}
 		devices["00-disable-snapd"] = map[string]string{
 			"type":   "disk",
 			"source": "/dev/null",

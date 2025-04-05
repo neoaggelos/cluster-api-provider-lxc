@@ -79,6 +79,10 @@ export LOAD_BALANCER="ovn: {host: 10.100.42.1, networkName: ovn-0}"
 
 {{#/tabs }}
 
+### `PRIVILEGED`
+
+Set `PRIVILEGED=false` to use [unprivileged containers](../../explanation/unprivileged-containers.md).
+
 ### `DEPLOY_KUBE_FLANNEL`
 
 Set `DEPLOY_KUBE_FLANNEL=true` to deploy the default kube-flannel CNI on the cluster. If not set, you must manually a CNI before the cluster is usable.

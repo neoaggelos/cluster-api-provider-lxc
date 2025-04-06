@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/lxc/incus/v6/shared/api"
-	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/yaml"
 )
 
 // loadBalancerNetwork is a LoadBalancerManager that spins up a network load-balancer.

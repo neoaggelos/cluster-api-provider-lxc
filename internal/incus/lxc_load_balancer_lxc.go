@@ -7,8 +7,8 @@ import (
 
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
-	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/yaml"
 
 	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
 	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"

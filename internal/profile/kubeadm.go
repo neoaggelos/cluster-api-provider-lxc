@@ -4,7 +4,7 @@ import (
 	_ "embed"
 
 	"github.com/lxc/incus/v6/shared/api"
-	"gopkg.in/yaml.v2"
+	"sigs.k8s.io/yaml"
 )
 
 var (

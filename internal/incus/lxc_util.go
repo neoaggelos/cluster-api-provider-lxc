@@ -253,11 +253,3 @@ func (c *Client) tryFindInstanceCreateOperation(ctx context.Context, instanceNam
 	}
 	return nil, nil
 }
-
-func (c *Client) tryFindServer() (string, error) {
-	server, _, err := c.Client.GetServer()
-	if err != nil {
-		return "", fmt.Errorf("failed to GetServer: %w", err)
-	}
-	return server.Environment.Server, nil
-}

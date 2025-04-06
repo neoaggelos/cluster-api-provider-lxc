@@ -65,16 +65,16 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		}
 	}
 
-	// Figure it which infrastructure we are targeting
-	serverName, err := c.tryFindServer()
+	// Fetch server information
+	server, _, err := c.Client.GetServer()
 	if err != nil {
-		log.FromContext(ctx).Error(err, "Failed to get server information")
+		log.FromContext(ctx).Error(err, "Warning: failed to get server information")
 	}
 
 	// Incus and LXD have diverged image servers for Ubuntu images, making it easy to confuse users.
 	// To address the issue, we allow a special prefix `ubuntu:VERSION` for image names:
 	if strings.HasPrefix(image.Name, "ubuntu:") {
-		switch serverName {
+		switch server.Environment.Server {
 		case "incus":
 			image = infrav1.LXCMachineImageSource{
 				Name:     fmt.Sprintf("ubuntu/%s/cloud", strings.TrimPrefix(image.Name, "ubuntu:")),
@@ -90,7 +90,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 			}
 			log.FromContext(ctx).V(2).WithValues("image", image).Info("Using Ubuntu image from https://cloud-images.ubuntu.com/releases/")
 		default:
-			return nil, terminalError{fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", image.Name, serverName)}
+			return nil, terminalError{fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", image.Name, server.Environment.Server)}
 		}
 	}
 	if image.IsZero() {
@@ -121,7 +121,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		configInstanceRoleKey:     role,
 		configCloudInitKey:        cloudInit,
 	}
-	if serverName == "lxd" && lxcCluster.Spec.Unprivileged {
+	if server.Environment.Server == "lxd" && lxcCluster.Spec.Unprivileged {
 		log.FromContext(ctx).Info("Adding config to set security.nesting=true and disable apparmor service on LXD instance")
 		config["security.nesting"] = "true"
 		if devices == nil {

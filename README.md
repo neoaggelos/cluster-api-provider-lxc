@@ -48,11 +48,12 @@ Rough steps for version v0.5.0:
 - [x] Add e2e tests for cluster upgrades.
 - [x] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
 - [x] Write developer guide.
+- [x] Support unprivileged containers.
+- [x] Extend e2e suite with tests for all cluster-template types (kvm, unprivileged containers, kube-vip, ovn)
+- [x] Gather initial user feedback.
 - [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
 - [ ] Write documentation with common troubleshooting steps.
 - [ ] Write documentation with common cluster deployment scenarios.
-- [ ] Extend e2e suite with tests for all cluster-template types (kube-vip, ovn)
-- [ ] Gather initial user feedback.
 
 ### $Future
 

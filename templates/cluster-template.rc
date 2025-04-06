@@ -1,5 +1,5 @@
 ## Cluster version and size
-export KUBERNETES_VERSION=v1.32.0
+export KUBERNETES_VERSION=v1.32.3
 export CONTROL_PLANE_MACHINE_COUNT=1
 export WORKER_MACHINE_COUNT=1
 

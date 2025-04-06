@@ -14,7 +14,7 @@ Unprivileged containers require extra configuration on the container runtime. Th
 
 ## Running Kubernetes in unprivileged containers
 
-In order for Kubernetes to work inside an unprivileged containers, configuration of containerd, kubelet and kube-proxy is adjusted, in accordance with [the upstream project documentation](#TODO).
+In order for Kubernetes to work inside an unprivileged containers, configuration of containerd, kubelet and kube-proxy is adjusted, in accordance with [the upstream project documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns/).
 
 In particular, the following configuration adjustments are performed:
 
@@ -42,7 +42,7 @@ Unprivileged containers are supported with the pre-built kubeadm images starting
 
 ## Limitations in unprivileged containers
 
-Known limitations apply when using unprivileged containers, e.g. consuming NFS volumes. See [](#TODO) for more details.
+Known limitations apply when using unprivileged containers, e.g. consuming NFS volumes. See [Caveats](https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns/#caveats) and [Caveats and Future work](https://rootlesscontaine.rs/caveats/) for more details.
 
 Similar limitations might apply for the CNI of the cluster. `kube-flannel` with the vxlan backend is known to work.
 

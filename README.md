@@ -70,4 +70,4 @@ The `cluster-api-provider-lxc` project would love your suggestions, contribution
 
 Remember that there are numerous effective ways to contribute to the project: raise a pull request to fix a bug, improve test coverage, improve existing documentation or even participate in GitHub issues. We want your help!
 
-Please refer to the [developer guide](./howto/developer-guide.md) in order to get started with setting up a local environment for development and testing.
+Please refer to the [developer guide](https://neoaggelos.github.io/cluster-api-provider-lxc/howto/developer-guide.html) in order to get started with setting up a local environment for development and testing.

@@ -348,7 +348,6 @@ spec:
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/postKubeadmCommands/-
         value: |
-          set -x
           if [ -f /run/kubeadm/kubeadm.yaml ]; then
             kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /run/kubeadm/kube-flannel.yaml
           fi
@@ -760,13 +759,14 @@ spec:
           patches:
             directory: /etc/kubernetes/patches
         preKubeadmCommands:
-        - set -x
+        - set -ex
         # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
         - |
           if systemd-detect-virt -c -q 2>/dev/null && [ -f /run/kubeadm/kubeadm.yaml ]; then
             cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
           fi
-        postKubeadmCommands: []
+        postKubeadmCommands:
+        - set -x
         files:
         - path: /etc/kubernetes/patches/.placeholder
           content: placeholder file to prevent kubeadm path not found errors

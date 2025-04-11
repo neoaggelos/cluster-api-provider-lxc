@@ -48,15 +48,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxccluster"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/controller/lxcmachine"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/controller/lxccluster"
+	"github.com/lxc/cluster-api-provider-incus/internal/controller/lxcmachine"
 )
 
 var (
 	scheme         = runtime.NewScheme()
 	setupLog       = ctrl.Log.WithName("setup")
-	controllerName = "cluster-api-lxc-controller-manager"
+	controllerName = "cluster-api-incus-controller-manager"
 
 	// flags.
 	enableLeaderElection        bool
@@ -80,7 +80,7 @@ var (
 	managerOptions              = flags.ManagerOptions{}
 	logOptions                  = logs.NewOptions()
 
-	// CAPL specific flags.
+	// CAPN specific flags.
 	concurrency             int
 	clusterCacheConcurrency int
 )
@@ -221,7 +221,7 @@ func main() {
 	ctrlOptions := ctrl.Options{
 		Scheme:                     scheme,
 		LeaderElection:             enableLeaderElection,
-		LeaderElectionID:           "controller-leader-election-capl",
+		LeaderElectionID:           "controller-leader-election-capn",
 		LeaseDuration:              &leaderElectionLeaseDuration,
 		RenewDeadline:              &leaderElectionRenewDeadline,
 		RetryPeriod:                &leaderElectionRetryPeriod,

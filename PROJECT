@@ -6,7 +6,7 @@ domain: cluster.x-k8s.io
 layout:
 - go.kubebuilder.io/v4
 projectName: test
-repo: github.com/neoaggelos/cluster-api-provider-lxc
+repo: github.com/lxc/cluster-api-provider-incus
 resources:
 - api:
     crdVersion: v1
@@ -15,7 +15,7 @@ resources:
   domain: cluster.x-k8s.io
   group: infrastructure
   kind: LXCCluster
-  path: github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2
+  path: github.com/lxc/cluster-api-provider-incus/api/v1alpha2
   version: v1alpha2
 - api:
     crdVersion: v1
@@ -23,7 +23,7 @@ resources:
   domain: cluster.x-k8s.io
   group: infrastructure
   kind: LXCClusterTemplate
-  path: github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2
+  path: github.com/lxc/cluster-api-provider-incus/api/v1alpha2
   version: v1alpha2
 - api:
     crdVersion: v1
@@ -31,7 +31,7 @@ resources:
   domain: cluster.x-k8s.io
   group: infrastructure
   kind: LXCMachineTemplate
-  path: github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2
+  path: github.com/lxc/cluster-api-provider-incus/api/v1alpha2
   version: v1alpha2
 - api:
     crdVersion: v1
@@ -40,6 +40,6 @@ resources:
   domain: cluster.x-k8s.io
   group: infrastructure
   kind: LXCMachine
-  path: github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2
+  path: github.com/lxc/cluster-api-provider-incus/api/v1alpha2
   version: v1alpha2
 version: "3"

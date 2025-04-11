@@ -10,8 +10,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/loadbalancer"
 )
 
 // loadBalancerLXC is a LoadBalancerManager that spins up an Ubuntu LXC container and installs haproxy from apt.

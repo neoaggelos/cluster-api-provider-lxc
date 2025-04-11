@@ -1,4 +1,4 @@
-module github.com/neoaggelos/cluster-api-provider-lxc/hack/tools
+module github.com/lxc/cluster-api-provider-incus/hack/tools
 
 go 1.23.4
 

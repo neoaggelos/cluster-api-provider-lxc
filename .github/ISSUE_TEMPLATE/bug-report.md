@@ -34,4 +34,4 @@ about: Something is not working
 <!-- yes/no, or @mention maintainers. Community contributions are welcome. -->
 
 
-<!-- Thank you for making cluster-api-provider-lxc better -->
+<!-- Thank you for making cluster-api-provider-incus better -->

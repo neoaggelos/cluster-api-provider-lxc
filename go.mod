@@ -1,4 +1,4 @@
-module github.com/neoaggelos/cluster-api-provider-lxc
+module github.com/lxc/cluster-api-provider-incus
 
 go 1.23.4
 

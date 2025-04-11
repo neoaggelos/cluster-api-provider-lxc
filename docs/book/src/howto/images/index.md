@@ -1,6 +1,6 @@
 # Build base images
 
-The cluster-api-provider-lxc project builds and pushes base images on the [default simplestreams server](../../reference/default-simplestreams-server.md).
+The cluster-api-provider-incus project builds and pushes base images on the [default simplestreams server](../../reference/default-simplestreams-server.md).
 
 Images on the default server do not support all Kubernetes versions, and availability might vary. Follow the links below for instructions to build base images for:
 

@@ -5,7 +5,7 @@ import (
 
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 )
 
 // LoadBalancerManager can be used to interact with the cluster load balancer.

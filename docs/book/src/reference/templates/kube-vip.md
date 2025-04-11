@@ -20,7 +20,7 @@ The kube-vip cluster-template will create a static pod running [kube-vip] in the
 ## Generate cluster
 
 ```bash
-clusterctl generate cluster example-cluster -i lxc --flavor kube-vip
+clusterctl generate cluster example-cluster -i incus --flavor kube-vip
 ```
 
 ## Cluster Template

@@ -10,7 +10,7 @@ spec:
       cidrBlocks: ${SERVICE_CIDR:=[10.96.0.0/12]}
     serviceDomain: cluster.local
   topology:
-    class: lxc-default
+    class: capn-default
     version: ${KUBERNETES_VERSION}
     controlPlane:
       replicas: ${CONTROL_PLANE_MACHINE_COUNT:=1}

@@ -9,9 +9,9 @@ import (
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/profile"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
+	"github.com/lxc/cluster-api-provider-incus/internal/profile"
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {

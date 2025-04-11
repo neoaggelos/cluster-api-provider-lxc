@@ -95,7 +95,7 @@ Run the script on the instance using the command below. Make sure to specify the
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | incus exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | incus exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -103,7 +103,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-k
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-kubeadm.sh | lxc exec kubeadm-builder -- bash -s -- v1.31.4
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | lxc exec kubeadm-builder -- bash -s -- v1.31.4
 ```
 
 {{#/tab }}
@@ -128,7 +128,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | incus exec kubeadm-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | incus exec kubeadm-builder -- bash
 ```
 
 {{#/tab }}
@@ -136,7 +136,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cle
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec kubeadm-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | lxc exec kubeadm-builder -- bash
 ```
 
 {{#/tab }}

@@ -12,8 +12,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/loadbalancer"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/loadbalancer"
 )
 
 // loadBalancerOCI is a LoadBalancerManager that spins up a haproxy OCI container.

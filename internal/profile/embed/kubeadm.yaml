@@ -1,7 +1,7 @@
 # cat profile.yaml | sudo incus profile create cluster-api-lxc
 # cat profile.yaml | sudo incus profile edit cluster-api-lxc
 
-description: Profile for cluster-api-provider-lxc privileged nodes
+description: Profile for cluster-api-provider-incus privileged nodes
 config:
   linux.kernel_modules: ip_vs,ip_vs_rr,ip_vs_wrr,ip_vs_sh,ip_tables,ip6_tables,iptable_raw,netlink_diag,nf_nat,overlay,br_netfilter,xt_socket
   raw.lxc: |

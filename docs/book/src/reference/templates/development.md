@@ -21,7 +21,7 @@ The development cluster template will create an LXC or OCI container running a h
 ## Generate cluster
 
 ```bash
-clusterctl generate cluster example-cluster -i lxc --flavor development
+clusterctl generate cluster example-cluster -i incus --flavor development
 ```
 
 ## Cluster Template

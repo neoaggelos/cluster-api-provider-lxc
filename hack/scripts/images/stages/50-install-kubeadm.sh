@@ -1,7 +1,7 @@
 #!/bin/bash -xeu
 
 # Usage:
-#  $ /opt/cluster-api-lxc/50-install-kubeadm.sh v1.32.1
+#  $ /opt/cluster-api/install-kubeadm.sh v1.32.1
 
 set -xeu
 
@@ -10,11 +10,6 @@ CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.6.2}"      # https://github.com/c
 CRICTL_VERSION="${CRICTL_VERSION:-v1.32.0}"               # https://github.com/kubernetes-sigs/cri-tools
 CONTAINERD_VERSION="${CONTAINERD_VERSION:-v1.7.27}"       # https://github.com/containerd/containerd
 RUNC_VERSION="${RUNC_VERSION:-v1.2.5}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/${CONTAINERD_VERSION}/script/setup/runc-version
-
-KUBELET_SERVICE_URL="${KUBELET_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/kubelet.service"}"
-KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL="${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/10-kubeadm.conf"}"
-CONTAINERD_CONFIG_URL="${CONTAINERD_CONFIG_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/config.toml"}"
-CONTAINERD_SERVICE_URL="${CONTAINERD_SERVICE_URL:-"https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/containerd.service"}"
 
 KUBELET_SERVICE='
 # Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service

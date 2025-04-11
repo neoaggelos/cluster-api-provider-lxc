@@ -19,7 +19,7 @@ export WORKER_MACHINE_COUNT=1
 #export PRIVILEGED=false
 
 ## [optional] Base image to use. This must be set if there are no base images for your Kubernetes version.
-## See https://neoaggelos.github.io/cluster-api-provider-lxc/reference/default-simplestreams-server.html#provided-images
+## See https://lxc.github.io/cluster-api-provider-incus/reference/default-simplestreams-server.html#provided-images
 ##
 ## You can use `ubuntu:VERSION`, which resolves to:
 ## - Incus:  Image `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org

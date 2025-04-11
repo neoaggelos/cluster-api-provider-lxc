@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/cluster-api/test/framework/clusterctl"
 	"sigs.k8s.io/yaml"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 
 	. "github.com/onsi/gomega"
 )
@@ -97,7 +97,7 @@ func AllNodesBeforeSuite(e2eCtx *E2EContext, data []byte) {
 	e2eCtx.Settings.ArtifactFolder = conf.ArtifactFolder
 	e2eCtx.Settings.ConfigPath = conf.ConfigPath
 	e2eCtx.Environment.ClusterctlConfigPath = conf.ClusterctlConfigPath
-	withLogCollector := framework.WithMachineLogCollector(LXCLogCollector{E2EContext: e2eCtx})
+	withLogCollector := framework.WithMachineLogCollector(IncusLogCollector{E2EContext: e2eCtx})
 	e2eCtx.Environment.BootstrapClusterProxy = framework.NewClusterProxy("bootstrap", conf.KubeconfigPath, e2eCtx.Environment.Scheme, withLogCollector)
 	e2eCtx.E2EConfig = &conf.E2EConfig
 	e2eCtx.Settings.LXCClientOptions = conf.LXCClientOptions

@@ -1,6 +1,6 @@
 # Image URL to use all building/pushing image targets
 TAG ?= latest
-IMG ?= ghcr.io/neoaggelos/cluster-api-provider-lxc:$(TAG)
+IMG ?= ghcr.io/lxc/cluster-api-provider-incus:$(TAG)
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
@@ -94,7 +94,7 @@ _SKIP_ARGS := $(foreach arg,$(strip $(E2E_GINKGO_SKIP)),-skip="$(arg)")
 endif
 
 .PHONY: e2e-image
-e2e-image: IMG = ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e ## Build controller image for e2e tests
+e2e-image: IMG = ghcr.io/lxc/cluster-api-provider-incus:e2e ## Build controller image for e2e tests
 e2e-image: docker-build
 
 E2E_DATA_DIR ?= $(REPO_ROOT)/test/e2e/data

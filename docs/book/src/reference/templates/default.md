@@ -1,6 +1,6 @@
 # Default cluster template
 
-The default cluster-template uses the [`lxc-default` cluster class](#cluster-class).
+The default cluster-template uses the [`capn-default` cluster class](#cluster-class).
 
 All load balancer types are supported through configuration options. Further, it allows deploying the default kube-flannel CNI on the cluster.
 
@@ -22,7 +22,7 @@ All load balancer types are supported through configuration options. Further, it
 ## Generate cluster
 
 ```bash
-clusterctl generate cluster example-cluster -i lxc
+clusterctl generate cluster example-cluster -i incus
 ```
 
 ## Configuration notes
@@ -134,5 +134,5 @@ Instance size for the control plane and worker instances. This is typically spec
 ## Cluster Class Definition
 
 ```yaml
-{{#include ../../../../../templates/clusterclass-lxc-default.yaml }}
+{{#include ../../../../../templates/clusterclass-capn-default.yaml }}
 ```

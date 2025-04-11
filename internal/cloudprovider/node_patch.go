@@ -13,7 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 )
 
 var (

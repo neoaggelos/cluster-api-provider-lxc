@@ -7,8 +7,8 @@ import (
 
 	"sigs.k8s.io/cluster-api/test/e2e"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
-	"github.com/neoaggelos/cluster-api-provider-lxc/test/e2e/shared"
+	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
+	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
 )
@@ -24,7 +24,7 @@ var _ = Describe("ClusterUpgrade", func() {
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
 				ControlPlaneWaiters:    e2eCtx.DefaultControlPlaneWaiters(),
-				InfrastructureProvider: ptr.To("lxc:v0.88.99"),
+				InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
@@ -44,7 +44,7 @@ var _ = Describe("ClusterUpgrade", func() {
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
 				ControlPlaneWaiters:    e2eCtx.DefaultControlPlaneWaiters(),
-				InfrastructureProvider: ptr.To("lxc:v0.88.99"),
+				InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),

@@ -18,4 +18,4 @@ about: Suggest a new feature
 <!-- yes/no, or @mention maintainers. -->
 
 
-<!-- Thank you for making cluster-api-provider-lxc better -->
+<!-- Thank you for making cluster-api-provider-incus better -->

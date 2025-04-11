@@ -6,7 +6,7 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
+	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
 )
 
 // CheckCloudInitStatus checks the cloud-init status of an instance.

@@ -13,11 +13,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudprovider"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/ptr"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
+	"github.com/lxc/cluster-api-provider-incus/internal/cloudprovider"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
+	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 )
 
 func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *incus.Client) (ctrl.Result, error) {

@@ -35,8 +35,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 )
 
 // LXCClusterReconciler reconciles a LXCCluster object

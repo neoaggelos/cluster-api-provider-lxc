@@ -2,7 +2,7 @@
 
 Part of the responsibilities of the infrastructure provider is to provision a Load Balancer for the control plane endpoint of workload clusters.
 
-`cluster-api-provider-lxc` supports a number of different options for how to provision the Load Balancer. They are mostly a tradeoff between simplicity, infrastructure requirements and production readiness.
+`cluster-api-provider-incus` supports a number of different options for how to provision the Load Balancer. They are mostly a tradeoff between simplicity, infrastructure requirements and production readiness.
 
 ## Load balancer types
 
@@ -75,7 +75,7 @@ spec:
 
 - **Required server extensions**: [`network_load_balancer`](https://linuxcontainers.org/incus/docs/main/api-extensions/#network-load-balancer), [`network_load_balancer_health_check`](https://linuxcontainers.org/incus/docs/main/api-extensions/#network-load-balancer-health-check)
 
-The `ovn` load balancer type will create and manage an [OVN network load balancer](https://linuxcontainers.org/incus/docs/main/howto/network_load_balancers/) for the control plane endpoint. A backend is configured for each control plane machine on the cluster. As control plane machines are added or removed from the cluster, cluster-api-provider-lxc will reconcile the backends of the network load balancer object accordingly.
+The `ovn` load balancer type will create and manage an [OVN network load balancer](https://linuxcontainers.org/incus/docs/main/howto/network_load_balancers/) for the control plane endpoint. A backend is configured for each control plane machine on the cluster. As control plane machines are added or removed from the cluster, cluster-api-provider-incus will reconcile the backends of the network load balancer object accordingly.
 
 Using the `ovn` load balancer type when the `network_load_balancer` and `network_load_balancer_health_check` API extensions are not supported will raise an error during the LXCCluster provisioning process.
 

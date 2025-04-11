@@ -8,7 +8,7 @@ import (
 
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/test/e2e/shared"
+	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -24,7 +24,7 @@ func init() {
 func TestE2E(t *testing.T) {
 	RegisterFailHandler(Fail)
 	ctrl.SetLogger(GinkgoLogr)
-	RunSpecs(t, "capl-e2e")
+	RunSpecs(t, "capn-e2e")
 }
 
 var _ = SynchronizedBeforeSuite(func(ctx context.Context) []byte {

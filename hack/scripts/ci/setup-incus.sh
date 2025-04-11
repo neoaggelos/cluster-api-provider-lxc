@@ -46,7 +46,7 @@ data:
 CLI=incus "${DIR}/setup-e2e-resources.sh"
 
 # NOTE(neoaggelos/2025-03-27): Incus KVMs are not starting in GitHub actions with ubuntu-24.04
-# https://github.com/neoaggelos/cluster-api-provider-lxc/issues/44
+# https://github.com/lxc/cluster-api-provider-incus/issues/44
 if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
   echo "** WARNING: Change default firmware, as KVMs do not work in GitHub actions out of the box"
   sudo apt update

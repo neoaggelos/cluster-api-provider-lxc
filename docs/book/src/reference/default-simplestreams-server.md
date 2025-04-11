@@ -1,6 +1,6 @@
 # Default Simplestreams Server
 
-The `cluster-api-provider-lxc` project runs a simplestreams server with pre-built kubeadm images for specific Kubernetes versions.
+The `cluster-api-provider-incus` project runs a simplestreams server with pre-built kubeadm images for specific Kubernetes versions.
 
 The default simplestreams server is available through an Amazon CloudFront distribution at [https://d14dnvi2l3tc5t.cloudfront.net](https://d14dnvi2l3tc5t.cloudfront.net).
 

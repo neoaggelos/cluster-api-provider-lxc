@@ -24,7 +24,7 @@ The ubuntu cluster template is the same as the [development](./development.md) c
 ## Generate cluster
 
 ```bash
-clusterctl generate cluster example-cluster -i lxc --flavor ubuntu
+clusterctl generate cluster example-cluster -i incus --flavor ubuntu
 ```
 
 ## Cluster Template

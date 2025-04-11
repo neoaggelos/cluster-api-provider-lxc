@@ -39,23 +39,23 @@ fi
 
 ########################################################################
 
-# configure default network. the user.capl.e2e.kube-vip-address annotation is used by "QuickStart KubeVIP"
+# configure default network. the user.capn.e2e.kube-vip-address annotation is used by "QuickStart KubeVIP"
 if ! "${CLI}" network show "${LXC_NETWORK_NAME}" 2> /dev/null; then
   "${CLI}" network create "${LXC_NETWORK_NAME}" --type=bridge \
     ipv4.address="${LXC_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_NETWORK_IPV6}" ipv6.nat=true \
     ipv4.dhcp.ranges="${LXC_NETWORK_IPV4_DHCP}" \
     ipv4.ovn.ranges="${LXC_NETWORK_IPV4_OVN}" \
-    user.capl.e2e.kube-vip-address="${LXC_NETWORK_IPV4_KUBE_VIP}"
+    user.capn.e2e.kube-vip-address="${LXC_NETWORK_IPV4_KUBE_VIP}"
 fi
 
-# configure ovn network. the user.capl.e2e.ovn-lb-address annotation is used by "QuickStart OVN"
+# configure ovn network. the user.capn.e2e.ovn-lb-address annotation is used by "QuickStart OVN"
 if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
   "${CLI}" network create "${LXC_OVN_NETWORK_NAME}" --type=ovn \
     network="${LXC_NETWORK_NAME}" \
     ipv4.address="${LXC_OVN_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_OVN_NETWORK_IPV6}" ipv6.nat=true \
-    user.capl.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}" \
+    user.capn.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}" \
   || echo "Failed to create OVN network, will skip OVN tests"
 fi
 

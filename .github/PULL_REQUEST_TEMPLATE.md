@@ -1,5 +1,5 @@
 <!--
-  Thank you for making cluster-api-provider-lxc better. Please fill the template below
+  Thank you for making cluster-api-provider-incus better. Please fill the template below
   with more details.
 -->
 

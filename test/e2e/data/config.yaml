@@ -1,7 +1,7 @@
 ---
-# E2E test scenario using local dev images and manifests for capl
+# E2E test scenario using local dev images and manifests for capn
 
-managementClusterName: capl-e2e
+managementClusterName: capn-e2e
 
 images:
 - name: registry.k8s.io/cluster-api/cluster-api-controller:v1.9.6
@@ -18,7 +18,7 @@ images:
 - name: quay.io/jetstack/cert-manager-webhook:v1.16.3
   loadBehavior: tryLoad
 # Use local dev images
-- name: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e
+- name: ghcr.io/lxc/cluster-api-provider-incus:e2e
   loadBehavior: mustLoad
 
 providers:
@@ -59,20 +59,20 @@ providers:
     - old: "imagePullPolicy: Always"
       new: "imagePullPolicy: IfNotPresent"
 
-- name: lxc
+- name: incus
   type: InfrastructureProvider
   versions:
   - name: v0.88.99
     value: ../../../config/default
     files:
     - sourcePath: "../data/shared/v1beta1_provider/metadata.yaml"
-    - sourcePath: "../../../templates/clusterclass-lxc-default.yaml"
+    - sourcePath: "../../../templates/clusterclass-capn-default.yaml"
     - sourcePath: "../../../templates/cluster-template.yaml"
     - sourcePath: "../../../templates/cluster-template-development.yaml"
     - sourcePath: "../../../templates/cluster-template-autoscaler.yaml"
     replacements:
-    - old: ghcr.io/neoaggelos/cluster-api-provider-lxc:latest
-      new: ghcr.io/neoaggelos/cluster-api-provider-lxc:e2e
+    - old: ghcr.io/lxc/cluster-api-provider-incus:latest
+      new: ghcr.io/lxc/cluster-api-provider-incus:e2e
     - old: "imagePullPolicy: Always"
       new: "imagePullPolicy: IfNotPresent"
     - old: "--v=2"
@@ -81,7 +81,7 @@ providers:
 # default variables for the e2e test; those values could be overridden via env variables, thus
 # allowing the same e2e config file to be re-used in different prow jobs e.g. each one with a K8s version permutation
 variables:
-  KUBE_CONTEXT: kind-capl-e2e
+  KUBE_CONTEXT: kind-capn-e2e
   KUBERNETES_VERSION: v1.32.3
   KUBERNETES_VERSION_UPGRADE_FROM: v1.31.5
   KUBERNETES_VERSION_UPGRADE_TO: v1.32.3

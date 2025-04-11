@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/cloudinit"
+	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
 
 	. "github.com/onsi/gomega"
 )

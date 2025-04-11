@@ -7,7 +7,7 @@ import (
 
 	"sigs.k8s.io/cluster-api/test/e2e"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/test/e2e/shared"
+	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
 )

@@ -1,6 +1,6 @@
 # Quick Start
 
-In this tutorial, we will deploy a single-node Incus (or Canonical LXD) server, use a local kind as a management cluster, deploy cluster-api-provider-lxc and create a secret with credentials. Finally, we will provision a development workload cluster and interact with it.
+In this tutorial, we will deploy a single-node Incus (or Canonical LXD) server, use a local kind as a management cluster, deploy cluster-api-provider-incus and create a secret with credentials. Finally, we will provision a development workload cluster and interact with it.
 
 ## Table Of Contents
 
@@ -157,9 +157,9 @@ kubectl create secret generic lxc-secret \
 
 After this step, you should now have your infrastructure ready and a Kubernetes secret with client credentials to access it.
 
-## Deploy cluster-api-provider-lxc
+## Deploy cluster-api-provider-incus
 
-First, we need to configure clusterctl so that it knows about cluster-api-provider-lxc:
+First, we need to configure clusterctl so that it knows about cluster-api-provider-incus:
 
 ```yaml
 # ~/.cluster-api/clusterctl.yaml
@@ -172,26 +172,26 @@ This can be done with the following commands:
 mkdir -p ~/.cluster-api
 
 curl -o ~/.cluster-api/clusterctl.yaml \
-  https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/clusterctl.yaml
+  https://lxc.github.io/cluster-api-provider-incus/static/v0.1/clusterctl.yaml
 ```
 
-Then, initialize `lxc` infrastructure provider:
+Then, initialize `incus` infrastructure provider:
 
 ```bash
-clusterctl init -i lxc
+clusterctl init -i incus
 ```
 
-Wait for `capl-controller-manager` to become healthy
+Wait for `capn-controller-manager` to become healthy
 
 ```bash
-kubectl get pod -n capl-system
+kubectl get pod -n capn-system
 ```
 
 The output should look similar to this:
 
 ```bash
 NAME                                      READY   STATUS    RESTARTS   AGE
-capl-controller-manager-b6f789559-vtdvw   1/1     Running   0          4m20s
+capn-controller-manager-b6f789559-vtdvw   1/1     Running   0          4m20s
 ```
 
 ## Generate cluster manifest
@@ -201,7 +201,7 @@ We will create a cluster manifest of the `development` flavor, which is suitable
 List the cluster template variables:
 
 ```bash
-clusterctl generate cluster c1 -i lxc --flavor development --list-variables
+clusterctl generate cluster c1 -i incus --flavor development --list-variables
 ```
 
 Example output:
@@ -240,7 +240,7 @@ Set configuration values:
 Then generate the cluster manifest using:
 
 ```bash
-clusterctl generate cluster c1 -i lxc --flavor development \
+clusterctl generate cluster c1 -i incus --flavor development \
   --kubernetes-version v1.32.0 \
   --control-plane-machine-count 1 \
   --worker-machine-count 1 \

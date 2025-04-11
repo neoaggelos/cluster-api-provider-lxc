@@ -9,7 +9,7 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 
 	. "github.com/onsi/gomega"
 )

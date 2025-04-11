@@ -3,12 +3,12 @@ authors = ["Angelos Kolaitis"]
 language = "en"
 multilingual = false
 src = "src"
-title = "The cluster-api-provider-lxc book"
+title = "The cluster-api-provider-incus book"
 
 [output.html]
 smart-punctuation = true
-site-url = "/cluster-api-provider-lxc/"
-git-repository-url = "https://github.com/neoaggelos/cluster-api-provider-lxc/"
+site-url = "/cluster-api-provider-incus/"
+git-repository-url = "https://github.com/lxc/cluster-api-provider-incus/"
 additional-css = ["theme/css/custom.css"]
 
 [output.html.redirect]

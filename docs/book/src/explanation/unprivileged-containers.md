@@ -1,6 +1,6 @@
 # Unprivileged containers
 
-When using `instanceType: container`, CAPL will launch an LXC container for each cluster node. In order for Kubernetes and the container runtime to work, CAPL launches `privileged` containers by default.
+When using `instanceType: container`, CAPN will launch an LXC container for each cluster node. In order for Kubernetes and the container runtime to work, CAPN launches `privileged` containers by default.
 
 However, privileged containers can pose security risks, especially in multi-tenant deployments. In such scenarios, if an adversary workload takes control of the kubelet, it can use the `privileged` capabilities to escape the container boundaries and affect workloads of other tenants or even fully take over the hypervisor.
 

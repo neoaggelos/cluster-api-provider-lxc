@@ -1,6 +1,6 @@
 # Developer Guide
 
-This document describes the necessary steps tools to get started with developing and testing CAPL on a local environment.
+This document describes the necessary steps tools to get started with developing and testing CAPN on a local environment.
 
 ## Table Of Contents
 
@@ -50,11 +50,11 @@ clusterctl init
 
 ### Initialize repository
 
-Clone the [cluster-api-provider-lxc](https://github.com/neoaggelos/cluster-api-provider-lxc) repository with:
+Clone the [cluster-api-provider-incus](https://github.com/lxc/cluster-api-provider-incus) repository with:
 
 ```bash
-git clone https://github.com/neoaggelos/cluster-api-provider-lxc
-cd cluster-api-provider-lxc
+git clone https://github.com/lxc/cluster-api-provider-incus
+cd cluster-api-provider-incus
 ```
 
 ### Initialize infrastructure
@@ -63,7 +63,7 @@ cd cluster-api-provider-lxc
 
 {{#tab Incus }}
 
-If Incus is not already installed on your machine, install latest stable version and initialize using [setup-incus.sh](https://github.com/neoaggelos/cluster-api-provider-lxc/blob/main/hack/scripts/ci/setup-incus.sh):
+If Incus is not already installed on your machine, install latest stable version and initialize using [setup-incus.sh](https://github.com/lxc/cluster-api-provider-incus/blob/main/hack/scripts/ci/setup-incus.sh):
 
 ```bash
 ./hack/scripts/ci/setup-incus.sh
@@ -81,7 +81,7 @@ The script will perform the following steps:
 
 {{#tab Canonical LXD }}
 
-If LXD is not already installed on your machine, install and initialize using [setup-lxd.sh](https://github.com/neoaggelos/cluster-api-provider-lxc/blob/main/hack/scripts/ci/setup-lxd.sh):
+If LXD is not already installed on your machine, install and initialize using [setup-lxd.sh](https://github.com/lxc/cluster-api-provider-incus/blob/main/hack/scripts/ci/setup-lxd.sh):
 
 ```bash
 ./hack/scripts/ci/setup-lxd.sh
@@ -135,7 +135,7 @@ clusterctl generate cluster c1 --from ./templates/cluster-template.yaml > c1.yam
 Deploy the cluster with:
 
 ```bash
-kubectl apply -f ./templates/clusterclass-lxc-default.yaml
+kubectl apply -f ./templates/clusterclass-capn-default.yaml
 kubectl apply -f c1.yaml
 ```
 

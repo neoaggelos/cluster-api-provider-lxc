@@ -17,16 +17,16 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 
-	infrav1 "github.com/neoaggelos/cluster-api-provider-lxc/api/v1alpha2"
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 )
 
-type LXCLogCollector struct {
+type IncusLogCollector struct {
 	E2EContext *E2EContext
 }
 
 // CollectMachineLog gets logs for the LXC resources related to the given machine.
-func (o LXCLogCollector) CollectMachineLog(ctx context.Context, managementClusterClient client.Client, m *clusterv1.Machine, outputPath string) error {
+func (o IncusLogCollector) CollectMachineLog(ctx context.Context, managementClusterClient client.Client, m *clusterv1.Machine, outputPath string) error {
 	Logf("Collecting logs for machine %q and storing them in %q", m.ObjectMeta.Name, outputPath)
 
 	if err := os.MkdirAll(outputPath, 0o750); err != nil {
@@ -125,12 +125,12 @@ func (o LXCLogCollector) CollectMachineLog(ctx context.Context, managementCluste
 }
 
 // CollectMachinePoolLog is not yet implemented for the LXC provider.
-func (o LXCLogCollector) CollectMachinePoolLog(_ context.Context, _ client.Client, _ *expv1.MachinePool, _ string) error {
+func (o IncusLogCollector) CollectMachinePoolLog(_ context.Context, _ client.Client, _ *expv1.MachinePool, _ string) error {
 	return fmt.Errorf("not implemented")
 }
 
 // CollectInfrastructureLogs is not yet implemented for the LXC provider.
-func (o LXCLogCollector) CollectInfrastructureLogs(ctx context.Context, managementClusterClient client.Client, cluster *clusterv1.Cluster, outputPath string) error {
+func (o IncusLogCollector) CollectInfrastructureLogs(ctx context.Context, managementClusterClient client.Client, cluster *clusterv1.Cluster, outputPath string) error {
 	clusterName := types.NamespacedName{Name: cluster.Name, Namespace: cluster.Namespace}
 	Logf("Collecting logs for cluster %q and storing them in %q", clusterName, outputPath)
 

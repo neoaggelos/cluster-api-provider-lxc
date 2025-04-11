@@ -61,7 +61,7 @@ Launch any commands you might need _before_ installing haproxy.
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | incus exec haproxy-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-haproxy.sh | incus exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -69,7 +69,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-h
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/install-haproxy.sh | lxc exec haproxy-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-haproxy.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -93,7 +93,7 @@ We use the script below to cleanup package archives, deb packages, bash history 
 {{#tab Incus }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | incus exec haproxy-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | incus exec haproxy-builder -- bash
 ```
 
 {{#/tab }}
@@ -101,7 +101,7 @@ curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cle
 {{#tab Canonical LXD }}
 
 ```bash
-curl https://neoaggelos.github.io/cluster-api-provider-lxc/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
+curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
 ```
 
 {{#/tab }}

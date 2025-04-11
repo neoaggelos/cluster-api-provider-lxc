@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/cluster-api/test/framework/bootstrap"
 	"sigs.k8s.io/cluster-api/test/framework/clusterctl"
 
-	"github.com/neoaggelos/cluster-api-provider-lxc/internal/incus"
+	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 )
 
 // Option represents an option to use when creating a e2e context.

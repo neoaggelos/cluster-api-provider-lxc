@@ -28,6 +28,10 @@ var _ = Describe("QuickStart", func() {
 			if err != nil {
 				Skip(fmt.Sprintf("Server does not support OCI instances: %v", err))
 			}
+
+			e2eCtx.OverrideVariables(map[string]string{
+				"LOAD_BALANCER": "oci: {}",
+			})
 		})
 
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
@@ -45,10 +49,6 @@ var _ = Describe("QuickStart", func() {
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](0),
 				ClusterName:              ptr.To(fmt.Sprintf("quick-start-oci-%s", util.RandomString(6))),
-
-				ClusterctlVariables: map[string]string{
-					"LOAD_BALANCER": "oci: {}",
-				},
 			}
 		})
 	})

@@ -17,6 +17,11 @@ import (
 
 var _ = Describe("QuickStart", func() {
 	Context("Unprivileged", Label("PRBlocking"), func() {
+		BeforeEach(func(ctx context.Context) {
+			e2eCtx.OverrideVariables(map[string]string{
+				"PRIVILEGED": "false",
+			})
+		})
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
 			return e2e.QuickStartSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,
@@ -32,10 +37,6 @@ var _ = Describe("QuickStart", func() {
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](1),
 				ClusterName:              ptr.To(fmt.Sprintf("quick-start-unprivileged-%s", util.RandomString(6))),
-
-				ClusterctlVariables: map[string]string{
-					"PRIVILEGED": "false",
-				},
 			}
 		})
 	})

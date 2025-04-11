@@ -19,10 +19,6 @@ import (
 
 var _ = Describe("QuickStart", func() {
 	Context("OVN", Label("PRBlocking"), func() {
-		var (
-			lbAddress   string
-			networkName string
-		)
 		BeforeEach(func(ctx context.Context) {
 			client, err := incus.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())
@@ -39,10 +35,14 @@ var _ = Describe("QuickStart", func() {
 			// find network with the annotations below
 			// -- user.capn.e2e.ovn-lb-address = "<ip address>"
 			for _, network := range networks {
-				if v, ok := network.Config["user.capn.e2e.ovn-lb-address"]; ok {
-					networkName = network.Name
-					lbAddress = v
-					shared.Logf("Using OVN network %q with LoadBalancer address %q", networkName, lbAddress)
+				if lbAddress, ok := network.Config["user.capn.e2e.ovn-lb-address"]; ok {
+					shared.Logf("Using OVN network %q with LoadBalancer address %q", network.Name, lbAddress)
+
+					e2eCtx.OverrideVariables(map[string]string{
+						"LOAD_BALANCER":                 fmt.Sprintf("ovn: {host: '%s', networkName: '%s'}", lbAddress, network.Name),
+						"CONTROL_PLANE_MACHINE_DEVICES": fmt.Sprintf("['eth0,type=nic,network=%s']", network.Name),
+						"WORKER_MACHINE_DEVICES":        fmt.Sprintf("['eth0,type=nic,network=%s']", network.Name),
+					})
 					return
 				}
 			}
@@ -65,12 +65,6 @@ var _ = Describe("QuickStart", func() {
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](0),
 				ClusterName:              ptr.To(fmt.Sprintf("quick-start-ovn-%s", util.RandomString(6))),
-
-				ClusterctlVariables: map[string]string{
-					"LOAD_BALANCER":                 fmt.Sprintf("ovn: {host: '%s', networkName: '%s'}", lbAddress, networkName),
-					"CONTROL_PLANE_MACHINE_DEVICES": fmt.Sprintf("['eth0,type=nic,network=%s']", networkName),
-					"WORKER_MACHINE_DEVICES":        fmt.Sprintf("['eth0,type=nic,network=%s']", networkName),
-				},
 			}
 		})
 	})

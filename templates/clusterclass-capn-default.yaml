@@ -645,7 +645,7 @@ spec:
         path: /spec/template/spec/preKubeadmCommands/-
         valueFrom:
           template: |
-            apt update && apt install curl -y && curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | bash -s -- {{ .builtin.controlPlane.version }}
+            apt update && apt install curl -y && curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | bash -s -- {{ .builtin.machineDeployment.version }}
   - name: controlPlaneConfigureUnprivileged
     description: Configure containerd for unprivileged mode in KubeadmControlPlane
     enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine") }}'

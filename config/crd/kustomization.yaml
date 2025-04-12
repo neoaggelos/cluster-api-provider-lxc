@@ -24,5 +24,5 @@ patches:
 
 labels:
   - pairs:
-      cluster.x-k8s.io/provider: infrastructure-lxc
+      cluster.x-k8s.io/provider: infrastructure-incus
       cluster.x-k8s.io/v1beta1: v1alpha2

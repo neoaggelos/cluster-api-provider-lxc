@@ -1,1 +1,8 @@
-*               @neoaggelos
+# @lxc/cluster-api-incus owns everything
+*               @lxc/cluster-api-incus
+
+# @neoaggelos owns API
+api/*           @neoaggelos
+
+# @neoaggelos owns docs
+docs/*          @neoaggelos

@@ -25,6 +25,7 @@ func (c *Client) ensureInstanceTemplateFiles(ctx context.Context, instanceName s
 		{templateName: "capn-install-kubeadm.tpl", filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript(), mode: "0755"},
 		{templateName: "capn-kube-flannel.tpl", filePath: "/opt/cluster-api/kube-flannel.yaml", content: static.KubeFlannelTemplate(), mode: "0644"},
 		{templateName: "capn-kube-proxy-config.tpl", filePath: "/opt/cluster-api/kube-proxy-config-lxc.yaml", content: static.KubeProxyConfigTemplate(), mode: "0644"},
+		{templateName: "capn-kube-vip.tpl", filePath: "/opt/cluster-api/kube-vip-pod.yaml", content: static.KubeVIPTemplate(), mode: "0644"},
 	} {
 		if _, ok := metadata.Templates[file.filePath]; !ok {
 			if err := c.Client.CreateInstanceTemplateFile(instanceName, file.templateName, bytes.NewReader([]byte(file.content))); err != nil {

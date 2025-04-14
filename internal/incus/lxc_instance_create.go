@@ -121,6 +121,15 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		configInstanceRoleKey:     role,
 		configCloudInitKey:        cloudInit,
 	}
+
+	if n := cluster.Spec.ClusterNetwork; n != nil {
+		if n.Pods != nil {
+			if len(n.Pods.CIDRBlocks) > 0 {
+				config["user.capn.kube-flannel.pod-network-cidr"] = n.Pods.CIDRBlocks[0]
+			}
+		}
+	}
+
 	if server.Environment.Server == "lxd" && lxcCluster.Spec.Unprivileged {
 		log.FromContext(ctx).Info("Adding config to set security.nesting=true and disable apparmor service on LXD instance")
 		config["security.nesting"] = "true"
@@ -156,6 +165,10 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		//
 		// E0325 19:38:50.780759       1 controller.go:316] "Reconciler error" err="failed to create instance: failed to ensure instance exists: failed to wait for CreateInstance operation: Failed creating instance from image: Source image size (5368709120) exceeds specified volume size (5000003584)" controller="lxcmachine" controllerGroup="infrastructure.cluster.x-k8s.io" controllerKind="LXCMachine" LXCMachine="quick-start-glpgz4/quick-start-kvm-vdbzv4-md-0-f448v-b5gwd-pxntp" namespace="quick-start-glpgz4" name="quick-start-kvm-vdbzv4-md-0-f448v-b5gwd-pxntp" reconcileID="12fe1bde-889b-412f-abd3-4990f27cbf15"
 		return nil, fmt.Errorf("failed to ensure instance exists: %w", err)
+	}
+
+	if err := c.ensureInstanceTemplateFiles(ctx, name); err != nil {
+		return nil, fmt.Errorf("failed to ensure instance template files: %w", err)
 	}
 
 	if err := c.ensureInstanceRunning(ctx, name); err != nil {

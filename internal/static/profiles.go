@@ -1,4 +1,4 @@
-package profile
+package static
 
 import (
 	_ "embed"
@@ -34,7 +34,7 @@ func mustParseProfile(b []byte) api.ProfilePut {
 	return profile
 }
 
-func DefaultKubeadm(privileged bool) api.ProfilePut {
+func DefaultKubeadmProfile(privileged bool) api.ProfilePut {
 	if privileged {
 		return defaultKubeadm
 	}

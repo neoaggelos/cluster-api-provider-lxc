@@ -11,7 +11,7 @@ import (
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/incus"
-	"github.com/lxc/cluster-api-provider-incus/internal/profile"
+	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
 func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, lxcClient *incus.Client) error {
@@ -22,7 +22,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	} else {
 		ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("profileName", profileName, "privileged", !lxcCluster.Spec.Unprivileged))
 		log.FromContext(ctx).Info("Creating default kubeadm profile")
-		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: profileName, ProfilePut: profile.DefaultKubeadm(!lxcCluster.Spec.Unprivileged)}); err != nil {
+		if err := lxcClient.InitProfile(ctx, api.ProfilesPost{Name: profileName, ProfilePut: static.DefaultKubeadmProfile(!lxcCluster.Spec.Unprivileged)}); err != nil {
 			err = fmt.Errorf("failed to create default kubeadm profile %q: %w", profileName, err)
 			log.FromContext(ctx).Error(err, "Failed to create default kubeadm profile")
 

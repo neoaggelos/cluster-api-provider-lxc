@@ -19,7 +19,7 @@ var _ = Describe("QuickStart", func() {
 	Context("Ubuntu", Label("PRBlocking"), func() {
 		BeforeEach(func(ctx context.Context) {
 			e2eCtx.OverrideVariables(map[string]string{
-				"KUBERNETES_VERSION": "v1.31.4", // Kubernetes version without pre-built images
+				"KUBERNETES_VERSION": "v1.31.7", // Kubernetes version without pre-built images
 				"LXC_IMAGE_NAME":     "ubuntu:24.04",
 				"INSTALL_KUBEADM":    "true",
 			})

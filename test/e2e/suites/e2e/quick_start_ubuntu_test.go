@@ -23,8 +23,6 @@ var _ = Describe("QuickStart", func() {
 				"LXC_IMAGE_NAME":     "ubuntu:24.04",
 				"INSTALL_KUBEADM":    "true",
 			})
-
-			Skip("Disable during transition to lxc org")
 		})
 		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
 			return e2e.QuickStartSpecInput{

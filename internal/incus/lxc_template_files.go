@@ -34,7 +34,7 @@ func (c *Client) ensureInstanceTemplateFiles(instanceName string) error {
 			}
 
 			metadata.Templates[file.filePath] = &api.ImageMetadataTemplate{
-				When:       []string{"create", "copy", "start"},
+				When:       []string{"create"},
 				CreateOnly: true,
 				Template:   file.templateName,
 			}

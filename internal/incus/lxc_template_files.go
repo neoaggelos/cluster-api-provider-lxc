@@ -5,8 +5,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/static"
 	"github.com/lxc/incus/v6/shared/api"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
 func (c *Client) ensureInstanceTemplateFiles(ctx context.Context, instanceName string) error {

@@ -2,7 +2,6 @@ package incus
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 
 	"github.com/lxc/incus/v6/shared/api"
@@ -10,7 +9,7 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-func (c *Client) ensureInstanceTemplateFiles(ctx context.Context, instanceName string) error {
+func (c *Client) ensureInstanceTemplateFiles(instanceName string) error {
 	metadata, _, err := c.Client.GetInstanceMetadata(instanceName)
 	if err != nil {
 		return fmt.Errorf("failed to GetInstanceMetadata: %w", err)

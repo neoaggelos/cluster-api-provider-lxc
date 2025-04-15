@@ -37,9 +37,6 @@ func (c *Client) ensureInstanceTemplateFiles(ctx context.Context, instanceName s
 				When:       []string{"create", "copy", "start"},
 				CreateOnly: true,
 				Template:   file.templateName,
-				UID:        "0",
-				GID:        "0",
-				Mode:       file.mode,
 			}
 
 			mustUpdateMetadata = true

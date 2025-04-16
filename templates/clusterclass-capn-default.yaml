@@ -404,7 +404,7 @@ spec:
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/preKubeadmCommands/-
         valueFrom:
-          template: bash -xeu /opt/cluster-api/install-kubeadm.sh {{ .builtin.controlPlane.version }}
+          template: sh -xeu /opt/cluster-api/install-kubeadm.sh {{ .builtin.controlPlane.version }}
   - name: workerInstallKubeadm
     description: Inject install-kubeadm.sh script to MachineDeployments
     enabledIf: "{{ .instance.installKubeadm }}"
@@ -420,7 +420,7 @@ spec:
       - op: add
         path: /spec/template/spec/preKubeadmCommands/-
         valueFrom:
-          template: bash -xeu /opt/cluster-api/install-kubeadm.sh {{ .builtin.machineDeployment.version }}
+          template: sh -xeu /opt/cluster-api/install-kubeadm.sh {{ .builtin.machineDeployment.version }}
   - name: controlPlaneConfigureUnprivileged
     description: Configure containerd for unprivileged mode in KubeadmControlPlane
     enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine") }}'

@@ -1,4 +1,4 @@
-#!/bin/bash -xeu
+#!/bin/sh -xeu
 
 # Usage:
 #  $ /opt/cluster-api/install-kubeadm.sh v1.32.1
@@ -143,7 +143,7 @@ OOMScoreAdjust=-999
 WantedBy=multi-user.target
 '
 
-CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE='#!/bin/bash -xeu
+CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE='#!/bin/sh -xeu
 
 set -xeu
 

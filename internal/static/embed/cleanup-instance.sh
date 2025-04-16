@@ -1,4 +1,4 @@
-#!/bin/bash -xeu
+#!/bin/sh -xeu
 
 # Usage:
 #  $ /opt/cluster-api-lxc/99-cleanup.sh

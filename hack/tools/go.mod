@@ -1,6 +1,6 @@
 module github.com/lxc/cluster-api-provider-incus/hack/tools
 
-go 1.23.4
+go 1.23.8
 
 require (
 	github.com/ahmetb/gen-crd-api-reference-docs v0.3.0

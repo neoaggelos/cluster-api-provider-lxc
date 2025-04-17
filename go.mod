@@ -1,6 +1,6 @@
 module github.com/lxc/cluster-api-provider-incus
 
-go 1.23.4
+go 1.23.8
 
 require (
 	github.com/lxc/incus/v6 v6.8.0

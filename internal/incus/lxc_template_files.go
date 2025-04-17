@@ -9,7 +9,7 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-func (c *Client) ensureInstanceTemplateFiles(instanceName string, isControlPlaneMachine bool) error {
+func (c *Client) ensureInstanceTemplateFiles(instanceName string) error {
 	metadata, _, err := c.Client.GetInstanceMetadata(instanceName)
 	if err != nil {
 		return fmt.Errorf("failed to GetInstanceMetadata: %w", err)

@@ -437,6 +437,13 @@ func (in *LXCMachineSpec) DeepCopyInto(out *LXCMachineSpec) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.Config != nil {
+		in, out := &in.Config, &out.Config
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	out.Image = in.Image
 }
 

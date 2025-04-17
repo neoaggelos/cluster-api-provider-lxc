@@ -85,6 +85,19 @@ LXCClusterLoadBalancer
 </tr>
 <tr>
 <td>
+<code>unprivileged</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
+<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>skipDefaultKubeadmProfile</code><br/>
 <em>
 bool
@@ -275,6 +288,19 @@ LXCClusterLoadBalancer
 </td>
 <td>
 <p>LoadBalancer is configuration for provisioning the load balancer of the cluster.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>unprivileged</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
+<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
 </td>
 </tr>
 <tr>
@@ -512,6 +538,19 @@ LXCClusterLoadBalancer
 </td>
 <td>
 <p>LoadBalancer is configuration for provisioning the load balancer of the cluster.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>unprivileged</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
+<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
 </td>
 </tr>
 <tr>
@@ -867,6 +906,34 @@ devices:
 </tr>
 <tr>
 <td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration entries.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
+<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
+<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
+<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
+<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
+</ul>
+<p>The following optional configuration values may be set to configure the
+default kube-vip manifests that are seeded into the instance:</p>
+<ul>
+<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
+<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td>
 <code>image</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineImageSource">
@@ -1062,6 +1129,34 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration entries.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
+<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
+<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
+<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
+<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
+</ul>
+<p>The following optional configuration values may be set to configure the
+default kube-vip manifests that are seeded into the instance:</p>
+<ul>
+<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
+<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+</ul>
 </td>
 </tr>
 <tr>
@@ -1344,6 +1439,34 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration entries.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
+<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
+<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
+<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
+<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
+<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
+</ul>
+<p>The following optional configuration values may be set to configure the
+default kube-vip manifests that are seeded into the instance:</p>
+<ul>
+<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
+<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+</ul>
 </td>
 </tr>
 <tr>

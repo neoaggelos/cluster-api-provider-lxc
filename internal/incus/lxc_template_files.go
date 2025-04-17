@@ -20,17 +20,10 @@ func (c *Client) ensureInstanceTemplateFiles(instanceName string, isControlPlane
 		templateName string
 		content      string
 		filePath     string
-		guard        bool
 	}{
 		// inject install-kubeadm.sh in all nodes
-		{templateName: "capn-install-kubeadm.tpl", guard: true, filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript()},
-		// add kube-proxy-config.yaml, kube-flannel and kube-vip manifests only on control plane machines
-		{templateName: "capn-kube-proxy-config.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-proxy-config-lxc.yaml", content: static.KubeProxyConfigTemplate()},
+		{templateName: "capn-install-kubeadm.tpl", filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript()},
 	} {
-		if !file.guard {
-			continue
-		}
-
 		if _, ok := metadata.Templates[file.filePath]; !ok {
 			if err := c.Client.CreateInstanceTemplateFile(instanceName, file.templateName, bytes.NewReader([]byte(file.content))); err != nil {
 				// TODO: do not fail if already exists

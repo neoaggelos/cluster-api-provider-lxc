@@ -761,7 +761,7 @@ spec:
         # Workaround for kube-proxy failing to configure nf_conntrack_max_per_core on LXC
         - |
           if systemd-detect-virt -c -q 2>/dev/null && [ -f /run/kubeadm/kubeadm.yaml ]; then
-            cat /opt/cluster-api/kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
+            cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
           fi
         postKubeadmCommands:
         - set -x
@@ -774,6 +774,16 @@ spec:
           content: placeholder file to prevent kubeadm path not found errors
           permissions: "0400"
           owner: "root:root"
+        - path: /run/kubeadm/hack-kube-proxy-config-lxc.yaml
+          content: |
+            ---
+            kind: KubeProxyConfiguration
+            apiVersion: kubeproxy.config.k8s.io/v1alpha1
+            mode: iptables
+            conntrack:
+              maxPerCore: 0
+          owner: root:root
+          permissions: "0444"
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCClusterTemplate

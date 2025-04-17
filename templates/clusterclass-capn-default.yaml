@@ -290,7 +290,9 @@ spec:
             image:
               name: {{ .instance.image | quote }}
             config:
+            {{ if hasKey .loadBalancer "kube-vip" }}
               user.capn.kube-vip.interface: {{ index .loadBalancer "kube-vip" "interface" | default "" | quote }}
+            {{ end }}
   - name: workerInstanceSpec
     description: LXCMachineTemplate configuration for MachineDeployments
     definitions:

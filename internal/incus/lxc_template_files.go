@@ -26,9 +26,6 @@ func (c *Client) ensureInstanceTemplateFiles(instanceName string, isControlPlane
 		{templateName: "capn-install-kubeadm.tpl", guard: true, filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript()},
 		// add kube-proxy-config.yaml, kube-flannel and kube-vip manifests only on control plane machines
 		{templateName: "capn-kube-proxy-config.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-proxy-config-lxc.yaml", content: static.KubeProxyConfigTemplate()},
-		{templateName: "capn-kube-flannel.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-flannel.yaml", content: static.KubeFlannelTemplate()},
-		{templateName: "capn-kube-vip.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-vip.yaml", content: static.KubeVIPTemplate()},
-		{templateName: "capn-kube-vip-hosts.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-vip.hosts", content: static.KubeVIPHostsTemplate()},
 	} {
 		if !file.guard {
 			continue

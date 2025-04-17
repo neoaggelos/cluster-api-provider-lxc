@@ -11,7 +11,7 @@ spec:
     - name: vip_arp
       value: "true"
     - name: port
-      value: "6443"
+      value: "{{ config_get("user.capn.kube-vip.port", "6443") }}"
     - name: vip_interface
       value: "{{ config_get("user.capn.kube-vip.interface", "") }}"
     - name: vip_cidr

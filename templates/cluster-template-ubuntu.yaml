@@ -52,8 +52,7 @@ spec:
         cat /run/kubeadm/hack-kube-proxy-config-lxc.yaml | tee -a /run/kubeadm/kubeadm.yaml
       fi
     # Install kubeadm
-    - apt update && apt install curl -y
-    - curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
+    - sh /opt/cluster-api/install-kubeadm.sh "${KUBERNETES_VERSION}"
     initConfiguration:
       nodeRegistration:
         kubeletExtraArgs:
@@ -136,8 +135,7 @@ spec:
       preKubeadmCommands:
       - set -x
       # Install kubeadm
-      - apt update && apt install curl -y
-      - curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | bash -s -- "${KUBERNETES_VERSION}"
+      - sh /opt/cluster-api/install-kubeadm.sh "${KUBERNETES_VERSION}"
       joinConfiguration:
         nodeRegistration:
           kubeletExtraArgs:

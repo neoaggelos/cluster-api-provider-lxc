@@ -170,7 +170,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		return nil, fmt.Errorf("failed to ensure instance exists: %w", err)
 	}
 
-	if err := c.ensureInstanceTemplateFiles(name); err != nil {
+	if err := c.ensureInstanceTemplateFiles(name, role == "control-plane"); err != nil {
 		return nil, fmt.Errorf("failed to ensure instance template files: %w", err)
 	}
 

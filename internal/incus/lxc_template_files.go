@@ -9,7 +9,7 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-func (c *Client) ensureInstanceTemplateFiles(instanceName string) error {
+func (c *Client) ensureInstanceTemplateFiles(instanceName string, isControlPlaneMachine bool) error {
 	metadata, _, err := c.Client.GetInstanceMetadata(instanceName)
 	if err != nil {
 		return fmt.Errorf("failed to GetInstanceMetadata: %w", err)
@@ -20,13 +20,20 @@ func (c *Client) ensureInstanceTemplateFiles(instanceName string) error {
 		templateName string
 		content      string
 		filePath     string
-		mode         string
+		guard        bool
 	}{
-		{templateName: "capn-install-kubeadm.tpl", filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript(), mode: "0755"},
-		{templateName: "capn-kube-flannel.tpl", filePath: "/opt/cluster-api/kube-flannel.yaml", content: static.KubeFlannelTemplate(), mode: "0644"},
-		{templateName: "capn-kube-proxy-config.tpl", filePath: "/opt/cluster-api/kube-proxy-config-lxc.yaml", content: static.KubeProxyConfigTemplate(), mode: "0644"},
-		{templateName: "capn-kube-vip.tpl", filePath: "/opt/cluster-api/kube-vip-pod.yaml", content: static.KubeVIPTemplate(), mode: "0644"},
+		// inject install-kubeadm.sh in all nodes
+		{templateName: "capn-install-kubeadm.tpl", guard: true, filePath: "/opt/cluster-api/install-kubeadm.sh", content: static.InstallKubeadmScript()},
+		// add kube-proxy-config.yaml, kube-flannel and kube-vip manifests only on control plane machines
+		{templateName: "capn-kube-proxy-config.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-proxy-config-lxc.yaml", content: static.KubeProxyConfigTemplate()},
+		{templateName: "capn-kube-flannel.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-flannel.yaml", content: static.KubeFlannelTemplate()},
+		{templateName: "capn-kube-vip.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-vip.yaml", content: static.KubeVIPTemplate()},
+		{templateName: "capn-kube-vip-hosts.tpl", guard: isControlPlaneMachine, filePath: "/opt/cluster-api/kube-vip.hosts", content: static.KubeVIPHostsTemplate()},
 	} {
+		if !file.guard {
+			continue
+		}
+
 		if _, ok := metadata.Templates[file.filePath]; !ok {
 			if err := c.Client.CreateInstanceTemplateFile(instanceName, file.templateName, bytes.NewReader([]byte(file.content))); err != nil {
 				// TODO: do not fail if already exists

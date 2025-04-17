@@ -246,95 +246,14 @@ spec:
       jsonPatches:
       - op: add
         path: /spec/template/spec/kubeadmConfigSpec/preKubeadmCommands/-
-        # Workaround for https://github.com/kube-vip/kube-vip/issues/684, see https://github.com/kube-vip/kube-vip/issues/684#issuecomment-1883955927
         value: |
+          cp /opt/cluster-api/kube-vip.yaml /etc/kubernetes/manifests/kube-vip.yaml
+          cp /opt/cluster-api/kube-vip.hosts /etc/kube-vip.hosts
+
+          # Workaround for https://github.com/kube-vip/kube-vip/issues/684, see https://github.com/kube-vip/kube-vip/issues/684#issuecomment-1883955927
           if [ -f /run/kubeadm/kubeadm.yaml ]; then
             sed -i 's#path: /etc/kubernetes/admin.conf#path: /etc/kubernetes/super-admin.conf#' /etc/kubernetes/manifests/kube-vip.yaml
           fi
-      - op: add
-        path: /spec/template/spec/kubeadmConfigSpec/files/-
-        valueFrom:
-          template: |
-            owner: root:root
-            path: /etc/kubernetes/manifests/kube-vip.yaml
-            permissions: "0644"
-            content: |
-              apiVersion: v1
-              kind: Pod
-              metadata:
-                name: kube-vip
-                namespace: kube-system
-              spec:
-                containers:
-                - args:
-                  - manager
-                  env:
-                  - name: vip_arp
-                    value: "true"
-                  - name: port
-                    value: "6443"
-                  - name: vip_interface
-                    value: {{ if ( index .loadBalancer "kube-vip" "interface" ) }}{{ index .loadBalancer "kube-vip" "interface" | quote }}{{ else }}""{{ end }}
-                  - name: vip_cidr
-                    value: "32"
-                  - name: cp_enable
-                    value: "true"
-                  - name: cp_namespace
-                    value: kube-system
-                  - name: vip_ddns
-                    value: "false"
-                  - name: svc_enable
-                    value: "true"
-                  - name: svc_leasename
-                    value: plndr-svcs-lock
-                  - name: svc_election
-                    value: "true"
-                  - name: vip_leaderelection
-                    value: "true"
-                  - name: vip_leasename
-                    value: plndr-cp-lock
-                  - name: vip_leaseduration
-                    value: "15"
-                  - name: vip_renewdeadline
-                    value: "10"
-                  - name: vip_retryperiod
-                    value: "2"
-                  - name: address
-                    value: {{ index .loadBalancer "kube-vip" "host" | quote }}
-                  - name: prometheus_server
-                    value: :2112
-                  image: ghcr.io/kube-vip/kube-vip:v0.6.4
-                  imagePullPolicy: IfNotPresent
-                  name: kube-vip
-                  resources: {}
-                  securityContext:
-                    capabilities:
-                      add:
-                      - NET_ADMIN
-                      - NET_RAW
-                  volumeMounts:
-                  - mountPath: /etc/kubernetes/admin.conf
-                    name: kubeconfig
-                  - mountPath: /etc/hosts
-                    name: etchosts
-                hostNetwork: true
-                volumes:
-                - hostPath:
-                    path: /etc/kubernetes/admin.conf
-                  name: kubeconfig
-                - hostPath:
-                    path: /etc/kube-vip.hosts
-                    type: File
-                  name: etchosts
-              status: {}
-      - op: add
-        path: /spec/template/spec/kubeadmConfigSpec/files/-
-        valueFrom:
-          template: |
-            content: 127.0.0.1 localhost kubernetes
-            owner: root:root
-            path: /etc/kube-vip.hosts
-            permissions: "0644"
   - name: controlPlaneKubeFlannel
     enabledIf: "{{ .deployKubeFlannel }}"
     description: Inject kube-flannel deploy steps for ControlPlane
@@ -370,6 +289,8 @@ spec:
             flavor: {{ .instance.flavor | quote }}
             image:
               name: {{ .instance.image | quote }}
+            config:
+              user.capn.kube-vip.interface: {{ index .loadBalancer "kube-vip" "interface" | default "" | quote }}
   - name: workerInstanceSpec
     description: LXCMachineTemplate configuration for MachineDeployments
     definitions:
@@ -543,6 +464,10 @@ spec:
         postKubeadmCommands:
         - set -x
         files:
+        - path: /etc/kubernetes/manifests/.placeholder
+          content: placeholder file to prevent kubelet path not found errors
+          permissions: "0400"
+          owner: "root:root"
         - path: /etc/kubernetes/patches/.placeholder
           content: placeholder file to prevent kubeadm path not found errors
           permissions: "0400"

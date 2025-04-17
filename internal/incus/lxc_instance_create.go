@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"strconv"
 	"strings"
 
 	incus "github.com/lxc/incus/v6/client"
@@ -121,17 +120,6 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		configClusterNamespaceKey: cluster.Namespace,
 		configInstanceRoleKey:     role,
 		configCloudInitKey:        cloudInit,
-
-		configKubeVIPHostKey: lxcCluster.Spec.ControlPlaneEndpoint.Host,
-		configKubeVIPPortKey: strconv.Itoa(int(lxcCluster.Spec.ControlPlaneEndpoint.Port)),
-	}
-
-	if n := cluster.Spec.ClusterNetwork; n != nil {
-		if n.Pods != nil {
-			if len(n.Pods.CIDRBlocks) > 0 {
-				config[configKubeFlannelPodNetworkCIDRKey] = n.Pods.CIDRBlocks[0]
-			}
-		}
 	}
 
 	if server.Environment.Server == "lxd" && lxcCluster.Spec.Unprivileged && instanceType == api.InstanceTypeContainer {

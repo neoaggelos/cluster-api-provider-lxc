@@ -916,19 +916,10 @@ map[string]string
 <p>Config allows overriding instance configuration entries.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
-<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
-<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
-<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
-<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
-</ul>
-<p>The following optional configuration values may be set to configure the
-default kube-vip manifests that are seeded into the instance:</p>
-<ul>
-<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
-<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
 </ul>
 </td>
 </tr>
@@ -1143,19 +1134,10 @@ map[string]string
 <p>Config allows overriding instance configuration entries.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
-<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
-<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
-<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
-<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
-</ul>
-<p>The following optional configuration values may be set to configure the
-default kube-vip manifests that are seeded into the instance:</p>
-<ul>
-<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
-<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
 </ul>
 </td>
 </tr>
@@ -1453,19 +1435,10 @@ map[string]string
 <p>Config allows overriding instance configuration entries.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li><p>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</p></li>
-<li><p>&ldquo;user.cluster-name&rdquo;: name of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</p></li>
-<li><p>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</p></li>
-<li><p>&ldquo;user.capn.kube-flannel.pod-network-cidr&rdquo;: set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]</p></li>
-<li><p>&ldquo;user.capn.kube-vip.host&rdquo;: set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests</p></li>
-<li><p>&ldquo;user.capn.kube-vip.port&rdquo;: set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests</p></li>
-</ul>
-<p>The following optional configuration values may be set to configure the
-default kube-vip manifests that are seeded into the instance:</p>
-<ul>
-<li>&ldquo;user.capn.kube-vip.interface&rdquo;: interface name, if using default kube-vip manifests</li>
-<li>&ldquo;user.capn.kube-vip.image&rdquo;: kube-vip image name, if using default kube-vip manifests</li>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
 </ul>
 </td>
 </tr>

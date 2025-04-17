@@ -30,15 +30,6 @@ const (
 	// configCloudInitKey is the config key that seeds cloud-init configuration into the instance.
 	configCloudInitKey = "cloud-init.user-data"
 
-	// configKubeFlannelPodNetworkCIDRKey is the config key to set the pod network CIDR for the embedded kube-flannel manifests.
-	configKubeFlannelPodNetworkCIDRKey = "user.capn.kube-flannel.pod-network-cidr"
-
-	// configKubeVIPHostKey is the config key to set the kube-vip address.
-	configKubeVIPHostKey = "user.capn.kube-vip.host"
-
-	// configKubeVIPPortKey is the config key to set the kube-vip port number.
-	configKubeVIPPortKey = "user.capn.kube-vip.port"
-
 	// defaultSimplestreamsServer is the default simplestreams server for fetching images.
 	defaultSimplestreamsServer = "https://d14dnvi2l3tc5t.cloudfront.net"
 )

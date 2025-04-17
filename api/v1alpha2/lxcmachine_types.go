@@ -85,16 +85,6 @@ type LXCMachineSpec struct {
 	// - "user.cluster-namespace": namespace of owning cluster
 	// - "user.cluster-role": instance role (e.g. control-plane, worker)
 	//
-	// - "user.capn.kube-flannel.pod-network-cidr": set to cluster.spec.clusterNetwork.pods.cidrBlocks[0]
-	// - "user.capn.kube-vip.host": set to cluster.spec.controlPlaneEndpoint.host, used by default kube-vip manifests
-	// - "user.capn.kube-vip.port": set to cluster.spec.controlPlaneEndpoint.port, used by default kube-vip manifests
-	//
-	// The following optional configuration values may be set to configure the
-	// default kube-vip manifests that are seeded into the instance:
-	//
-	// - "user.capn.kube-vip.interface": interface name, if using default kube-vip manifests
-	// - "user.capn.kube-vip.image": kube-vip image name, if using default kube-vip manifests
-	//
 	// +optional
 	Config map[string]string `json:"config,omitempty"`
 

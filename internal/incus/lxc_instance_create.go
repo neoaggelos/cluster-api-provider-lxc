@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 
 	incus "github.com/lxc/incus/v6/client"
@@ -133,7 +134,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		}
 	}
 
-	if server.Environment.Server == "lxd" && lxcCluster.Spec.Unprivileged {
+	if server.Environment.Server == "lxd" && lxcCluster.Spec.Unprivileged && instanceType == api.InstanceTypeContainer {
 		log.FromContext(ctx).Info("Adding config to set security.nesting=true and disable apparmor service on LXD instance")
 		config["security.nesting"] = "true"
 		if devices == nil {

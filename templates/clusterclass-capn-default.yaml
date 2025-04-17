@@ -289,8 +289,8 @@ spec:
             flavor: {{ .instance.flavor | quote }}
             image:
               name: {{ .instance.image | quote }}
-            config:
             {{ if hasKey .loadBalancer "kube-vip" }}
+            config:
               user.capn.kube-vip.interface: {{ index .loadBalancer "kube-vip" "interface" | default "" | quote }}
             {{ end }}
   - name: workerInstanceSpec

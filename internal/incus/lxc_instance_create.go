@@ -148,7 +148,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		InstancePut: api.InstancePut{
 			Profiles: profiles,
 			Devices:  devices,
-			Config:   util.MergeMap(config, lxcMachine.Spec.Config),
+			Config:   config,
 		},
 	}); err != nil {
 		// TODO: Handle the below situations as terminalError.

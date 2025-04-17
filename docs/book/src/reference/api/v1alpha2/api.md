@@ -85,19 +85,6 @@ LXCClusterLoadBalancer
 </tr>
 <tr>
 <td>
-<code>unprivileged</code><br/>
-<em>
-bool
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
-<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
-</td>
-</tr>
-<tr>
-<td>
 <code>skipDefaultKubeadmProfile</code><br/>
 <em>
 bool
@@ -288,19 +275,6 @@ LXCClusterLoadBalancer
 </td>
 <td>
 <p>LoadBalancer is configuration for provisioning the load balancer of the cluster.</p>
-</td>
-</tr>
-<tr>
-<td>
-<code>unprivileged</code><br/>
-<em>
-bool
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
-<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
 </td>
 </tr>
 <tr>
@@ -538,19 +512,6 @@ LXCClusterLoadBalancer
 </td>
 <td>
 <p>LoadBalancer is configuration for provisioning the load balancer of the cluster.</p>
-</td>
-</tr>
-<tr>
-<td>
-<code>unprivileged</code><br/>
-<em>
-bool
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Unprivileged will launch unprivileged LXC containers for the cluster machines.</p>
-<p>Known limitations apply for unprivileged LXC containers (e.g. cannot use NFS volumes).</p>
 </td>
 </tr>
 <tr>
@@ -906,25 +867,6 @@ devices:
 </tr>
 <tr>
 <td>
-<code>config</code><br/>
-<em>
-map[string]string
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Config allows overriding instance configuration entries.</p>
-<p>Note that the provider will always set the following configuration keys:</p>
-<ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td>
 <code>image</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineImageSource">
@@ -1120,25 +1062,6 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
-</td>
-</tr>
-<tr>
-<td>
-<code>config</code><br/>
-<em>
-map[string]string
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Config allows overriding instance configuration entries.</p>
-<p>Note that the provider will always set the following configuration keys:</p>
-<ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-</ul>
 </td>
 </tr>
 <tr>
@@ -1421,25 +1344,6 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
-</td>
-</tr>
-<tr>
-<td>
-<code>config</code><br/>
-<em>
-map[string]string
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>Config allows overriding instance configuration entries.</p>
-<p>Note that the provider will always set the following configuration keys:</p>
-<ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-</ul>
 </td>
 </tr>
 <tr>

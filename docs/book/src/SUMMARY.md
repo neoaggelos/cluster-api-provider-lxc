@@ -24,6 +24,7 @@
 - [Explanation](./explanation/index.md)
   - [Load Balancer Types](./explanation/load-balancer.md)
   - [Unprivileged Containers](./explanation/unprivileged-containers.md)
+  - [Injected Files](./explanation/injected-files.md)
 
 ---
 

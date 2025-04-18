@@ -18,15 +18,12 @@ package lxcmachine
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/klog/v2"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/finalizers"
 	utillog "sigs.k8s.io/cluster-api/util/log"
@@ -47,10 +44,6 @@ import (
 // LXCMachineReconciler reconciles a LXCMachine object
 type LXCMachineReconciler struct {
 	client.Client
-	ClusterCache clustercache.ClusterCache
-
-	// CachingClient is a client that can cache responses, will be used for retrieving secrets.
-	CachingClient client.Client
 
 	// WatchFilterValue is the label value used to filter events prior to reconciliation.
 	WatchFilterValue string
@@ -169,14 +162,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, r.reconcileDelete(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
 	}
 
-	result, err := r.reconcileNormal(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
-	// Requeue if the reconcile failed because the ClusterCacheTracker was locked for the
-	// current cluster because of concurrent access.
-	if errors.Is(err, clustercache.ErrClusterNotConnected) {
-		log.V(5).Info("Requeuing because connection to the workload cluster is down")
-		return ctrl.Result{RequeueAfter: time.Minute}, nil
-	}
-	return result, err
+	return r.reconcileNormal(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -184,10 +170,6 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 	switch {
 	case r.Client == nil:
 		return fmt.Errorf("required field Client must not be nil")
-	case r.ClusterCache == nil:
-		return fmt.Errorf("required field ClusterCache must not be nil")
-	case r.CachingClient == nil:
-		return fmt.Errorf("required field CachingClient must not be nil")
 	}
 
 	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxcmachine")
@@ -215,7 +197,6 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 				predicates.ClusterPausedTransitionsOrInfrastructureReady(mgr.GetScheme(), predicateLog),
 			),
 		).
-		WatchesRawSource(r.ClusterCache.GetClusterSource("lxcmachine", clusterToLXCMachines)).
 		Complete(r); err != nil {
 		return fmt.Errorf("failed setting up with a controller manager: %w", err)
 	}

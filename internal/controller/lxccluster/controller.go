@@ -43,9 +43,6 @@ import (
 type LXCClusterReconciler struct {
 	client.Client
 
-	// CachingClient is a client that can cache responses, will be used for retrieving secrets.
-	CachingClient client.Client
-
 	// WatchFilterValue is the label value used to filter events prior to reconciliation.
 	WatchFilterValue string
 }
@@ -137,8 +134,6 @@ func (r *LXCClusterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 	switch {
 	case r.Client == nil:
 		return fmt.Errorf("required field Client must not be nil")
-	case r.CachingClient == nil:
-		return fmt.Errorf("required field CachingClient must not be nil")
 	}
 	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxccluster")
 

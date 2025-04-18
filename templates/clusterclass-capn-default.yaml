@@ -747,7 +747,7 @@ spec:
             kubeletExtraArgs:
               eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
               fail-swap-on: "false"
-              provider-id: "lxc:///{{ v1.instance_id }}"
+              provider-id: "lxc:///{{ v1.local_hostname }}"
           patches:
             directory: /etc/kubernetes/patches
         joinConfiguration:
@@ -755,7 +755,7 @@ spec:
             kubeletExtraArgs:
               eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
               fail-swap-on: "false"
-              provider-id: "lxc:///{{ v1.instance_id }}"
+              provider-id: "lxc:///{{ v1.local_hostname }}"
           patches:
             directory: /etc/kubernetes/patches
         preKubeadmCommands:
@@ -831,7 +831,7 @@ spec:
           kubeletExtraArgs:
             eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
             fail-swap-on: "false"
-            provider-id: "lxc:///{{ v1.instance_id }}"
+            provider-id: "lxc:///{{ v1.local_hostname }}"
         patches:
           directory: /etc/kubernetes/patches
       files:

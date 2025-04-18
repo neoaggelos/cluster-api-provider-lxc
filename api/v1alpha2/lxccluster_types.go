@@ -64,12 +64,10 @@ type LXCClusterSpec struct {
 	// +optional
 	SkipDefaultKubeadmProfile bool `json:"skipDefaultKubeadmProfile"`
 
-	// SkipCloudProviderNodePatch will skip patching Nodes in the workload cluster
-	// to set `.spec.providerID`. Note that this requires deploying the external
-	// cloud controller manager, otherwise Machines will not be able to be tied
-	// to the respective Nodes in the workload cluster.
+	// SkipCloudProviderNodePatch is deprecated and does not have any effect.
 	//
 	// +optional
+	// +deprecated
 	SkipCloudProviderNodePatch bool `json:"skipCloudProviderNodePatch"`
 
 	// TODO(neoaggelos): enable failure domains

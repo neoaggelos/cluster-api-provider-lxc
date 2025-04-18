@@ -10,12 +10,9 @@ import (
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
-	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
-	"github.com/lxc/cluster-api-provider-incus/internal/cloudprovider"
 	"github.com/lxc/cluster-api-provider-incus/internal/incus"
 	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 )
@@ -27,22 +24,6 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, infrav1.WaitingForClusterInfrastructureReason, clusterv1.ConditionSeverityInfo, "")
 		return ctrl.Result{}, nil
 	}
-
-	// TODO(neoaggelos): enable this code from capd, and adjust for LXC
-	/*
-		// if the corresponding machine is deleted but the docker machine not yet, update load balancer configuration to divert all traffic from this instance
-		if util.IsControlPlaneMachine(machine) && !machine.DeletionTimestamp.IsZero() && dockerMachine.DeletionTimestamp.IsZero() {
-			if _, ok := dockerMachine.Annotations["dockermachine.infrastructure.cluster.x-k8s.io/weight"]; !ok {
-				if err := r.reconcileLoadBalancerConfiguration(ctx, cluster, dockerCluster, externalLoadBalancer); err != nil {
-					return ctrl.Result{}, err
-				}
-			}
-			if dockerMachine.Annotations == nil {
-				dockerMachine.Annotations = map[string]string{}
-			}
-			dockerMachine.Annotations["dockermachine.infrastructure.cluster.x-k8s.io/weight"] = "0"
-		}
-	*/
 
 	// if the machine is already provisioned, return
 	if lxcMachine.Spec.ProviderID != nil {
@@ -112,34 +93,8 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		lxcMachine.Status.LoadBalancerConfigured = true
 	}
 
-	// TODO(neoaggelos): consider editing the instance and unsetting "cloud-init.user-data" configuration key.
-
-	if !lxcCluster.Spec.SkipCloudProviderNodePatch {
-		// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
-		// to contact to get the ProviderID for the Node hosted on this machine, so return early.
-		// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
-		// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
-		// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
-		// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
-		if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
-			log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
-			return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
-		}
-
-		remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
-		if err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
-		}
-
-		if err := cloudprovider.PatchNode(ctx, remoteClient, lxcMachine); err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
-		}
-	} else {
-		log.FromContext(ctx).Info("Skip cloud provider node patch")
-	}
-
-	lxcMachine.Status.Ready = true
 	lxcMachine.Spec.ProviderID = ptr.To(lxcMachine.GetExpectedProviderID())
+	lxcMachine.Status.Ready = true
 
 	return ctrl.Result{}, nil
 }

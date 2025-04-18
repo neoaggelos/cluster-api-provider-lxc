@@ -112,29 +112,6 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		lxcMachine.Status.LoadBalancerConfigured = true
 	}
 
-	// check cloud-init status on the node
-	cloudInitStatus, err := lxcClient.CheckCloudInitStatus(ctx, lxcMachine.GetInstanceName())
-	if err != nil || cloudInitStatus == cloudinit.StatusUnknown {
-		log.FromContext(ctx).Error(err, "Could not retrieve cloud-init status")
-		conditions.MarkUnknown(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingUnknownStatusReason, "%s", err)
-	}
-	switch cloudInitStatus {
-	case cloudinit.StatusRunning:
-		log.FromContext(ctx).Info("Waiting for bootstrap script to complete")
-		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrappingReason, clusterv1.ConditionSeverityInfo, "")
-		return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
-	case cloudinit.StatusError:
-		err := fmt.Errorf("bootstrap failed since cloud-init finished with error status")
-		log.FromContext(ctx).Error(err, "Bootstrap failed, marking machine as failed")
-		conditions.MarkFalse(lxcMachine, infrav1.BootstrapSucceededCondition, infrav1.BootstrapFailedReason, clusterv1.ConditionSeverityError, "%s", err)
-		return ctrl.Result{}, nil
-	case cloudinit.StatusDone:
-		log.FromContext(ctx).Info("Bootstrap finished successfully")
-		conditions.MarkTrue(lxcMachine, infrav1.BootstrapSucceededCondition)
-	default:
-		// This should never happen, but not adding a panic on purpose. If only Go had enums :)
-	}
-
 	// TODO(neoaggelos): consider editing the instance and unsetting "cloud-init.user-data" configuration key.
 
 	if !lxcCluster.Spec.SkipCloudProviderNodePatch {

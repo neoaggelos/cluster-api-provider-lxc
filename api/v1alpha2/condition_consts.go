@@ -79,23 +79,3 @@ const (
 	// the underlying instance has been deleted unexpectedly.
 	InstanceDeletedReason = "InstanceDeleted"
 )
-
-const (
-	// BootstrapSucceededCondition provides an observation of the LXCMachine bootstrap process.
-	// It is set based on successful execution of bootstrap commands and on the existence of
-	// the /run/cluster-api/bootstrap-success.complete file.
-	// The condition gets generated after InstanceProvisionedCondition is True.
-	BootstrapSucceededCondition clusterv1.ConditionType = "BootstrapSucceeded"
-
-	// BootstrappingReason documents (Severity=Info) a LXCMachine currently executing the bootstrap
-	// script that creates the Kubernetes node on the newly provisioned machine infrastructure.
-	BootstrappingReason = "Bootstrapping"
-
-	// BootstrappingUnknownStatus documents a LXCMachine for which the current status of the bootstrap
-	// script that creates the Kubernetes node on the newly provisioned machine infrastructure is unknown.
-	BootstrappingUnknownStatusReason = "BootstrappingUnknownStatus"
-
-	// BootstrapFailedReason documents (Severity=Error) a LXCMachine controller detecting an error while
-	// bootstrapping the Kubernetes node on the machine just provisioned.
-	BootstrapFailedReason = "BootstrapFailed"
-)

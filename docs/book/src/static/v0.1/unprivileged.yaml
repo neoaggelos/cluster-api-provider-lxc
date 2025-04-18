@@ -1,9 +1,1 @@
-description: Profile for cluster-api-provider-incus unprivileged nodes
-config:
-  linux.kernel_modules: ip_vs,ip_vs_rr,ip_vs_wrr,ip_vs_sh,ip_tables,ip6_tables,iptable_raw,netlink_diag,nf_nat,overlay,br_netfilter,xt_socket
-devices:
-  kubeadm-host-boot:
-    path: /usr/lib/ostree-boot
-    readonly: "true"
-    source: /boot
-    type: disk
+../../../../../internal/static/embed/unprivileged.yaml

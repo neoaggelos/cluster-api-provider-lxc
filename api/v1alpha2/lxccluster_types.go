@@ -208,6 +208,7 @@ type LXCClusterV1Beta2Status struct {
 // +kubebuilder:printcolumn:name="Load Balancer",type="string",JSONPath=".spec.controlPlaneEndpoint.host",description="Load Balancer address"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="Cluster infrastructure is ready"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCCluster"
+// +kubebuilder:resource:categories=cluster-api
 
 // LXCCluster is the Schema for the lxcclusters API.
 type LXCCluster struct {

@@ -168,6 +168,7 @@ type LXCMachineV1Beta2Status struct {
 // +kubebuilder:printcolumn:name="ProviderID",type="string",JSONPath=".spec.providerID",description="Provider ID"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="Machine ready status"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCMachine"
+// +kubebuilder:resource:categories=cluster-api
 
 // LXCMachine is the Schema for the lxcmachines API.
 type LXCMachine struct {

@@ -5,7 +5,13 @@ DIR="$(dirname "$(realpath "$0")")"
 if ! snap list lxd; then
   sudo apt update
   sudo apt install snapd -y
-  sudo snap install lxd --channel 5.21/stable
+  sudo snap wait core seed.loaded
+
+  timeout 5m sh -c '
+    while ! sudo snap install lxd --channel 5.21/stable; do
+      echo retry failed install
+    done
+  '
 fi
 
 sudo snap refresh lxd --channel 5.21/stable

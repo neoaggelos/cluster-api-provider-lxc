@@ -159,7 +159,7 @@ func (l *loadBalancerLXC) Inspect(ctx context.Context) map[string]string {
 		{name: "haproxy.cfg", command: []string{"cat", "/etc/haproxy/haproxy.cfg"}},
 	} {
 		var stdout, stderr bytes.Buffer
-		if err := l.lxcClient.RunCommand(ctx, l.name, item.command, &stdout, &stderr); err != nil {
+		if err := l.lxcClient.RunCommand(ctx, l.name, item.command, nil, &stdout, &stderr); err != nil {
 			result[fmt.Sprintf("%s.error", item.name)] = fmt.Errorf("failed to RunCommand %v on %s: %w", item.command, l.name, err).Error()
 		}
 		result[item.name] = fmt.Sprintf("%s\n%s\n", stdout.String(), stderr.String())

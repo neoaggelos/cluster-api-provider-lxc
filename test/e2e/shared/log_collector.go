@@ -104,7 +104,7 @@ func (o IncusLogCollector) CollectMachineLog(ctx context.Context, managementClus
 		defer cancel()
 
 		var stdout, stderr bytes.Buffer
-		if err := client.RunCommand(commandCtx, instanceName, item.command, &stdout, &stderr); err != nil {
+		if err := client.RunCommand(commandCtx, instanceName, item.command, nil, &stdout, &stderr); err != nil {
 			errs = append(errs, fmt.Errorf("failed to run command %v: %w", item.command, err))
 		}
 		if v := stdout.Bytes(); len(v) > 0 {

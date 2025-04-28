@@ -7,8 +7,6 @@ on:
         required: true
         description: Kubernetes version, e.g. "v1.33.0"
         type: string
-  push:
-    branches: [feat/cmd-image-builder]
 
 jobs:
   build:
@@ -46,5 +44,5 @@ jobs:
       - name: Upload image
         uses: actions/upload-artifact@v4
         with:
-          name: image-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.runner }}
+          name: kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.arch }}
           path: image.tar.gz

@@ -12,6 +12,10 @@ issues:
     - path: "api/*"
       linters:
         - lll
+    - path: "cmd/*"
+      linters:
+        - lll
+        - goconst
     - path: "internal/*"
       linters:
         - dupl

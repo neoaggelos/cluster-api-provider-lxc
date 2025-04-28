@@ -1,4 +1,4 @@
-name: Build Images
+name: Build Kubeadm Images
 
 on:
   workflow_dispatch:
@@ -7,6 +7,8 @@ on:
         required: true
         description: Kubernetes version, e.g. "v1.33.0"
         type: string
+  push:
+    branches: [feat/cmd-image-builder]
 
 jobs:
   build:
@@ -15,15 +17,15 @@ jobs:
       matrix:
         include:
         # amd64 images
-        - { infrastructure: incus,  type: container,        runner: ubuntu-24.04 }
-        - { infrastructure: incus,  type: virtual-machine,  runner: ubuntu-24.04 }
-        - { infrastructure: lxd,    type: virtual-machine,  runner: ubuntu-24.04 }
+        - { infrastructure: incus,  type: container,        arch: amd64 }
+        - { infrastructure: incus,  type: virtual-machine,  arch: amd64 }
+        - { infrastructure: lxd,    type: virtual-machine,  arch: amd64 }
 
         # arm64 images
-        - { infrastructure: incus,  type: container,        runner: ubuntu-24.04-arm }
-        # - { infrastructure: incus,  type: virtual-machine,  runner: ubuntu-24.04-arm }    # arm64 runners do not support kvm
-        # - { infrastructure: lxd,    type: virtual-machine,  runner: ubuntu-24.04-arm }    # arm64 runners do not support kvm
-    runs-on: ${{ matrix.runner }}
+        - { infrastructure: incus,  type: container,        arch: arm64 }
+        # - { infrastructure: incus,  type: virtual-machine,  arch: arm64 }    # arm64 runners do not support kvm
+        # - { infrastructure: lxd,    type: virtual-machine,  arch: arm64 }    # arm64 runners do not support kvm
+    runs-on: ${{ matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +41,7 @@ jobs:
 
       - name: Build image
         run: |
-          go run ./cmd/image-builder --v=4 --kubernetes-version ${{ inputs.version }} --instance-type=${{ matrix.type }} --output image.tar.gz
+          go run ./cmd/image-builder --v=4 --kubernetes-version v1.33.0 --instance-type=${{ matrix.type }} --output image.tar.gz
 
       - name: Upload image
         uses: actions/upload-artifact@v4

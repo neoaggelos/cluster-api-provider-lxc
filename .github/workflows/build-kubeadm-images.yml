@@ -39,7 +39,7 @@ jobs:
 
       - name: Build image
         run: |
-          go run ./cmd/image-builder kubeadm --v=4 --kubernetes-version v1.33.0 --instance-type=${{ matrix.type }} --output image.tar.gz
+          go run ./cmd/image-builder kubeadm --v=4 --kubernetes-version ${{ inputs.version }} --instance-type=${{ matrix.type }} --output image.tar.gz
 
       - name: Upload image
         uses: actions/upload-artifact@v4

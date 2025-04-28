@@ -1,1 +1,0 @@
-../../../../../hack/scripts/images/stages/99-cleanup.sh

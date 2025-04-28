@@ -1,1 +1,0 @@
-../../../../../hack/scripts/images/stages/50-install-haproxy.sh

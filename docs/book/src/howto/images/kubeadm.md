@@ -4,176 +4,53 @@ This how-to describes the process of building a custom base image for your infra
 
 The `kubeadm` image will be used to launch cluster nodes.
 
-We will go over the steps of launching a builder instance with the appropriate base image, installing Kubernetes and other necessary tools, cleaning up and publishing a snapshot of the image, as well as steps for using it.
-
 ## Table Of Contents
 
 <!-- toc -->
 
-## Launch builder instance
+## Requirements
 
-We must start a builder instance that matches the instance type (`container` or `virtual-machine`) and base Operating System that we want to have. Ubuntu 24.04 and Debian 12 have been tested and are known to work.
+- A locally configured Incus or Canonical LXD instance. The `image-builder` utility will use the default client credentials.
+- Go 1.23.0+
 
-> **NOTE**: The images published on [default simplestreams server](../../reference/default-simplestreams-server.md) are based on Ubuntu 24.04.
+## Build `image-builder` binary
 
-The one requirement for our base image is that it comes with `cloud-init`, since ClusterAPI needs `cloud-init` to provision instances.
-
-{{#tabs name:"launch" tabs:"Incus (VM),Incus (Container),Canonical LXD (VM), Canonical LXD (Container)" }}
-
-{{#tab Incus (VM) }}
-
-Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/). Make sure to use the `cloud` variant, which supports cloud-init.
+First, clone the cluster-api-provider-incus source repository:
 
 ```bash
-incus launch images:ubuntu/24.04 kubeadm-builder
+git clone https://github.com/lxc/cluster-api-provider-incus
 ```
 
-Or you can use Debian 12 as base image:
+Then, build the `image-builder` binary with:
 
 ```bash
-incus launch images:debian/12 kubeadm-builder
+make image-builder
 ```
 
-{{#/tab }}
+## Build `kubeadm` image for containers
 
-{{#tab Incus (Container) }}
-
-Launch a new Container using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/). Make sure to use the `cloud` variant, which supports cloud-init.
+Use `./bin/image-builder kubeadm --help` for a list of all available options.
 
 ```bash
-incus launch images:ubuntu/24.04 kubeadm-builder
+./bin/image-builder kubeadm --v=4 --output image-kubeadm.tar.gz \
+  --image-alias kubeadm/v1.33.0/ubuntu/24.04 \
+  --ubuntu-version 24.04 \
+  --kubernetes-version v1.33.0
 ```
 
-Or you can use Debian 12 as base image:
+This will build a kubeadm image for Kubernetes v1.33.0, save it with alias `kubeadm/v1.33.0/ubuntu/24.04` and also export it to `image-kubeadm.tar.gz`.
+
+## Build `kubeadm` image for virtual machines
 
 ```bash
-incus launch images:debian/12 kubeadm-builder
-```
-{{#/tab }}
-
-
-{{#tab Canonical LXD (VM) }}
-
-Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/). The image comes with support for cloud-init.
-
-```bash
-lxc launch ubuntu:24.04 kubeadm-builder --vm
+./bin/image-builder kubeadm --v=4 --output image-kubeadm-kvm.tar.gz \
+  --image-alias kubeadm/v1.33.0/ubuntu/24.04/kvm \
+  --ubuntu-version 24.04 \
+  --kubernetes-version v1.33.0 \
+  --instance-type virtual-machine
 ```
 
-{{#/tab }}
-
-{{#tab Canonical LXD (Container) }}
-
-Launch a new Container using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/). The image comes with support for cloud-init.
-
-```bash
-lxc launch ubuntu:24.04 kubeadm-builder
-```
-
-{{#/tab }}
-
-{{#/tabs }}
-
-The steps to build the kubeadm image are the same for both Container and Virtual Machine images.
-
-## Pre-run commands
-
-Launch any commands you might need _before_ installing the Kubernetes binaries and set any host configuration. This might include installing extra packages and binaries depending on your requirements, configuring default registry mirrors based on your target environment, etc.
-
-## Install Kubernetes
-
-We will use the following script to install runc, containerd, cni-plugins, crictl and Kubernetes binaries on the instance. Feel free to adjust component versions as required.
-
-```bash
-{{#include ../../static/v0.1/install-kubeadm.sh }}
-```
-
-Run the script on the instance using the command below. Make sure to specify the Kubernetes version you want to use, e.g. `v1.31.4`:
-
-{{#tabs name:"install" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | incus exec kubeadm-builder -- bash -s -- v1.31.4
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-kubeadm.sh | lxc exec kubeadm-builder -- bash -s -- v1.31.4
-```
-
-{{#/tab }}
-
-{{#/tabs }}
-
-## Post-run commands
-
-Launch any commands you might need _after_ installing the Kubernetes and adjusting the host configuration. This might include patching component configurations, or pulling extra OCI images.
-
-## Clean-up
-
-We use the script below to cleanup package archives, deb packages, bash history files and local user configurations. Most importantly, we also reset `cloud-init` status, so that we can use it as a base image.
-
-
-```bash
-{{#include ../../static/v0.1/image-cleanup.sh }}
-```
-
-{{#tabs name:"cleanup" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | incus exec kubeadm-builder -- bash
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | lxc exec kubeadm-builder -- bash
-```
-
-{{#/tab }}
-
-{{#/tabs }}
-
-## Stop instance and publish snapshot
-
-At this point, our image root filesystem is ready. Final steps are to shutdown the instance and publish:
-
-{{#tabs name:"publish" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-incus stop kubeadm-builder
-incus snapshot create kubeadm-builder snapshot-0
-
-# publish snapshot as image, using alias "kubeadm/v1.31.4/ubuntu/24.04"
-incus publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-lxc stop kubeadm-builder
-lxc snapshot kubeadm-builder snapshot-0
-
-# publish snapshot as image, using alias "kubeadm/v1.31.4/ubuntu/24.04"
-lxc publish kubeadm-builder/snapshot-0 --alias kubeadm/v1.31.4/ubuntu/24.04
-```
-
-{{#/tab }}
-
-{{#/tabs }}
+This will build a kubeadm image for Kubernetes v1.33.0, save it with alias `kubeadm/v1.33.0/ubuntu/24.04/kvm` and also export it to `image-kubeadm-kvm.tar.gz`.
 
 ## Check image
 
@@ -200,11 +77,13 @@ lxc image list kubeadm
 The output should look similar to this:
 
 ```bash
-+------------------------------+--------------+--------+-----------------------------------+--------------+-----------+-----------+----------------------+
-|            ALIAS             | FINGERPRINT  | PUBLIC |            DESCRIPTION            | ARCHITECTURE |   TYPE    |   SIZE    |     UPLOAD DATE      |
-+------------------------------+--------------+--------+-----------------------------------+--------------+-----------+-----------+----------------------+
-| kubeadm/v1.31.4/ubuntu/24.04 | 5053ee6cac52 | no     | ubuntu noble amd64 (202501120531) | x86_64       | CONTAINER | 668.13MiB | 2025/01/12 07:24 EET |
-+------------------------------+--------------+--------+-----------------------------------+--------------+-----------+-----------+----------------------+
++----------------------------------+--------------+--------+---------------------------------------------------+--------------+-----------------+------------+-----------------------+
+|              ALIAS               | FINGERPRINT  | PUBLIC |                    DESCRIPTION                    | ARCHITECTURE |      TYPE       |    SIZE    |      UPLOAD DATE      |
++----------------------------------+--------------+--------+---------------------------------------------------+--------------+-----------------+------------+-----------------------+
+| kubeadm/v1.33.0/ubuntu/24.04     | 8960df007461 | yes    | kubeadm v1.33.0 ubuntu noble amd64 (202504280150) | x86_64       | CONTAINER       | 742.47MiB  | 2025/04/28 01:50 EEST |
++----------------------------------+--------------+--------+---------------------------------------------------+--------------+-----------------+------------+-----------------------+
+| kubeadm/v1.33.0/ubuntu/24.04/kvm | 501df06be7a4 | yes    | kubeadm v1.33.0 ubuntu noble amd64 (202504280156) | x86_64       | VIRTUAL-MACHINE | 1005.12MiB | 2025/04/28 01:57 EEST |
++----------------------------------+--------------+--------+---------------------------------------------------+--------------+-----------------+------------+-----------------------+
 ```
 
 ## Use the image in LXCMachineTemplate
@@ -217,7 +96,7 @@ When using the example [Cluster Templates](../../reference/templates/), you need
 export CONTROL_PLANE_MACHINE_TYPE=container         # 'container' or 'virtual-machine'
 export WORKER_MACHINE_TYPE=container                # must match type of built image
 
-export LXC_IMAGE_NAME=kubeadm/v1.31.4/ubuntu/24.40  # exported image alias name
+export LXC_IMAGE_NAME=kubeadm/v1.33.0/ubuntu/24.04  # exported image alias name
 ```
 
 ### Editing LXCImageTemplate manually
@@ -239,7 +118,7 @@ spec:
       #profiles: [default]
       instanceType: container
       image:
-        name: kubeadm/v1.31.4/ubuntu/24.04
+        name: kubeadm/v1.33.0/ubuntu/24.04
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
@@ -250,7 +129,7 @@ spec:
     spec:
       #flavor: c2-m4
       #profiles: [default]
-      instanceType: container
+      instanceType: virtual-machine
       image:
-        name: kubeadm/v1.31.4/ubuntu/24.04
+        name: kubeadm/v1.33.0/ubuntu/24.04/kvm
 ```

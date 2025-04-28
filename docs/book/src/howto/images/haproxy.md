@@ -4,141 +4,40 @@ This how-to describes the process of building a custom base image for your infra
 
 The `haproxy` image will be used for the cluster load balancer when using the development cluster template.
 
-We will go over the steps of launching a builder instance with the appropriate base image, installing haproxy, cleaning up and publishing a snapshot of the image, as well as steps for using it.
-
 ## Table Of Contents
 
 <!-- toc -->
 
-## Launch builder instance
+## Requirements
 
-We must start a `container` instance with the base Operating System that we want to have. Ubuntu 24.04 and Debian 12 have been tested and are known to work.
+- A locally configured Incus or Canonical LXD instance. The `image-builder` utility will use the default client credentials.
+- Go 1.23.0+
 
-> **NOTE**: The images published on [default simplestreams server](../../reference/default-simplestreams-server.md) are based on Ubuntu 24.04.
+## Build `image-builder` binary
 
-{{#tabs name:"launch" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://images.linuxcontainers.org/](https://images.linuxcontainers.org/).
+First, clone the cluster-api-provider-incus source repository:
 
 ```bash
-incus launch images:ubuntu/24.04 haproxy-builder
+git clone https://github.com/lxc/cluster-api-provider-incus
 ```
 
-Or you can use Debian 12 as base image:
+Then, build the `image-builder` binary with:
 
 ```bash
-incus launch images:debian/12 haproxy-builder
+make image-builder
 ```
 
-{{#/tab }}
+## Build `haproxy` image
 
-{{#tab Canonical LXD }}
-
-Launch a new Virtual Machine using the Ubuntu 24.04 image from [https://cloud-images.ubuntu.com/releases/](https://cloud-images.ubuntu.com/releases/).
+Use `./bin/image-builder haproxy --help` for a list of all available options.
 
 ```bash
-lxc launch ubuntu:24.04 haproxy-builder
+./bin/image-builder haproxy --v=4 --output image-haproxy.tar.gz \
+  --image-alias haproxy/u24 \
+  --ubuntu-version 24.04
 ```
 
-{{#/tab }}
-
-{{#/tabs }}
-
-## Pre-run commands
-
-Launch any commands you might need _before_ installing haproxy.
-
-## Install haproxy
-
-```bash
-{{#include ../../static/v0.1/install-haproxy.sh }}
-```
-
-{{#tabs name:"install" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-haproxy.sh | incus exec haproxy-builder -- bash
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/install-haproxy.sh | lxc exec haproxy-builder -- bash
-```
-
-{{#/tab }}
-
-{{#/tabs }}
-
-## Post-run commands
-
-Launch any commands you might need _after_ installing haproxy and adjusting the host configuration.
-
-## Clean-up
-
-We use the script below to cleanup package archives, deb packages, bash history files and local user configurations. Most importantly, we also reset `cloud-init` status, so that we can use it as a base image.
-
-```bash
-{{#include ../../static/v0.1/image-cleanup.sh }}
-```
-
-{{#tabs name:"cleanup" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | incus exec haproxy-builder -- bash
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/image-cleanup.sh | lxc exec haproxy-builder -- bash
-```
-
-{{#/tab }}
-
-{{#/tabs }}
-
-## Stop instance and publish snapshot
-
-At this point, our image root filesystem is ready. Final steps are to shutdown the instance and publish:
-
-{{#tabs name:"publish" tabs:"Incus,Canonical LXD" }}
-
-{{#tab Incus }}
-
-```bash
-incus stop haproxy-builder
-incus snapshot create haproxy-builder snapshot-0
-
-# publish snapshot as image, using alias "haproxy/ubuntu/24.04"
-incus publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
-```
-
-{{#/tab }}
-
-{{#tab Canonical LXD }}
-
-```bash
-lxc stop haproxy-builder
-lxc snapshot haproxy-builder snapshot-0
-
-# publish snapshot as image, using alias "haproxy/ubuntu/24.04"
-lxc publish haproxy-builder/snapshot-0 --alias haproxy/ubuntu/24.04
-```
-
-{{#/tab }}
-
-{{#/tabs }}
+This will build a haproxy image based on Ubuntu 24.04, save it on the server as `haproxy/u24` and also export it to the local file `image-haproxy.tar.gz`
 
 ## Check image
 
@@ -165,11 +64,11 @@ lxc image list haproxy
 The output should look similar to this:
 
 ```bash
-+---------+--------------+--------+-------------------------------------+--------------+-----------+-----------+----------------------+
-|  ALIAS  | FINGERPRINT  | PUBLIC |             DESCRIPTION             | ARCHITECTURE |   TYPE    |   SIZE    |     UPLOAD DATE      |
-+---------+--------------+--------+-------------------------------------+--------------+-----------+-----------+----------------------+
-| haproxy | 464c5e12f184 | no     | Ubuntu noble amd64 (20250115_07:42) | x86_64       | CONTAINER | 133.90MiB | 2025/01/15 23:19 EET |
-+---------+--------------+--------+-------------------------------------+--------------+-----------+-----------+----------------------+
++-------------+--------------+--------+------------------------------------+--------------+-----------+-----------+-----------------------+
+|    ALIAS    | FINGERPRINT  | PUBLIC |            DESCRIPTION             | ARCHITECTURE |   TYPE    |   SIZE    |      UPLOAD DATE      |
++-------------+--------------+--------+------------------------------------+--------------+-----------+-----------+-----------------------+
+| haproxy/u24 | 80aef76c0754 | yes    | haproxy noble amd64 (202504280141) | x86_64       | CONTAINER | 148.15MiB | 2025/04/28 01:41 EEST |
++-------------+--------------+--------+------------------------------------+--------------+-----------+-----------+-----------------------+
 ```
 
 ## Use the image in LXCCluster
@@ -191,5 +90,5 @@ spec:
         #flavor: c1-m1
         #profiles: [default]
         image:
-          name: haproxy
+          name: haproxy/u24
 ```

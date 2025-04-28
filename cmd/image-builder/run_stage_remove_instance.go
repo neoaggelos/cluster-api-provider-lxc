@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-type removeInstanceStage struct{}
+type stageRemoveInstance struct{}
 
-func (*removeInstanceStage) name() string { return "remove-instance" }
+func (*stageRemoveInstance) name() string { return "remove-instance" }
 
 // incus rm capn-builder --force
-func (*removeInstanceStage) run(ctx context.Context) error {
+func (*stageRemoveInstance) run(ctx context.Context) error {
 	if err := client.ForceRemoveInstance(ctx, cfg.instanceName); err != nil {
 		return fmt.Errorf("failed to delete instance: %w", err)
 	}

@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type publishHaproxyImageStage struct{}
+type stagePublishHaproxyImage struct{}
 
-func (*publishHaproxyImageStage) name() string { return "publish-image" }
+func (*stagePublishHaproxyImage) name() string { return "publish-image" }
 
 // incus publish capn-builder capn-builder-image
-func (s *publishHaproxyImageStage) run(ctx context.Context) error {
+func (s *stagePublishHaproxyImage) run(ctx context.Context) error {
 	now := time.Now()
 	serial := fmt.Sprintf("%d%02d%02d%02d%02d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute())
 

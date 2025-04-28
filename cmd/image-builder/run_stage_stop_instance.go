@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-type stopInstanceStage struct{}
+type stageStopInstance struct{}
 
-func (*stopInstanceStage) name() string { return "stop-instance" }
+func (*stageStopInstance) name() string { return "stop-instance" }
 
 // incus stop capn-builder
-func (*stopInstanceStage) run(ctx context.Context) error {
+func (*stageStopInstance) run(ctx context.Context) error {
 	if err := client.StopInstance(ctx, cfg.instanceName); err != nil {
 		return fmt.Errorf("failed to stop instance: %w", err)
 	}

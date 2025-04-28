@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type publishKubeadmImageStage struct{}
+type stagePublishKubeadmImage struct{}
 
-func (*publishKubeadmImageStage) name() string { return "publish-image" }
+func (*stagePublishKubeadmImage) name() string { return "publish-image" }
 
 // incus publish capn-builder capn-builder-image
-func (*publishKubeadmImageStage) run(ctx context.Context) error {
+func (*stagePublishKubeadmImage) run(ctx context.Context) error {
 	now := time.Now()
 	serial := fmt.Sprintf("%d%02d%02d%02d%02d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute())
 

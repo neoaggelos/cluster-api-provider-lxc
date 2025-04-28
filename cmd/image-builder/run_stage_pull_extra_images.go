@@ -8,12 +8,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-type pullExtraImagesStage struct{}
+type stagePullExtraImages struct{}
 
-func (*pullExtraImagesStage) name() string { return "pull-extra-images" }
+func (*stagePullExtraImages) name() string { return "pull-extra-images" }
 
 // incus exec capn-builder -- crictl pull $image
-func (*pullExtraImagesStage) run(ctx context.Context) error {
+func (*stagePullExtraImages) run(ctx context.Context) error {
 	for _, image := range kubeadmCfg.pullExtraImages {
 		log.FromContext(ctx).V(1).WithValues("image", image).Info("Pulling image")
 		if err := client.RunCommand(ctx, cfg.instanceName, []string{"crictl", "pull", image}, nil, os.Stdout, os.Stderr); err != nil {

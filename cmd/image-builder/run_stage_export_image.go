@@ -10,12 +10,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-type exportImageStage struct{}
+type stageExportImage struct{}
 
-func (*exportImageStage) name() string { return "export-image" }
+func (*stageExportImage) name() string { return "export-image" }
 
 // incus image export capn-builder-image
-func (s *exportImageStage) run(ctx context.Context) (rerr error) {
+func (s *stageExportImage) run(ctx context.Context) (rerr error) {
 	image, _, err := client.Client.GetImageAlias(cfg.imageAlias)
 	if err != nil {
 		return fmt.Errorf("failed to find image for alias %q: %w", cfg.imageAlias, err)

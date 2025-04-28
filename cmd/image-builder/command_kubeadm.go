@@ -31,17 +31,17 @@ var (
 			).Info("Building kubeadm image")
 
 			return runStages(
-				&createInstanceStage{},
-				&preRunCommandsStage{},
-				&installKubeadmStage{},
-				&pullExtraImagesStage{},
-				&generateManifestStage{},
-				&postRunCommandsStage{},
-				&cleanupInstanceStage{},
-				&stopInstanceStage{},
-				&publishKubeadmImageStage{},
-				&exportImageStage{},
-				&removeInstanceStage{},
+				&stageCreateInstance{},
+				&stagePreRunCommands{},
+				&stageInstallKubeadm{},
+				&stagePullExtraImages{},
+				&stageGenerateManifest{},
+				&stagePostRunCommands{},
+				&stageCleanupInstance{},
+				&stageStopInstance{},
+				&stagePublishKubeadmImage{},
+				&stageExportImage{},
+				&stageRemoveInstance{},
 			)
 		},
 	}

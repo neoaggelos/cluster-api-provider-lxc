@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -13,12 +12,12 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-type cleanupInstanceStage struct{}
+type stageCleanupInstance struct{}
 
-func (*cleanupInstanceStage) name() string { return "cleanup-instance" }
+func (*stageCleanupInstance) name() string { return "cleanup-instance" }
 
 // cat cleanup-instance.sh | incus exec capn-builder -- bash -s
-func (*cleanupInstanceStage) run(ctx context.Context) error {
+func (*stageCleanupInstance) run(ctx context.Context) error {
 	log.FromContext(ctx).V(1).Info("Running cleanup-instance.sh script")
 
 	var stdout, stderr io.Writer

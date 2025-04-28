@@ -7,13 +7,13 @@ import (
 	"github.com/lxc/incus/v6/shared/api"
 )
 
-type createInstanceStage struct{}
+type stageCreateInstance struct{}
 
-func (*createInstanceStage) name() string { return "create-instance" }
+func (*stageCreateInstance) name() string { return "create-instance" }
 
 // incus launch image:ubuntu/24.04/cloud
 // incus launch image:ubuntu/24.04/cloud --vm -d root,size=5GiB
-func (*createInstanceStage) run(ctx context.Context) error {
+func (*stageCreateInstance) run(ctx context.Context) error {
 	// Fetch server information
 	server, _, err := client.Client.GetServer()
 	if err != nil {

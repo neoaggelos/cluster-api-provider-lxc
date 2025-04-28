@@ -25,15 +25,15 @@ var (
 			).Info("Building haproxy image")
 
 			return runStages(
-				&createInstanceStage{},
-				&preRunCommandsStage{},
-				&installHaproxyStage{},
-				&postRunCommandsStage{},
-				&cleanupInstanceStage{},
-				&stopInstanceStage{},
-				&publishHaproxyImageStage{},
-				&exportImageStage{},
-				&removeInstanceStage{},
+				&stageCreateInstance{},
+				&stagePreRunCommands{},
+				&stageInstallHaproxy{},
+				&stagePostRunCommands{},
+				&stageCleanupInstance{},
+				&stageStopInstance{},
+				&stagePublishHaproxyImage{},
+				&stageExportImage{},
+				&stageRemoveInstance{},
 			)
 		},
 	}

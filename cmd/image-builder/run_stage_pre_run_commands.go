@@ -2,10 +2,10 @@ package main
 
 import "context"
 
-type preRunCommandsStage struct{}
+type stagePreRunCommands struct{}
 
-func (*preRunCommandsStage) name() string { return "pre-run-commands" }
+func (*stagePreRunCommands) name() string { return "pre-run-commands" }
 
-func (*preRunCommandsStage) run(ctx context.Context) error {
+func (*stagePreRunCommands) run(ctx context.Context) error {
 	return nil
 }

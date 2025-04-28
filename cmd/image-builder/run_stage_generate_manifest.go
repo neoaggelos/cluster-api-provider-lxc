@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -13,12 +12,12 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-type generateManifestStage struct{}
+type stageGenerateManifest struct{}
 
-func (*generateManifestStage) name() string { return "generate-manifest" }
+func (*stageGenerateManifest) name() string { return "generate-manifest" }
 
 // cat generate-manifest.sh | incus exec capn-builder -- bash -s
-func (*generateManifestStage) run(ctx context.Context) error {
+func (*stageGenerateManifest) run(ctx context.Context) error {
 	log.FromContext(ctx).V(1).Info("Running generate-manifest.sh script")
 
 	var stdout, stderr io.Writer

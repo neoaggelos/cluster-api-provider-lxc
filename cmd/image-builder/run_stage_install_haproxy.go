@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -13,13 +12,13 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-type installHaproxyStage struct{}
+type stageInstallHaproxy struct{}
 
-func (*installHaproxyStage) name() string { return "install-haproxy" }
+func (*stageInstallHaproxy) name() string { return "install-haproxy" }
 
 // cat embed/50-install-haproxy.sh | incus exec capn-builder -- bash -s
 // incus config set capn-builder user.capn.stage.install-haproxy=true
-func (*installHaproxyStage) run(ctx context.Context) error {
+func (*stageInstallHaproxy) run(ctx context.Context) error {
 	instance, etag, err := client.Client.GetInstance(cfg.instanceName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve instance info: %w", err)

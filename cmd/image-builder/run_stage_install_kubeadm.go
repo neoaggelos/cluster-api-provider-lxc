@@ -12,13 +12,13 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
-type installKubeadmStage struct{}
+type stageInstallKubeadm struct{}
 
-func (*installKubeadmStage) name() string { return "install-kubeadm" }
+func (*stageInstallKubeadm) name() string { return "install-kubeadm" }
 
 // cat embed/50-install-kubeadm.sh | incus exec capn-builder -- bash -s -- $kubernetesVersion
 // incus config set capn-builder user.capn.stage.install-kubeadm=true
-func (*installKubeadmStage) run(ctx context.Context) error {
+func (*stageInstallKubeadm) run(ctx context.Context) error {
 	instance, etag, err := client.Client.GetInstance(cfg.instanceName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve instance info: %w", err)

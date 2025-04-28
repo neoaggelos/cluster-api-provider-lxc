@@ -68,6 +68,9 @@ spec:
               flavor:
                 description: Instance size, e.g. "c1-m1" for 1 CPU and 1 GB RAM
                 type: string
+              image:
+                type: string
+                description: Override the image to use for provisioning the load balancer instance.
               profiles:
                 description: List of profiles to apply on the instance
                 type: array
@@ -199,12 +202,16 @@ spec:
             {{ if hasKey .loadBalancer "lxc" }}
             loadBalancer:
               lxc:
-                instanceSpec: {{ if and (not .loadBalancer.lxc.flavor) (not .loadBalancer.lxc.profiles) }}{}{{ end }}
+                instanceSpec: {{ if and (not .loadBalancer.lxc.image) (not .loadBalancer.lxc.flavor) (not .loadBalancer.lxc.profiles) }}{}{{ end }}
             {{ if .loadBalancer.lxc.flavor }}
                   flavor: {{ .loadBalancer.lxc.flavor }}
             {{ end }}
             {{ if .loadBalancer.lxc.profiles }}
                   profiles: {{ .loadBalancer.lxc.profiles | toJson }}
+            {{ end }}
+            {{ if .loadBalancer.lxc.image }}
+                  image:
+                    name: {{ .loadBalancer.lxc.image | quote }}
             {{ end }}
             {{ end }}
             {{ if hasKey .loadBalancer "oci" }}

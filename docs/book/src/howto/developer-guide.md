@@ -125,7 +125,7 @@ On a separate window, generate a cluster manifest and deploy:
 ```bash
 export LOAD_BALANCER="lxc: {}"
 export LXC_SECRET_NAME="lxc-secret"
-export KUBERNETES_VERSION="v1.32.3"
+export KUBERNETES_VERSION="v1.33.0"
 export CONTROL_PLANE_MACHINE_COUNT=1
 export WORKER_MACHINE_COUNT=1
 

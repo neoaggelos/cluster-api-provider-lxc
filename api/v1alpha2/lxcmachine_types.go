@@ -76,6 +76,22 @@ type LXCMachineSpec struct {
 	// +optional
 	Devices []string `json:"devices,omitempty"`
 
+	// Config allows overriding instance configuration keys.
+	//
+	// Note that the provider will always set the following configuration keys:
+	//
+	// - "cloud-init.user-data": cloud-init config data
+	// - "user.cluster-name": name of owning cluster
+	// - "user.cluster-namespace": namespace of owning cluster
+	// - "user.cluster-role": instance role (e.g. control-plane, worker)
+	// - "user.machine-name": name of machine (should match instance hostname)
+	//
+	// See https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options
+	// for details.
+	//
+	// +optional
+	Config map[string]string `json:"config,omitempty"`
+
 	// Image to use for provisioning the machine. If not set, a kubeadm image
 	// from the default upstream simplestreams source will be used, based on
 	// the version of the machine.

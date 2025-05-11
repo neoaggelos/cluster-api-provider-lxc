@@ -118,6 +118,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 	config := map[string]string{
 		configClusterNameKey:      cluster.Name,
 		configClusterNamespaceKey: cluster.Namespace,
+		configMachineNameKey:      machine.Name,
 		configInstanceRoleKey:     role,
 		configCloudInitKey:        cloudInit,
 	}
@@ -148,7 +149,7 @@ func (c *Client) CreateInstance(ctx context.Context, machine *clusterv1.Machine,
 		InstancePut: api.InstancePut{
 			Profiles: profiles,
 			Devices:  devices,
-			Config:   config,
+			Config:   util.MergeMap(config, lxcMachine.Spec.Config),
 		},
 	}); err != nil {
 		// TODO: Handle the below situations as terminalError.

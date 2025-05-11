@@ -24,6 +24,9 @@ const (
 	// configClusterNamespaceKey is the user config key that tracks the cluster namespace.
 	configClusterNamespaceKey = "user.cluster-namespace"
 
+	// configMachineNameKey is the user config key that tracks the machine name.
+	configMachineNameKey = "user.machine-name"
+
 	// configInstanceRoleKey is the user config key that tracks the instance role.
 	configInstanceRoleKey = "user.cluster-role"
 

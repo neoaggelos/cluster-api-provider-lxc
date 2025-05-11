@@ -861,6 +861,28 @@ devices:
 </tr>
 <tr>
 <td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration keys.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
+<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+</ul>
+<p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
+for details.</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>image</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineImageSource">
@@ -1056,6 +1078,28 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration keys.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
+<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+</ul>
+<p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
+for details.</p>
 </td>
 </tr>
 <tr>
@@ -1338,6 +1382,28 @@ string
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code><br/>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Config allows overriding instance configuration keys.</p>
+<p>Note that the provider will always set the following configuration keys:</p>
+<ul>
+<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
+<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
+<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
+<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
+<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+</ul>
+<p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
+for details.</p>
 </td>
 </tr>
 <tr>

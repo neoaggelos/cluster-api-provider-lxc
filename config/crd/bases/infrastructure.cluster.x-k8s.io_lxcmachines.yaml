@@ -62,6 +62,23 @@ spec:
           spec:
             description: LXCMachineSpec defines the desired state of LXCMachine.
             properties:
+              config:
+                additionalProperties:
+                  type: string
+                description: |-
+                  Config allows overriding instance configuration keys.
+
+                  Note that the provider will always set the following configuration keys:
+
+                  - "cloud-init.user-data": cloud-init config data
+                  - "user.cluster-name": name of owning cluster
+                  - "user.cluster-namespace": namespace of owning cluster
+                  - "user.cluster-role": instance role (e.g. control-plane, worker)
+                  - "user.machine-name": name of machine (should match instance hostname)
+
+                  See https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options
+                  for details.
+                type: object
               devices:
                 description: |-
                   Devices allows overriding the configuration of the instance disk or network.

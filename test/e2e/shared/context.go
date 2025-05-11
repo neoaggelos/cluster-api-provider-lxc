@@ -19,8 +19,6 @@ limitations under the License.
 package shared
 
 import (
-	"context"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/cluster-api/test/framework"
 	"sigs.k8s.io/cluster-api/test/framework/bootstrap"
@@ -83,20 +81,6 @@ type RuntimeEnvironment struct {
 	ClusterctlConfigPath string
 	// Scheme is the GVK scheme to use for the tests
 	Scheme *runtime.Scheme
-}
-
-// DefaultControlPlaneWaiters adds ControlPlaneWaiters on a SpecInput, such that we can deploy the CNI.
-func (c *E2EContext) DefaultControlPlaneWaiters() clusterctl.ControlPlaneWaiters {
-	return clusterctl.ControlPlaneWaiters{
-		WaitForControlPlaneInitialized: func(ctx context.Context, input clusterctl.ApplyCustomClusterTemplateAndWaitInput, result *clusterctl.ApplyCustomClusterTemplateAndWaitResult) {
-			FixupWorkloadCluster(c, input.ClusterName, input.Namespace)
-
-			result.ControlPlane = framework.DiscoveryAndWaitForControlPlaneInitialized(ctx, framework.DiscoveryAndWaitForControlPlaneInitializedInput{
-				Lister:  input.ClusterProxy.GetClient(),
-				Cluster: result.Cluster,
-			}, input.WaitForControlPlaneIntervals...)
-		},
-	}
 }
 
 // DefaultPostNamespaceCreated deploys the LXC credentials secret, as well as the CNI resource set on the namespace.

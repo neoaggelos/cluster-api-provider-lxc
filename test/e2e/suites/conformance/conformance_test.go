@@ -21,7 +21,6 @@ var _ = Describe("Conformance", Label("conformance"), func() {
 			ArtifactFolder:        e2eCtx.Settings.ArtifactFolder,
 			SkipCleanup:           e2eCtx.Settings.SkipCleanup,
 			PostNamespaceCreated:  e2eCtx.DefaultPostNamespaceCreated(),
-			ControlPlaneWaiters:   e2eCtx.DefaultControlPlaneWaiters(),
 
 			Flavor: shared.FlavorDefault,
 		}

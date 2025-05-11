@@ -25,7 +25,6 @@ var _ = Describe("QuickStart", func() {
 				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				ControlPlaneWaiters:    e2eCtx.DefaultControlPlaneWaiters(),
 				InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
@@ -44,7 +43,6 @@ var _ = Describe("QuickStart", func() {
 				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				ControlPlaneWaiters:    e2eCtx.DefaultControlPlaneWaiters(),
 				InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
 				Flavor:                   ptr.To(shared.FlavorDefault),

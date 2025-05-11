@@ -5,16 +5,9 @@ package shared
 import (
 	"context"
 
-	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 
-	addonsv1 "sigs.k8s.io/cluster-api/api/addons/v1beta1"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/test/e2e"
-	"sigs.k8s.io/cluster-api/test/framework"
-	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	. "github.com/onsi/gomega"
@@ -34,40 +27,6 @@ func FixupNamespace(e2eCtx *E2EContext, namespace string, enableCredentials bool
 			description: "secret/lxc-credentials",
 			object:      e2eCtx.Settings.LXCClientOptions.ToSecret(e2eCtx.E2EConfig.MustGetVariable(LXCSecretName), namespace),
 		},
-		{
-			enabled:     enableCNIResources,
-			description: "configmap/cni-resources",
-			object: &corev1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "cni-resources",
-					Namespace: namespace,
-				},
-				Data: map[string]string{
-					"cni.yaml": e2eCtx.Settings.CNIManifest,
-				},
-			},
-		},
-		{
-			enabled:     enableCNIResources,
-			description: "clusterresourceset/cni-resource-set",
-			object: &addonsv1.ClusterResourceSet{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "cni-resource-set",
-					Namespace: namespace,
-				},
-				Spec: addonsv1.ClusterResourceSetSpec{
-					Strategy: "ApplyOnce",
-					Resources: []addonsv1.ResourceRef{
-						{Kind: "ConfigMap", Name: "cni-resources"},
-					},
-					ClusterSelector: metav1.LabelSelector{
-						MatchLabels: map[string]string{
-							"cni": "cni-resources",
-						},
-					},
-				},
-			},
-		},
 	} {
 		if item.enabled {
 			e2e.Byf("Creating resource %s on namespace %s", item.description, namespace)
@@ -77,22 +36,4 @@ func FixupNamespace(e2eCtx *E2EContext, namespace string, enableCredentials bool
 			e2e.Byf("Skipping resource %s on namespace %s", item.description, namespace)
 		}
 	}
-}
-
-// FixupWorkloadCluster patches the workload cluster object to install CNI.
-func FixupWorkloadCluster(e2eCtx *E2EContext, name string, namespace string) {
-	clusterClient := e2eCtx.Environment.BootstrapClusterProxy.GetClient()
-
-	clusterName := types.NamespacedName{Name: name, Namespace: namespace}
-	cluster := &clusterv1.Cluster{}
-
-	e2e.Byf("Fetching workload cluster %v", clusterName)
-	Expect(clusterClient.Get(context.TODO(), clusterName, cluster)).To(Succeed(), "Failed to retrieve workload cluster")
-
-	e2e.Byf("Labeling workload cluster %v with cni=cni-resources", clusterName)
-	framework.PatchClusterLabel(context.TODO(), framework.PatchClusterLabelInput{
-		ClusterProxy: e2eCtx.Environment.BootstrapClusterProxy,
-		Cluster:      cluster,
-		Labels:       util.MergeMap(map[string]string{"cni": "cni-resources"}, cluster.Labels),
-	})
 }

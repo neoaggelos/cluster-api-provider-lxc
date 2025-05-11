@@ -85,7 +85,7 @@ Set `PRIVILEGED=false` to use [unprivileged containers](../../explanation/unpriv
 
 ### `DEPLOY_KUBE_FLANNEL`
 
-Set `DEPLOY_KUBE_FLANNEL=true` to deploy the default kube-flannel CNI on the cluster. If not set, you must manually a CNI before the cluster is usable.
+Set `DEPLOY_KUBE_FLANNEL=true` to deploy the default kube-flannel CNI on the cluster. If not set, you must manually deploy a CNI before the cluster is usable.
 
 ### `LXC_IMAGE_NAME` and `INSTALL_KUBEADM`
 

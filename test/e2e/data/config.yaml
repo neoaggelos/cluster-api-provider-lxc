@@ -97,7 +97,7 @@ variables:
   CONTROL_PLANE_MACHINE_TYPE: container
   WORKER_MACHINE_FLAVOR: c2-m2
   WORKER_MACHINE_TYPE: container
-  DEPLOY_KUBE_FLANNEL: "false"
+  DEPLOY_KUBE_FLANNEL: "true"
 
   # Conformance tests configuration
   KUBETEST_CONFIGURATION: ../../data/kubetest/conformance.yaml

@@ -40,5 +40,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artifacts-${{ matrix.infrastructure }}
+          name: artifacts-${{ matrix.infrastructure }}-${{ matrix.arch }}
           path: _artifacts

@@ -8,9 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/static"
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
 
 type stageValidateKubeadmImage struct{}

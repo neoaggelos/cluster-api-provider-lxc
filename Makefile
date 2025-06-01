@@ -9,6 +9,7 @@ export KO_DOCKER_REPO = $(REPO)
 
 # PLATFORMS defines the target platforms for the manager image be built.
 PLATFORMS ?= linux/arm64,linux/amd64
+LOCAL_PLATFORM ?= linux/$(shell go env GOARCH)
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
@@ -164,8 +165,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: ko-build
 ko-build: ko ## Build manager image and load to local docker instance.
-	uname -m | grep -q aarch64 && PLATFORM="linux/arm64" || PLATFORM="linux/amd64" && \
-		$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$$PLATFORM --local
+	$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$(LOCAL_PLATFORM) --local
 
 .PHONY: ko-login
 ko-login: ko ## Configure credentials for pushing images (needs USERNAME and PASSWORD).

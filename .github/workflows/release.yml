@@ -17,17 +17,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3.2.0
-        with:
-          registry: https://ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push image
+      - name: Login
         run: |
-          make docker-build TAG=${{ github.ref_name }}
-          make docker-push TAG=${{ github.ref_name }}
+          make ko-login USERNAME=${{ github.actor }} PASSWORD=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: |
+          make ko-push TAG=${{ github.ref_name }}
 
       - name: Build release assets
         run: make dist TAG=${{ github.ref_name }}

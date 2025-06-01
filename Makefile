@@ -164,7 +164,8 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: ko-build
 ko-build: ko ## Build manager image and load to local docker instance.
-	$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$(PLATFORMS) --local
+	uname -m | grep -q aarch64 && PLATFORM="linux/arm64" || PLATFORM="linux/amd64" && \
+		$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$$PLATFORM --local
 
 .PHONY: ko-login
 ko-login: ko ## Configure credentials for pushing images (needs USERNAME and PASSWORD).

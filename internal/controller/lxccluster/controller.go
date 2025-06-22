@@ -58,7 +58,7 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// Fetch the lxcCluster instance
 	lxcCluster := &infrav1.LXCCluster{}
-	if err := r.Client.Get(ctx, req.NamespacedName, lxcCluster); err != nil {
+	if err := r.Get(ctx, req.NamespacedName, lxcCluster); err != nil {
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
@@ -77,7 +77,7 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// Fetch the lxcSecret before adding any finalizers, so that clusters without a valid secretRef do not get stuck
 	lxcSecret := &corev1.Secret{}
-	if err := r.Client.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
+	if err := r.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
 		log.WithValues("secret", lxcCluster.GetLXCSecretNamespacedName()).Error(err, "Failed to fetch LXC credentials secret")
 		return ctrl.Result{}, fmt.Errorf("failed to fetch LXC credentials: %w", err)
 	}
@@ -124,10 +124,10 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *LXCClusterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
-	switch {
-	case r.Client == nil:
+	if r.Client == nil {
 		return fmt.Errorf("required field Client must not be nil")
 	}
+
 	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxccluster")
 
 	if err := ctrl.NewControllerManagedBy(mgr).

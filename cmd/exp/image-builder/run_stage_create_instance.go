@@ -49,7 +49,7 @@ func (*stageCreateInstance) run(ctx context.Context) error {
 
 		for _, pool := range pools {
 			if pool.Status == api.StoragePoolStatusCreated {
-				instance.InstancePut.Devices = map[string]map[string]string{
+				instance.Devices = map[string]map[string]string{
 					"root": {
 						"type": "disk",
 						"pool": pool.Name,

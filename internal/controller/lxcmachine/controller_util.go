@@ -31,7 +31,7 @@ func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine 
 	// A step counter is added to represent progress during the provisioning process (instead we are hiding the step counter during the deletion process).
 	conditions.SetSummary(lxcMachine,
 		conditions.WithConditions(infraConditions...),
-		conditions.WithStepCounterIf(lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil && !hasInfraConditionError),
+		conditions.WithStepCounterIf(lxcMachine.DeletionTimestamp.IsZero() && lxcMachine.Spec.ProviderID == nil && !hasInfraConditionError),
 	)
 
 	// Patch the object, ignoring conflicts on the conditions owned by this controller.
@@ -45,7 +45,7 @@ func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine 
 func (r *LXCMachineReconciler) getBootstrapData(ctx context.Context, namespace string, dataSecretName string) (string, error) {
 	s := &corev1.Secret{}
 	key := client.ObjectKey{Namespace: namespace, Name: dataSecretName}
-	if err := r.Client.Get(ctx, key, s); err != nil {
+	if err := r.Get(ctx, key, s); err != nil {
 		return "", fmt.Errorf("failed to retrieve bootstrap data secret %q: %w", dataSecretName, err)
 	}
 

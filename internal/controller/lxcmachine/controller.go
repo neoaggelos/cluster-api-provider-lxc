@@ -69,7 +69,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// Fetch the LXCMachine instance.
 	lxcMachine := &infrav1.LXCMachine{}
-	if err := r.Client.Get(ctx, req.NamespacedName, lxcMachine); err != nil {
+	if err := r.Get(ctx, req.NamespacedName, lxcMachine); err != nil {
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
@@ -121,14 +121,14 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		Namespace: lxcMachine.Namespace,
 		Name:      cluster.Spec.InfrastructureRef.Name,
 	}
-	if err := r.Client.Get(ctx, lxcClusterName, lxcCluster); err != nil {
+	if err := r.Get(ctx, lxcClusterName, lxcCluster); err != nil {
 		log.Info("LXCCluster is not available yet")
 		return ctrl.Result{}, nil
 	}
 
 	// Fetch the lxcSecret before adding any finalizers, so that clusters without a valid secretRef do not get stuck
 	lxcSecret := &corev1.Secret{}
-	if err := r.Client.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
+	if err := r.Get(ctx, lxcCluster.GetLXCSecretNamespacedName(), lxcSecret); err != nil {
 		log.WithValues("secret", lxcCluster.GetLXCSecretNamespacedName()).Error(err, "Failed to fetch LXC credentials secret")
 		return ctrl.Result{}, fmt.Errorf("failed to fetch LXC credentials: %w", err)
 	}
@@ -158,7 +158,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}()
 
 	// Handle deleted machines
-	if !lxcMachine.ObjectMeta.DeletionTimestamp.IsZero() {
+	if !lxcMachine.DeletionTimestamp.IsZero() {
 		return ctrl.Result{}, r.reconcileDelete(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient)
 	}
 
@@ -167,8 +167,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
-	switch {
-	case r.Client == nil:
+	if r.Client == nil {
 		return fmt.Errorf("required field Client must not be nil")
 	}
 
@@ -222,7 +221,7 @@ func (r *LXCMachineReconciler) LXCClusterToLXCMachines(ctx context.Context, o cl
 
 	labels := map[string]string{clusterv1.ClusterNameLabel: cluster.Name}
 	machineList := &clusterv1.MachineList{}
-	if err := r.Client.List(ctx, machineList, client.InNamespace(c.Namespace), client.MatchingLabels(labels)); err != nil {
+	if err := r.List(ctx, machineList, client.InNamespace(c.Namespace), client.MatchingLabels(labels)); err != nil {
 		return nil
 	}
 	result := make([]ctrl.Request, 0, len(machineList.Items))

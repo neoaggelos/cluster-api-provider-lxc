@@ -81,7 +81,7 @@ func (c *Client) WithTarget(target string) *Client {
 		return c
 	}
 	return &Client{
-		InstanceServer:  c.InstanceServer.UseTarget(target),
+		InstanceServer:  c.UseTarget(target),
 		serverInfo:      c.serverInfo,
 		progressHandler: c.progressHandler,
 	}

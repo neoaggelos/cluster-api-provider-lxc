@@ -43,7 +43,7 @@ func (*stageInstallHaproxy) run(ctx context.Context) error {
 	}
 
 	log.FromContext(ctx).V(1).Info("Set user.capn.stage.install-haproxy=true on instance")
-	instance.InstancePut.Config["user.capn.stage.install-haproxy"] = "true"
+	instance.Config["user.capn.stage.install-haproxy"] = "true"
 	if _, err := lxcClient.UpdateInstance(cfg.instanceName, instance.InstancePut, etag); err != nil {
 		return fmt.Errorf("failed to mark install-haproxy stage on instance: %w", err)
 	}

@@ -257,7 +257,7 @@ func (c *LXCCluster) SetV1Beta2Conditions(conditions []metav1.Condition) {
 // GetLXCSecretNamespacedName returns the client.ObjectKey for the secret containing LXC credentials.
 func (c *LXCCluster) GetLXCSecretNamespacedName() types.NamespacedName {
 	return types.NamespacedName{
-		Namespace: c.ObjectMeta.Namespace,
+		Namespace: c.Namespace,
 		Name:      c.Spec.SecretRef.Name,
 	}
 }

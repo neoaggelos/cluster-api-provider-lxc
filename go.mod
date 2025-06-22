@@ -1,6 +1,6 @@
 module github.com/lxc/cluster-api-provider-incus
 
-go 1.23.8
+go 1.24.4
 
 require (
 	github.com/blang/semver/v4 v4.0.0

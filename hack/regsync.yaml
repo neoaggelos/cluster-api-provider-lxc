@@ -1,10 +1,14 @@
-
+version: 1
 
 sync:
   - source: docker.io/kindest/haproxy:v20230606-42a2262b
-    target: ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v20230606-42a2262b
+    target: ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b
     type: image
 
-  - source: docker.io/kindest/haproxy:v20230606-42a2262b
-    target: ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+  - source: docker.io/kindest/local-path-helper:v20230510-486859a6
+    target: ghcr.io/lxc/cluster-api-provider-incus/local-path-helper:v20230510-486859a6
+    type: image
+
+  - source: docker.io/kindest/local-path-provisioner:v20240813-c6f155d6
+    target: ghcr.io/lxc/cluster-api-provider-incus/local-path-provisioner:v20240813-c6f155d6 
     type: image

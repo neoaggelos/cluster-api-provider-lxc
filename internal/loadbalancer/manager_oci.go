@@ -21,7 +21,7 @@ func defaultHaproxyOCIImage() api.InstanceSource {
 		Type:     "image",
 		Protocol: "oci",
 		Server:   "https://ghcr.io",
-		Alias:    "neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1",
+		Alias:    "lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b",
 	}
 }
 

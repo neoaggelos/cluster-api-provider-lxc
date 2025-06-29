@@ -46,7 +46,7 @@ The `oci` load balancer type is similar to `lxc`. The only difference is that an
 
 The control plane endpoint of the cluster will be set to the IP address of the haproxy container. The haproxy container is a single-point-of-failure for accessing the control plane of the workload cluster, so it is not suitable for production deployments. However, it requires zero configuration, therefore it can be used for evaulation or development purposes.
 
-The load balancer instance can be configured through the `spec.loadBalancer.oci.instanceSpec` configuration fields. Unless a custom image source is set, the `ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1` (mirror of `kindest/haproxy`) image will be used.
+The load balancer instance can be configured through the `spec.loadBalancer.oci.instanceSpec` configuration fields. Unless a custom image source is set, the `ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b` (mirror of `kindest/haproxy`) image will be used.
 
 Support for OCI containers was first added in Incus 6.5. Using the `oci` load balancer type when the `oci_instance` API extension is not supported will raise an error during the LXCCluster provisioning process.
 

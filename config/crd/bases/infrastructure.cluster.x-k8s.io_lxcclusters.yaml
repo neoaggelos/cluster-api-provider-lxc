@@ -114,7 +114,7 @@ spec:
                               Image to use for provisioning the load balancer machine. If not set,
                               a default image based on the load balancer type will be used.
 
-                                - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+                                - "oci": ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b
                                 - "lxc": haproxy from the default simplestreams server
                             properties:
                               fingerprint:
@@ -192,7 +192,7 @@ spec:
                               Image to use for provisioning the load balancer machine. If not set,
                               a default image based on the load balancer type will be used.
 
-                                - "oci": ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1
+                                - "oci": ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b
                                 - "lxc": haproxy from the default simplestreams server
                             properties:
                               fingerprint:

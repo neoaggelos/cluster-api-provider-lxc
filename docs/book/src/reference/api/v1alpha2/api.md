@@ -221,7 +221,7 @@ LXCLoadBalancerExternal
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterTemplateResource">LXCClusterTemplateResource</a>)
 </p>
 <p>
@@ -709,7 +709,7 @@ LXCMachineImageSource
 <p>Image to use for provisioning the load balancer machine. If not set,
 a default image based on the load balancer type will be used.</p>
 <ul>
-<li>&ldquo;oci&rdquo;: ghcr.io/neoaggelos/cluster-api-provider-lxc/haproxy:v0.0.1</li>
+<li>&ldquo;oci&rdquo;: ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b</li>
 <li>&ldquo;lxc&rdquo;: haproxy from the default simplestreams server</li>
 </ul>
 </td>
@@ -918,7 +918,7 @@ LXCMachineStatus
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineSpec">LXCMachineSpec</a>)
 </p>
 <p>
@@ -992,7 +992,7 @@ string
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineTemplateResource">LXCMachineTemplateResource</a>)
 </p>
 <p>

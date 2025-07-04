@@ -140,6 +140,7 @@ spec:
             enum:
             - container
             - virtual-machine
+            - kind
             - ""
           image:
             type: string

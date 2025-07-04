@@ -40,7 +40,7 @@ spec:
 {{#/tab }}
 {{#tab oci }}
 
-- **Required server extensions**: [`oci_instance`](https://linuxcontainers.org/incus/docs/main/api-extensions/#instance-oci)
+- **Required server extensions**: [`instance_oci`](https://linuxcontainers.org/incus/docs/main/api-extensions/#instance-oci), [`instance_oci_entrypoint`](https://linuxcontainers.org/incus/docs/main/api-extensions/#instance-oci-entrypoint)
 
 The `oci` load balancer type is similar to `lxc`. The only difference is that an OCI container running the kindest haproxy image is used instead. Similarly to `lxc`, when control plane machines are added or removed from the cluster, the provider will keep the haproxy configuration up to date.
 
@@ -48,7 +48,7 @@ The control plane endpoint of the cluster will be set to the IP address of the h
 
 The load balancer instance can be configured through the `spec.loadBalancer.oci.instanceSpec` configuration fields. Unless a custom image source is set, the `ghcr.io/lxc/cluster-api-provider-incus/haproxy:v20230606-42a2262b` (mirror of `kindest/haproxy`) image will be used.
 
-Support for OCI containers was first added in Incus 6.5. Using the `oci` load balancer type when the `oci_instance` API extension is not supported will raise an error during the LXCCluster provisioning process.
+Support for OCI containers was first added in Incus 6.5. Using the `oci` load balancer type when the `instance_oci` API extension is not supported will raise an error during the LXCCluster provisioning process.
 
 The only requirement to use the `oci` load balancer type is that the management cluster **must** be able to reach the load balancer container through its IP.
 

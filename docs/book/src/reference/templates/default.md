@@ -95,9 +95,11 @@ Alternatively, you can pick a default Ubuntu image with `ubuntu:24.04`, and set 
 
 ### `CONTROL_PLANE_MACHINE_TYPE` and `WORKER_MACHINE_TYPE`
 
-These must be set to `container` or `virtual-machine`. Launch virtual machines requires `kvm` support on the node.
+These must be set to `container`, `virtual-machine` or `kind`.
 
-It is customary that clusters use `container` instances for the control plane nodes, and `virtual-machine` for the worker nodes.
+It is a common scenario to use `container` instances for the control plane nodes, and then `virtual-machine` instances for the worker nodes of a cluster.
+
+See [Instance Types](../../explanation/instance-types.md) for more details.
 
 ### `CONTROL_PLANE_MACHINE_PROFILES` and `WORKER_MACHINE_PROFILES`
 

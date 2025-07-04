@@ -1,0 +1,5 @@
+{%- if config_get("cloud-init.user-data", properties.default) == properties.default -%}
+{{ config_get("user.user-data", properties.default) }}
+{%- else -%}
+{{- config_get("cloud-init.user-data", properties.default) }}
+{%- endif %}

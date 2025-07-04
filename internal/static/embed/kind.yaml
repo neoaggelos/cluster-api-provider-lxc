@@ -1,0 +1,16 @@
+description: Profile for cluster-api-provider-incus kind nodes
+config:
+  linux.kernel_modules: ip_vs,ip_vs_rr,ip_vs_wrr,ip_vs_sh,ip_tables,ip6_tables,iptable_raw,netlink_diag,nf_nat,overlay,br_netfilter,xt_socket
+  raw.lxc: lxc.apparmor.profile=unconfined
+  security.privileged: "true"
+  oci.entrypoint: /sbin/init
+devices:
+  kubelet-dev-kmsg:
+    path: /dev/kmsg
+    source: /dev/kmsg
+    type: unix-char
+  kubeadm-host-boot:
+    path: /usr/lib/ostree-boot
+    readonly: "true"
+    source: /boot
+    type: disk

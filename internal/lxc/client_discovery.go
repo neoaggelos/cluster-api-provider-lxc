@@ -31,7 +31,7 @@ func (c *Client) serverSupportsExtensions(extensions ...string) error {
 }
 
 func (c *Client) SupportsInstanceOCI() error {
-	return c.serverSupportsExtensions("instance_oci")
+	return c.serverSupportsExtensions("instance_oci", "instance_oci_entrypoint")
 }
 
 func (c *Client) SupportsNetworkLoadBalancers() error {

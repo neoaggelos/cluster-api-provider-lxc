@@ -42,7 +42,10 @@ type LXCMachineSpec struct {
 
 	// InstanceType is "container" or "virtual-machine". Empty defaults to "container".
 	//
-	// +kubebuilder:validation:Enum:=container;virtual-machine;""
+	// InstanceType may also be set to "kind", in which case OCI containers using the kindest/node
+	// images will be created. This requires server extensions: "instance_oci", "instance_oci_entrypoint".
+	//
+	// +kubebuilder:validation:Enum:=container;virtual-machine;kind;""
 	// +optional
 	InstanceType string `json:"instanceType,omitempty"`
 

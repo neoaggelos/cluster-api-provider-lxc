@@ -39,6 +39,10 @@ func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.Instanc
 			return nil, fmt.Errorf("failed to GetInstanceMetadata: %w", err)
 		}
 
+		if metadata.Templates == nil {
+			metadata.Templates = make(map[string]*api.ImageMetadataTemplate, len(templates))
+		}
+
 		for path, contents := range templates {
 			templateName := fmt.Sprintf("%s.tpl", filepath.Base(path))
 			if err := c.CreateInstanceTemplateFile(instance.Name, templateName, strings.NewReader(contents)); err != nil {

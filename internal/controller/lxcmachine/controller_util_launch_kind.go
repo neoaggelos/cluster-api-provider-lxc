@@ -6,11 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
-	"net/http"
 	"strings"
-	"time"
 
-	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
@@ -79,11 +76,14 @@ func launchKindInstance(
 		version := *version
 
 		// test if image for version exists on dockerhub, fail otherwise.
-		if ociClient, err := incus.ConnectOCI("https://docker.io", &incus.ConnectionArgs{HTTPClient: &http.Client{Timeout: 10 * time.Second}}); err != nil {
-			return nil, fmt.Errorf("no image source specified and failed to connect to DockerHub: %w", err)
-		} else if _, _, err := ociClient.GetImageAlias(fmt.Sprintf("kindest/node:%s", version)); err != nil {
-			return nil, utils.TerminalError(fmt.Errorf("no image source specified and could not find kindest/node:%s image on DockerHub: %w. Please consider using a different Kubernetes version, or build your own base image and set the image source on the LXCMachineTemplate resource", version, err))
-		}
+		// TODO(neoaggelos): temporarily disable, as this requires skopeo binary to be available on the client
+		// TODO(neoaggelos): use crane library to interact with DockerHub directly instead.
+
+		// if ociClient, err := incus.ConnectOCI("https://docker.io", &incus.ConnectionArgs{HTTPClient: &http.Client{Timeout: 10 * time.Second}}); err != nil {
+		// 	return nil, fmt.Errorf("no image source specified and failed to connect to DockerHub: %w", err)
+		// } else if _, _, err := ociClient.GetImageAlias(fmt.Sprintf("kindest/node:%s", version)); err != nil {
+		// 	return nil, utils.TerminalError(fmt.Errorf("no image source specified and could not find kindest/node:%s image on DockerHub: %w. Please consider using a different Kubernetes version, or build your own base image and set the image source on the LXCMachineTemplate resource", version, err))
+		// }
 
 		image = api.InstanceSource{
 			Type:     "image",

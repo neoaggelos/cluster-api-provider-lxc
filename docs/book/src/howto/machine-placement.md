@@ -12,7 +12,7 @@ In this page, we explain how to configure cluster groups in an existing cluster,
 
 ## Cluster Members and Cluster Groups
 
-Incus uses the concepts of [cluster members](https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-members) (individual hypervisors that are part of the cluster) and [cluster groups](https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups) (hypervisors grouped by the user based on specific criteria).
+Incus uses the concepts of [cluster members](https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-members) (individual hypervisors that are part of the cluster) and [cluster groups](https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups) (members grouped by the user based on specific criteria).
 
 When launching an instance, the target may be set to:
 
@@ -23,10 +23,10 @@ When launching an instance, the target may be set to:
 
 Let's assume a cluster with 6 nodes. 3 CPU nodes `cpu-01`, `cpu-02`, `cpu-03` and 3 GPU nodes `gpu-01`, `gpu-02`, `gpu-03`.
 
-We can see the list of hypervisors that are in the with:
+We can see the list of cluster members with:
 
 ```bash
-incus cluster list
+incus cluster list -c nuasm
 ```
 
 Example output:
@@ -72,7 +72,7 @@ name: default
 
 ## Configure cluster groups
 
-We want to deploy clusters with control plane machines running on the `cpu-xx` hypervisors, and worker machines running on the `gpu-xx` hypervisors.
+We want to deploy Kubernetes clusters with control plane machines running on the `cpu-xx` hypervisors, and worker machines running on the `gpu-xx` hypervisors.
 
 In order to do this, we can define two cluster groups, called `cpu-nodes` and `gpu-nodes` respectively:
 
@@ -81,7 +81,7 @@ incus cluster group create cpu-nodes
 incus cluster group create gpu-nodes
 ```
 
-Then, we assign each node on the respective group:
+Then, we assign each cluster member on the respective group:
 
 ```bash
 incus cluster group assign cpu-01 cpu-nodes,default
@@ -115,7 +115,7 @@ We have now configured our `cpu-nodes` and `gpu-nodes` cluster groups.
 
 ## Launch a cluster
 
-Generate a cluster using the [default cluster template](../reference/templates/default.md) and set the following additional configuration:
+Generate a cluster manifest using the [default cluster template](../reference/templates/default.md) and set the following additional configuration:
 
 ```bash
 export CONTROL_PLANE_MACHINE_TARGET="@cpu-nodes"

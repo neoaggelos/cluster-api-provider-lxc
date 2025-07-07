@@ -1,7 +1,6 @@
 package lxcmachine
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/lxc/incus/v6/shared/api"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
@@ -156,24 +154,25 @@ func launchKindInstance(
 		seedFiles["/hack/cloud-init.json"] = string(b)
 	}
 
-	addrs, err := lxcClient.WithTarget(spec.Target).WaitForLaunchInstance(ctx, instance, seedFiles)
+	addrs, err := lxcClient.WithTarget(spec.Target).WaitForLaunchInstance(ctx, instance, &lxc.LaunchOptions{SeedFiles: seedFiles, Symlinks: defaultKindSymlinks})
 	if err != nil {
 		return nil, fmt.Errorf("failed to launch instance: %w", err)
 	}
 
-	log.FromContext(ctx).Info("Starting cloud-init script")
-	var stderr bytes.Buffer
-	if err := lxcClient.RunCommand(ctx, name, []string{"systemd-run", "-ucapn-init", "python3", "/hack/cloud-init.py"}, nil, nil, &stderr); err != nil {
-		return nil, fmt.Errorf("failed to start cloud-init with stderr=%q: %w", stderr.String(), err)
-	}
 	return addrs, nil
 }
 
 // defaultKindSeedFiles that are injected to LXCMachine kind instances.
 var defaultKindSeedFiles = map[string]string{
-	"/kind/product_name":                        "kind",
-	"/kind/product_uuid":                        "kind",
-	"/var/lib/cloud/seed/nocloud-net/meta-data": static.CloudInitMetaDataTemplate(),
-	"/var/lib/cloud/seed/nocloud-net/user-data": static.CloudInitUserDataTemplate(),
-	"/hack/cloud-init.py":                       static.KindCloudInitScript(),
+	"/kind/product_name":                            "kind",
+	"/kind/product_uuid":                            "kind",
+	"/var/lib/cloud/seed/nocloud-net/meta-data":     static.CloudInitMetaDataTemplate(),
+	"/var/lib/cloud/seed/nocloud-net/user-data":     static.CloudInitUserDataTemplate(),
+	"/hack/cloud-init.py":                           static.KindCloudInitScript(),
+	"/etc/systemd/system/cloud-init-launch.service": static.CloudInitLaunchSystemdServiceTemplate(),
+}
+
+// defaultKindSymlinks that are injected to LXCMachine kind instances.
+var defaultKindSymlinks = map[string]string{
+	"/etc/systemd/system/multi-user.target.wants/cloud-init-launch.service": "/etc/systemd/system/cloud-init-launch.service",
 }

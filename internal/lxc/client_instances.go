@@ -1,6 +1,7 @@
 package lxc
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"path/filepath"
@@ -16,7 +17,7 @@ import (
 // If an instance create operation is already underway, it will wait for the existing operation and start the instance.
 //
 // WaitForLaunchInstance will wait for the instance to have a valid host address, and returns a slice of host addresses on success.
-func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.InstancesPost, templates map[string]string) ([]string, error) {
+func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.InstancesPost, opts *LaunchOptions) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, instanceCreateTimeout)
 	defer cancel()
 
@@ -33,7 +34,7 @@ func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.Instanc
 		return nil, err
 	}
 
-	if len(templates) > 0 {
+	if templates := opts.GetSeedFiles(); len(templates) > 0 {
 		metadata, _, err := c.GetInstanceMetadata(instance.Name)
 		if err != nil {
 			return nil, fmt.Errorf("failed to GetInstanceMetadata: %w", err)
@@ -57,6 +58,15 @@ func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.Instanc
 		}
 		if err := c.UpdateInstanceMetadata(instance.Name, *metadata, ""); err != nil {
 			return nil, fmt.Errorf("failed to UpdateInstanceMetadata: %w", err)
+		}
+	}
+
+	for path, target := range opts.GetSymlinks() {
+		if err := c.CreateInstanceFile(instance.Name, path, incus.InstanceFileArgs{
+			Content: bytes.NewReader([]byte(target)),
+			Type:    "symlink",
+		}); err != nil {
+			return nil, fmt.Errorf("failed to CreateSymbolicLink(%q => %q): %w", path, target, err)
 		}
 	}
 

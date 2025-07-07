@@ -127,7 +127,7 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 		maps.Copy(instance.Config, profile.Config)
 	}
 
-	return lxcClient.WithTarget(lxcMachine.Spec.Target).WaitForLaunchInstance(ctx, instance, defaultSeedFiles)
+	return lxcClient.WithTarget(lxcMachine.Spec.Target).WaitForLaunchInstance(ctx, instance, &lxc.LaunchOptions{SeedFiles: defaultSeedFiles})
 }
 
 // defaultSeedFiles that are injected to LXCMachine instances.

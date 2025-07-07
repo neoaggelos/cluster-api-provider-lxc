@@ -59,3 +59,27 @@ func (c *Client) waitForInstanceAddress(ctx context.Context, name string) ([]str
 		}
 	}
 }
+
+// LaunchOptions describe additional provisioning actions for machines.
+type LaunchOptions struct {
+	// SeedFiles are "<file>"="<contents>" template files that will be created on the machine.
+	// Supported by all instance types.
+	SeedFiles map[string]string
+	// Symlinks are "<path>"="<target>" symbolic links to that will be created on the machine.
+	// Not supported by virtual-machine instance types.
+	Symlinks map[string]string
+}
+
+func (o *LaunchOptions) GetSeedFiles() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.SeedFiles
+}
+
+func (o *LaunchOptions) GetSymlinks() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Symlinks
+}

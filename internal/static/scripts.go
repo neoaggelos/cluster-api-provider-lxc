@@ -26,6 +26,9 @@ var (
 
 	//go:embed embed/user-data
 	cloudInitUserDataTemplate string
+
+	//go:embed embed/cloud-init-launch.service
+	cloudInitLaunchSystemdServiceTemplate string
 )
 
 func InstallKubeadmScript() string {
@@ -58,4 +61,8 @@ func CloudInitMetaDataTemplate() string {
 
 func CloudInitUserDataTemplate() string {
 	return cloudInitUserDataTemplate
+}
+
+func CloudInitLaunchSystemdServiceTemplate() string {
+	return cloudInitLaunchSystemdServiceTemplate
 }

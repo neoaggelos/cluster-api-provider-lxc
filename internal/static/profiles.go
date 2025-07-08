@@ -20,17 +20,23 @@ var (
 	//go:embed embed/kind.yaml
 	defaultKindYAML []byte
 
-	// defaultKubeadm is the profile to use with privileged LXC nodes.
+	//go:embed embed/unprivileged-kind.yaml
+	defaultKindUnprivilegedYAML []byte
+
+	// defaultKubeadm is the profile to use for privileged LXC nodes.
 	defaultKubeadm api.ProfilePut
 
-	// defaultKubeadmUnprivileged is the profile to use with unprivileged Incus nodes.
+	// defaultKubeadmUnprivileged is the profile to use for unprivileged Incus nodes.
 	defaultKubeadmUnprivileged api.ProfilePut
 
-	// defaultLXDKubeadmUnprivileged is the profile to use with unprivileged LXD nodes.
+	// defaultLXDKubeadmUnprivileged is the profile to use for unprivileged LXD nodes.
 	defaultLXDKubeadmUnprivileged api.ProfilePut
 
 	// defaultKind is the profile to use for kind nodes.
 	defaultKind api.ProfilePut
+
+	// defaultKindUnprivileged is the profile to use for unprivileged kind nodes.
+	defaultKindUnprivileged api.ProfilePut
 )
 
 func init() {
@@ -38,6 +44,7 @@ func init() {
 	defaultKubeadmUnprivileged = mustParseProfile(defaultKubeadmUnprivilegedYAML)
 	defaultLXDKubeadmUnprivileged = mustParseProfile(defaultLXDKubeadmUnprivilegedYAML)
 	defaultKind = mustParseProfile(defaultKindYAML)
+	defaultKindUnprivileged = mustParseProfile(defaultKindUnprivilegedYAML)
 }
 
 func mustParseProfile(b []byte) api.ProfilePut {
@@ -59,6 +66,9 @@ func DefaultKubeadmProfile(privileged bool, serverName string) api.ProfilePut {
 	}
 }
 
-func DefaultKindProfile() api.ProfilePut {
-	return defaultKind
+func DefaultKindProfile(privileged bool) api.ProfilePut {
+	if privileged {
+		return defaultKind
+	}
+	return defaultKindUnprivileged
 }

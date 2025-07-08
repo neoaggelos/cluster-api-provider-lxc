@@ -115,9 +115,11 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 	})
 
 	// apply profile for Kubernetes to run in LXC containers
-	profile := static.DefaultKindProfile()
-	maps.Copy(instance.Devices, profile.Devices)
-	maps.Copy(instance.Config, profile.Config)
+	if !lxcCluster.Spec.SkipDefaultKubeadmProfile {
+		profile := static.DefaultKindProfile(!lxcCluster.Spec.Unprivileged)
+		maps.Copy(instance.Devices, profile.Devices)
+		maps.Copy(instance.Config, profile.Config)
+	}
 
 	seedFiles := maps.Clone(defaultKindSeedFiles)
 

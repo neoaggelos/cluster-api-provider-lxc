@@ -3,7 +3,6 @@
 package e2e
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -21,6 +20,36 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
+
+func applyDefaultKindCNI(ctx context.Context, input clusterctl.ApplyCustomClusterTemplateAndWaitInput, result *clusterctl.ApplyCustomClusterTemplateAndWaitResult) {
+	lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
+	Expect(err).ToNot(HaveOccurred())
+
+	instances, err := lxcClient.ListInstances(ctx, lxc.WithConfig(map[string]string{
+		"user.cluster-name":      input.ClusterName,
+		"user.cluster-namespace": input.Namespace,
+		"user.cluster-role":      "control-plane",
+	}))
+	Expect(err).ToNot(HaveOccurred())
+	Expect(instances).ToNot(BeEmpty())
+
+	shared.Logf("Reading default kind CNI from instance %s", instances[0].Name)
+	reader, _, err := lxcClient.GetInstanceFile(instances[0].Name, "/kind/manifests/default-cni.yaml")
+	Expect(err).ToNot(HaveOccurred())
+	defer reader.Close()
+	b, err := io.ReadAll(reader)
+	Expect(err).ToNot(HaveOccurred())
+
+	shared.Logf("Applying default kind CNI")
+	Expect(input.ClusterProxy.GetWorkloadCluster(ctx, input.Namespace, input.ClusterName).CreateOrUpdate(ctx, b)).To(Succeed())
+
+	shared.Logf("Waiting for ControlPlane nodes to become Ready")
+	framework.WaitForControlPlaneAndMachinesReady(ctx, framework.WaitForControlPlaneAndMachinesReadyInput{
+		GetLister:    input.ClusterProxy.GetClient(),
+		Cluster:      result.Cluster,
+		ControlPlane: result.ControlPlane,
+	}, input.WaitForControlPlaneIntervals...)
+}
 
 var _ = Describe("QuickStart", func() {
 	Context("Kind", Label("PRBlocking"), func() {
@@ -55,41 +84,10 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](1),
-				ClusterName:              ptr.To(fmt.Sprintf("quick-start-kind-%s", util.RandomString(6))),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-kind-%s", util.RandomString(6))),
 
 				ControlPlaneWaiters: clusterctl.ControlPlaneWaiters{
-					WaitForControlPlaneMachinesReady: func(ctx context.Context, input clusterctl.ApplyCustomClusterTemplateAndWaitInput, result *clusterctl.ApplyCustomClusterTemplateAndWaitResult) {
-						lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
-						Expect(err).ToNot(HaveOccurred())
-
-						instances, err := lxcClient.ListInstances(ctx, lxc.WithConfig(map[string]string{
-							"user.cluster-name":      input.ClusterName,
-							"user.cluster-namespace": input.Namespace,
-							"user.cluster-role":      "control-plane",
-						}))
-						Expect(err).ToNot(HaveOccurred())
-						Expect(instances).ToNot(BeEmpty())
-
-						shared.Logf("Reading default kind CNI from instance %s", instances[0].Name)
-						reader, _, err := lxcClient.GetInstanceFile(instances[0].Name, "/kind/manifests/default-cni.yaml")
-						Expect(err).ToNot(HaveOccurred())
-						defer reader.Close()
-						b, err := io.ReadAll(reader)
-						Expect(err).ToNot(HaveOccurred())
-
-						shared.Logf("Applying default kind CNI")
-						Expect(input.ClusterProxy.GetWorkloadCluster(ctx, input.Namespace, input.ClusterName).CreateOrUpdate(
-							ctx,
-							bytes.ReplaceAll(b, []byte(`{{ .PodSubnet }}`), []byte(`10.244.0.0/16`)),
-						)).To(Succeed())
-
-						shared.Logf("Waiting for ControlPlane nodes to become Ready")
-						framework.WaitForControlPlaneAndMachinesReady(ctx, framework.WaitForControlPlaneAndMachinesReadyInput{
-							GetLister:    input.ClusterProxy.GetClient(),
-							Cluster:      result.Cluster,
-							ControlPlane: result.ControlPlane,
-						}, input.WaitForControlPlaneIntervals...)
-					},
+					WaitForControlPlaneMachinesReady: applyDefaultKindCNI,
 				},
 			}
 		})

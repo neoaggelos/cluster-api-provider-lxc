@@ -1,12 +1,11 @@
 [Unit]
 Description=CAPN cloud-init launcher
-After=network.target
+After=network-online.target
 ConditionPathExists=!/hack/cloud-init.success
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/env python3 /hack/cloud-init.py
-ExecStartPost=/usr/bin/touch /hack/cloud-init.success
+ExecStart=/bin/bash -xe -c 'while ! ip route get 1.1.1.1; do sleep 1; done; /usr/bin/env python3 /hack/cloud-init.py && /usr/bin/touch /hack/cloud-init.success'
 Restart=on-failure
 RestartSec=5s
 StartLimitInterval=60

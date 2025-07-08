@@ -30,7 +30,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](0),
-				ClusterName:              ptr.To(fmt.Sprintf("quick-start-smoke-%s", util.RandomString(6))),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-smoke-%s", util.RandomString(6))),
 			}
 		})
 	})
@@ -48,7 +48,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
 				WorkerMachineCount:       ptr.To[int64](3),
-				ClusterName:              ptr.To(fmt.Sprintf("quick-start-full-%s", util.RandomString(6))),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-full-%s", util.RandomString(6))),
 			}
 		})
 	})

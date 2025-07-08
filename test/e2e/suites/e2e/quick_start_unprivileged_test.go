@@ -35,7 +35,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](1),
-				ClusterName:              ptr.To(fmt.Sprintf("quick-start-unprivileged-%s", util.RandomString(6))),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-unprivileged-%s", util.RandomString(6))),
 			}
 		})
 	})

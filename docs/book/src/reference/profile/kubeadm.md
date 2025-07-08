@@ -26,9 +26,31 @@ When using unprivileged containers, the following profile is applied instead:
 
 When using unprivileged containers with Canonical LXD, it is also required to enable `security.nesting` and disable apparmor:
 
-```bash
+```yaml
 # lxc profile create kubeadm-unprivileged
 # curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/unprivileged-lxd.yaml | lxc profile edit kubeadm-unprivileged
 
 {{#include ../../static/v0.1/unprivileged-lxd.yaml }}
+```
+
+## Privileged kind containers
+
+When using privileged kind containers, the following profile is applied:
+
+```yaml
+# incus profile create kind
+# curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/kind.yaml | lxc profile edit kind
+
+{{#include ../../static/v0.1/kind.yaml }}
+```
+
+## Unprivileged kind containers
+
+When using unprivileged kind containers, the following profile is applied:
+
+```yaml
+# incus profile create kind-unprivileged
+# curl https://lxc.github.io/cluster-api-provider-incus/static/v0.1/kind-unprivileged.yaml | lxc profile edit kind-unprivileged
+
+{{#include ../../static/v0.1/kind.yaml }}
 ```

@@ -30,11 +30,9 @@ If using custom images, you have to make sure that they support cloud-init.
 
 **Extra requirements**: `instance_oci` and `instance_oci_entrypoint` API extensions
 
-When setting `.spec.instanceType: kind`, an OCI application container is spawned for the LXCMachine. By default, it will use the `kindest/node` images from the [kind](https://kind.sigs.k8s.io) project, which are not maintained by CAPN, but should support all released Kubernetes versions.
+When setting `.spec.instanceType: kind`, an OCI application container is spawned for the LXCMachine. By default, CAPN will spawn privileged containers so that Kubernetes services run properly, but [unprivileged containers](./unprivileged-containers.md) are also supported.
 
-Currently, CAPN will always launch privileged `kindest/node` containers.
-
-`kindest/node` images do not come with cloud-init out of the box, therefore CAPN will manually execute the cloud-init script to ensure instances are configured.
+`kind` instances use the `kindest/node` images published to DockerHub by the [kind](https://kind.sigs.k8s.io) project, which are not maintained by CAPN, but should support all released Kubernetes versions. Note that `kindest/node` images do not come with cloud-init out of the box, therefore CAPN will manually execute the cloud-init script to ensure instances are configured.
 
 Custom images may be used, but they are expected to be "binary-compatible" with the `kindest/node` image. If you encounter any issues, you are kindly requested to create an issue in [GitHub](https://github.com/lxc/cluster-api-provider-incus/issues).
 

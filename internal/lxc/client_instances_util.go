@@ -3,6 +3,7 @@ package lxc
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	incus "github.com/lxc/incus/v6/client"
@@ -68,6 +69,10 @@ type LaunchOptions struct {
 	// Symlinks are "<path>"="<target>" symbolic links to that will be created on the machine.
 	// Not supported by virtual-machine instance types.
 	Symlinks map[string]string
+	// Replacements are a list of string replacements to perform on files on the machine.
+	// The replacer is expected to be idempotent.
+	// Not supported by virtual-machine instance types.
+	Replacements map[string]*strings.Replacer
 }
 
 func (o *LaunchOptions) GetSeedFiles() map[string]string {
@@ -82,4 +87,11 @@ func (o *LaunchOptions) GetSymlinks() map[string]string {
 		return nil
 	}
 	return o.Symlinks
+}
+
+func (o *LaunchOptions) GetReplacements() map[string]*strings.Replacer {
+	if o == nil {
+		return nil
+	}
+	return o.Replacements
 }

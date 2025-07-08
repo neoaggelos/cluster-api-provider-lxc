@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
 
@@ -67,6 +68,35 @@ func (c *Client) WaitForLaunchInstance(ctx context.Context, instance api.Instanc
 			Type:    "symlink",
 		}); err != nil {
 			return nil, fmt.Errorf("failed to CreateSymbolicLink(%q => %q): %w", path, target, err)
+		}
+	}
+
+	for path, replacer := range opts.GetReplacements() {
+		reader, resp, err := c.GetInstanceFile(instance.Name, path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to replace text in %q: failed to GetInstanceFile: %w", path, err)
+		}
+
+		b, err := io.ReadAll(reader)
+		if err != nil {
+			return nil, fmt.Errorf("failed to replace text in %q: failed to read file: %w", path, err)
+		}
+		contents := string(b)
+		if err := reader.Close(); err != nil {
+			return nil, fmt.Errorf("failed to replace text in %q: failed to close reader: %w", path, err)
+		}
+
+		if newContents := replacer.Replace(contents); newContents == contents {
+			continue
+		} else if err := c.CreateInstanceFile(instance.Name, path, incus.InstanceFileArgs{
+			Content:   bytes.NewReader([]byte(newContents)),
+			Mode:      resp.Mode,
+			UID:       resp.UID,
+			GID:       resp.GID,
+			WriteMode: "overwrite",
+			Type:      resp.Type,
+		}); err != nil {
+			return nil, fmt.Errorf("failed to replace text in %q: failed to CreateInstanceFile: %w", path, err)
 		}
 	}
 

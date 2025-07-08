@@ -9,6 +9,8 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/lxc/incus/v6/shared/api"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/cluster-api/util"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/cloudinit"
@@ -17,35 +19,22 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
-func launchKindInstance(
-	ctx context.Context,
-	lxcClient *lxc.Client,
-	clusterName string,
-	clusterNamespace string,
-	machineName string,
-
-	name string,
-	isControlPlane bool,
-	cloudInit string,
-
-	spec infrav1.LXCMachineSpec,
-	version *string,
-
-	manualCloudInit bool,
-) ([]string, error) {
+func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *lxc.Client, cloudInit string, manualCloudInit bool) ([]string, error) {
 	if err := lxcClient.SupportsInstanceOCI(); err != nil {
 		return nil, utils.TerminalError(fmt.Errorf("cannot launch kind instance as OCI containers are not supported: %w", err))
 	}
 
+	name := lxcMachine.GetInstanceName()
+
 	role := "control-plane"
-	if !isControlPlane {
+	if !util.IsControlPlaneMachine(machine) {
 		role = "worker"
 	}
 	instanceType := lxc.Container
 
 	// Parse device configurations
 	devices := map[string]map[string]string{}
-	for _, deviceSpec := range spec.Devices {
+	for _, deviceSpec := range lxcMachine.Spec.Devices {
 		deviceName, deviceArgs, hasSeparator := strings.Cut(deviceSpec, ",")
 		if !hasSeparator {
 			return nil, utils.TerminalError(fmt.Errorf("device spec %q is not using the expected %q format", deviceSpec, "<device>,<key>=<value>,<key2>=<value2>"))
@@ -67,12 +56,12 @@ func launchKindInstance(
 
 	var image api.InstanceSource
 	switch {
-	case spec.Image.IsZero():
-		if version == nil {
-			return nil, utils.TerminalError(fmt.Errorf("no image source specified on LXCMachineTemplate and Machine %q does not have a Kubernetes version", machineName))
+	case lxcMachine.Spec.Image.IsZero():
+		if machine.Spec.Version == nil {
+			return nil, utils.TerminalError(fmt.Errorf("no image source specified on LXCMachineTemplate and Machine %q does not have a Kubernetes version", machine.Name))
 		}
 
-		version := *version
+		version := *machine.Spec.Version
 
 		// test if kindest/node image for this version exists on DockerHub, fail otherwise.
 		if _, err := crane.Head(fmt.Sprintf("docker.io/kindest/node:%s", version)); err != nil {
@@ -96,10 +85,10 @@ func launchKindInstance(
 	default:
 		image = api.InstanceSource{
 			Type:        "image",
-			Protocol:    spec.Image.Protocol,
-			Server:      spec.Image.Server,
-			Alias:       spec.Image.Name,
-			Fingerprint: spec.Image.Fingerprint,
+			Protocol:    lxcMachine.Spec.Image.Protocol,
+			Server:      lxcMachine.Spec.Image.Server,
+			Alias:       lxcMachine.Spec.Image.Name,
+			Fingerprint: lxcMachine.Spec.Image.Fingerprint,
 		}
 	}
 
@@ -107,19 +96,19 @@ func launchKindInstance(
 		Name:         name,
 		Type:         api.InstanceType(instanceType),
 		Source:       image,
-		InstanceType: spec.Flavor,
+		InstanceType: lxcMachine.Spec.Flavor,
 		InstancePut: api.InstancePut{
 			Config:   map[string]string{},
-			Profiles: spec.Profiles,
+			Profiles: lxcMachine.Spec.Profiles,
 			Devices:  devices,
 		},
 	}
 
 	// apply custom config
-	maps.Copy(instance.Config, spec.Config)
+	maps.Copy(instance.Config, lxcMachine.Spec.Config)
 	maps.Copy(instance.Config, map[string]string{
-		"user.cluster-name":      clusterName,
-		"user.cluster-namespace": clusterNamespace,
+		"user.cluster-name":      cluster.Name,
+		"user.cluster-namespace": cluster.Namespace,
 		"user.machine-name":      name,
 		"user.cluster-role":      role,
 		"cloud-init.user-data":   cloudInit,
@@ -154,12 +143,7 @@ func launchKindInstance(
 		seedFiles["/hack/cloud-init.json"] = string(b)
 	}
 
-	addrs, err := lxcClient.WithTarget(spec.Target).WaitForLaunchInstance(ctx, instance, &lxc.LaunchOptions{SeedFiles: seedFiles, Symlinks: defaultKindSymlinks})
-	if err != nil {
-		return nil, fmt.Errorf("failed to launch instance: %w", err)
-	}
-
-	return addrs, nil
+	return lxcClient.WithTarget(lxcMachine.Spec.Target).WaitForLaunchInstance(ctx, instance, &lxc.LaunchOptions{SeedFiles: seedFiles, Symlinks: defaultKindSymlinks})
 }
 
 // defaultKindSeedFiles that are injected to LXCMachine kind instances.

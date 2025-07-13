@@ -43,7 +43,7 @@ var _ = Describe("SelfHosted", func() {
 			}
 			dockerSaveCommand = append(dockerSaveCommand, "-o", preloadImages)
 
-			shared.Logf("Executing command docker %v", strings.Join(dockerSaveCommand, " "))
+			shared.Logf("docker %v", strings.Join(dockerSaveCommand, " "))
 			cmd := exec.CommandContext(ctx, "docker", dockerSaveCommand...)
 			cmd.Stderr = os.Stderr
 			Expect(exec.CommandContext(ctx, "docker", dockerSaveCommand...).Run()).To(Succeed())

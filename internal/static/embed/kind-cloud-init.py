@@ -14,7 +14,7 @@ if ! cloud-init; then
     apt-get install --no-install-recommends --yes cloud-init
 fi
 
-systemctl start cloud-final.service
+systemctl start --no-block cloud-final.service
 """
 
 

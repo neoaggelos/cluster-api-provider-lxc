@@ -10,7 +10,9 @@ Restart=on-failure
 RestartSec=5s
 StartLimitInterval=60
 StartLimitBurst=10
-Environment=PYTHONUNBUFFERED=1   # so that logs from cloud-init.py are in order
+
+# NOTE(neoaggelos): so that logs from cloud-init.py are in order
+Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target

@@ -3,6 +3,7 @@
 import json
 import subprocess
 from pathlib import Path
+from time import sleep
 
 HACK_CLOUD_CONFIG_PATH = Path("/hack/cloud-init.json")
 
@@ -18,12 +19,27 @@ systemctl start cloud-final.service
 
 
 if __name__ == "__main__":
+    # wait for instance address before proceeding
+    while True:
+        print("Waiting for instance address...")
+        try:
+            p = subprocess.run(["ip", "addr", "show"], capture_output=True, text=True)
+
+            # wait for addresses "inet" that are "scope global" (ignore link, localhost)
+            if any(all(x in ln for x in ["inet", "scope global"]) for ln in p.stdout.split("\n")):
+                break
+        except subprocess.CalledProcessError:
+            print(f"Failed to check instance address {p.returncode=} {p.stdout=} {p.stderr=}")
+
+        sleep(1)
+
+    # if /hack/cloud-init.json does not exist, install cloud-init
     if not HACK_CLOUD_CONFIG_PATH.exists():
         subprocess.run(["bash", "-xe", "-c", CLOUD_INIT_SCRIPT], check=True)
         exit(0)
 
+    # load /hack/cloud-init.json and apply manually
     hack_cloud_config = json.loads(HACK_CLOUD_CONFIG_PATH.read_text())
-
     for file in hack_cloud_config.get("write_files") or []:
         path = Path(file["path"])
         path.parent.mkdir(parents=True, exist_ok=True)

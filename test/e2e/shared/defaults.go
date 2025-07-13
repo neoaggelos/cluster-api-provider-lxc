@@ -43,6 +43,9 @@ const (
 	// KubeVIP address to use for kube-vip tests
 	KubeVIPAddress = "KUBE_VIP_ADDRESS"
 
+	// Tarball with provider images to load into instances for SelfHosted tests
+	PreloadImages = "PRELOAD_IMAGES"
+
 	FlavorDefault     = ""
 	FlavorDevelopment = "development"
 	FlavorAutoscaler  = "autoscaler"

@@ -106,6 +106,12 @@ variables:
   # Autoscaler tests configuration
   AUTOSCALER_WORKLOAD: ../../data/autoscaler/autoscaler-to-management-workload.yaml
 
+  # SelfHosted tests configuration. One of:
+  #   "":             skip test
+  #   "auto":         use "docker save" to export images from config.yaml
+  #   "/images.tar":  absolute path to existing tarball with images
+  PRELOAD_IMAGES: "auto"
+
   # ClusterAPI providers configuration
   CLUSTER_TOPOLOGY: "true"
   CAPI_DIAGNOSTICS_ADDRESS: ":8080"

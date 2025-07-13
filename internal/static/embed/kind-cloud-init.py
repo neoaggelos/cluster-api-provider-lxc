@@ -25,8 +25,8 @@ if __name__ == "__main__":
         try:
             p = subprocess.run(["ip", "addr", "show"], capture_output=True, text=True)
 
-            # wait for addresses "inet" that are "scope global" (ignore link, localhost)
-            if any(all(x in ln for x in ["inet", "scope global"]) for ln in p.stdout.split("\n")):
+            # wait for addresses that are "scope global" (ignore link, localhost)
+            if any("scope global" in line for line in p.stdout.split("\n")):
                 break
         except subprocess.CalledProcessError:
             print(f"Failed to check instance address {p.returncode=} {p.stdout=} {p.stderr=}")

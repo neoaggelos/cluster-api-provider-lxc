@@ -40,8 +40,43 @@ Custom images may be used, but they are expected to be "binary-compatible" with 
 
 Running the kindest/node containers under Incus requires a few in-place modifications on the instance configuration files:
 - A symlink is created at `/init`, which points to `/usr/local/bin/entrypoint`. This is because kind must run as PID 1 for systemd to run properly, but Incus will override PID 1 of containers unless the entrypoint is one of `/init`, `/sbin/init`, or `/s6-init`. Therefore, the resulting `oci.entrypoint` becomes `/init /sbin/init`
-- A `cloud-init-launch.service` is injected into the instance and enabled by default. This allows the cloud-init scripts to run once when the instance starts for the first time.
-  - The `cloud-init-launch.service` is able to `apt install cloud-init` (not pre-installed in the image) and start the cloud-final target. However, this makes instances depend on external packages, and is disabled
-  - Instead, CAPN will parse a limited subset of the cloud-init manifest from the bootstrap provider, render it to `/hack/cloud-init.json`, and apply it on the host using `/hack/cloud-init.py`
+- A `cloud-init-launch.service` is injected into the instance and enabled by default. This allows the cloud-init scripts to run once when the instance starts for the first time. See [cloud-init support for kind instances](#cloud-init-support-for-kind-instances)
 - By default, `/usr/local/bin/entrypoint` will always attempt to overwrite `/etc/resolv.conf`. In Incus, this is not required, and also fails for unprivileged instances because `/etc/resolv.conf` is read-only. Therefore, we mutate the script to write to `/etc/local-resolv.conf` instead (and nullify this change).
 - `kind` mounts `/lib/modules` into the containers. However, this fails under Incus. Instead, we mount `/boot` into `/usr/lib/ostree-boot`, so that kubeadm is able to retrieve the kernel configuration.
+
+## cloud-init support for kind instances
+
+ClusterAPI uses cloud-init configuration for cluster instances to bootstrap or join a cluster, but `kindest/node` do not have `cloud-init` preinstalled, meaning that nodes would not be configured without further action.
+
+The ClusterAPI docker provider, which also uses the `kindest/node` images, addresses this by manually parsing the cloud-init configuration on the provider, then executing the cloud-init commands on the node. This was not deemed as a useful approach for CAPN.
+
+Instead, CAPN will inject a `cloud-init-launch.service` on the nodes, and enable it by default (so it starts when the systemd entrypoint takes over). There are two ways that the cloud-init configuration can be applied:
+
+1.  `/hack/cloud-init.py /hack/cloud-init.json` [**default**]
+
+    In this (default) mode, CAPN will parse the YAML cloud-init config that the bootstrap provider has generated for the instance, and render it in JSON format as `/hack/cloud-init.json` inside the instance. A python script `/hack/cloud-init.py` is also injected, which applies these configs on the instance.
+
+    Currently, only `write_files` and `runcmd` configuration is supported in this mode. This should cover kubeadm and most other bootstrap providers (e.g. RKE2, K3s, etc). However, it will not work if other cloud-init configuration is required (e.g. `users`). If you are affected by this, you are kindly requested to create an issue in [GitHub](https://github.com/lxc/cluster-api-provider-incus/issues) with more details, and support may be added.
+
+    This mode is the default, as it requires no external dependencies for the cloud-init configuration to be applied.
+
+2.  `apt update; apt install cloud-init; systemctl start cloud-final.service`.
+
+    An alternative approach is to install the full cloud-init apt packages on the instance, and then start the `cloud-final` service, which executes cloud-init.
+
+    This does a `apt update; apt install cloud-init` to install the `cloud-init` package from the archives, which requires external network connection and might not be desirable. However, it supports any cloud-init configuration that the bootstrap provider has set.
+
+    To use this mode, the `LXCMachineTemplate` instance spec must be updated to set the `user.capn.x-kind-apt-install-cloud-init` config to true, for example:
+
+    ```yaml,hidelines=#
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    kind: LXCMachineTemplate
+    metadata:
+      name: "kind-machine-template"
+    spec:
+      template:
+        spec:
+          instanceType: kind
+          config:
+            user.capn.x-kind-apt-install-cloud-init: "true"
+    ```

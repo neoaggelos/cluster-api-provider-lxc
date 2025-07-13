@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
+	"strconv"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/crane"
@@ -19,7 +20,7 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
-func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *lxc.Client, cloudInit string, manualCloudInit bool) ([]string, error) {
+func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *lxc.Client, cloudInit string) ([]string, error) {
 	if err := lxcClient.SupportsInstanceOCI(); err != nil {
 		return nil, utils.TerminalError(fmt.Errorf("cannot launch kind instance as OCI containers are not supported: %w", err))
 	}
@@ -124,7 +125,16 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 	seedFiles := maps.Clone(defaultKindSeedFiles)
 
 	// configure cloud-init
-	if manualCloudInit {
+	aptInstallCloudInit := false
+	if v, ok := lxcMachine.Spec.Config["user.capn.x-kind-apt-install-cloud-init"]; ok {
+		if b, err := strconv.ParseBool(v); err != nil {
+			return nil, utils.TerminalError(fmt.Errorf("failed to parse user.capn.x-kind-apt-install-cloud-init=%q as boolean: %w", v, err))
+		} else {
+			aptInstallCloudInit = b
+		}
+	}
+
+	if !aptInstallCloudInit {
 		// manual cloud-init mode:
 		// - parse YAML (ensure no unknown fields are present), and replace {{ v1.local_hostname }} with hostname
 		// - marshal to JSON

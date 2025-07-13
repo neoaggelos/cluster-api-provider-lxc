@@ -22,7 +22,7 @@ import (
 func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluster, machine *clusterv1.Machine, lxcMachine *infrav1.LXCMachine, lxcClient *lxc.Client, cloudInit string) ([]string, error) {
 	// TODO: merge the two code paths as much as possible
 	if lxcMachine.Spec.InstanceType == "kind" {
-		return launchKindInstance(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient, cloudInit, true)
+		return launchKindInstance(ctx, cluster, lxcCluster, machine, lxcMachine, lxcClient, cloudInit)
 	}
 
 	name := lxcMachine.GetInstanceName()

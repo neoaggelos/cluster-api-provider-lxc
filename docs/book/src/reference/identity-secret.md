@@ -23,11 +23,22 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: incus-secret
+  labels:
+    # [optional]
+    # If set, "clusterctl move" will include this secret when moving Cluster API objects
+    # to the target management cluster. This is required if you are planning on moving
+    # the cluster after provisioning.
+    clusterctl.cluster.x-k8s.io/move: "true"
 stringData:
   # [required]
-  # 'server' is the https URL of the Incus or LXD server. Unless, already configured this requires:
+  # 'server' is the HTTPS URL of the Incus or LXD server.
+  #
+  # Note that Incus and LXD only expose a local UNIX socket by default. In order to
+  # expose a running server on the network, you need to do something like:
   #
   #   $ sudo incus config set core.https_address=:8443
+  #
+  # See https://linuxcontainers.org/incus/docs/main/howto/server_expose/#server-expose
   server: https://10.0.1.1:8443
 
   # [required]
@@ -74,6 +85,8 @@ stringData:
 
   # [required]
   # 'client-key' is the private key for the client certificate to use for authentication.
+  #
+  #   $ cat ~/.config/incus/client.key
   client-key: |
     -----BEGIN EC PRIVATE KEY-----
     MIGkAgEBBDDC7pty/YA+IFDQx4aP2hXpw5S7rwTat5POJsCQMM06kn2qY+PoITY+

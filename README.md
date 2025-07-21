@@ -33,10 +33,12 @@ See [Quick Start](https://lxc.github.io/cluster-api-provider-incus/tutorial/quic
 
 ## Project Roadmap
 
-### v0.5.0
+### v0.8.0
 
-Rough steps for version v0.5.0:
+Rough steps for version v0.8.0:
 
+- [ ] Add `kini` command line tool, re-using building blocks from [kind](https://kind.sigs.k8s.io).
+- [ ] Use `kini` for quick start guide and e2e tests.
 - [x] Private initial alpha testing.
 - [x] Cloud provider node patch to link Machines with workload cluster Nodes.
 - [x] Test with both [Incus](https://linuxcontainers.org/incus/introduction/) and [Canonical LXD](https://canonical.com/lxd).
@@ -49,20 +51,24 @@ Rough steps for version v0.5.0:
 - [x] Explore clusters with ClusterTopology=true (clusterclass), also allows us to run all existing ClusterAPI e2e tests like Autoscaler, etc.
 - [x] Write developer guide.
 - [x] Support unprivileged containers.
+- [x] Support configurable machine placement for production clusters.
 - [x] Extend e2e suite with tests for all cluster-template types (kvm, unprivileged containers, kube-vip, ovn)
+- [x] Add self-hosted e2e test.
+- [x] Implement `kind` instance types (using OCI containers with the kindest/node images from the kind project).
 - [x] Gather initial user feedback.
+- [ ] Improve generated API reference documentation.
 - [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
 - [ ] Write documentation with common troubleshooting steps.
 - [ ] Write documentation with common cluster deployment scenarios.
 
 ### $Future
 
-- [ ] Improve API validations and possibly API conformance tests.
-- [ ] Add CI to build and push kubeadm and haproxy images to the default simplestreams server.
-- [X] Decide on project OWNERSHIP and testing infrastructure (part of LXC org).
-- [ ] Split cloud provider node patch to external cloud-provider-incus project.
-- [ ] Refactor `internal/incus` package and improve consistency and log levels across the code.
 - [ ] Add to default list of providers supported by ClusterAPI.
+- [ ] Improve API validations and possibly API conformance tests.
+- [x] Add CI to build kubeadm images for the default simplestreams server. Pushing will remain manual for now.
+- [x] Decide on project OWNERSHIP and testing infrastructure (part of LXC org).
+- [x] Refactor `internal/incus` package and improve consistency and log levels across the code.
+- [ ] Split cloud provider node patch to external cloud-provider-incus project.
 
 ## Getting involved and contributing
 

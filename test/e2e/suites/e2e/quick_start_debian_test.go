@@ -16,11 +16,11 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("Ubuntu", Label("PRBlocking"), func() {
+	Context("Debian", Label("PRBlocking"), func() {
 		BeforeEach(func(ctx context.Context) {
 			e2eCtx.OverrideVariables(map[string]string{
 				"KUBERNETES_VERSION": "v1.33.3", // Kubernetes version without pre-built images
-				"LXC_IMAGE_NAME":     "ubuntu:24.04",
+				"LXC_IMAGE_NAME":     "debian:12",
 				"INSTALL_KUBEADM":    "true",
 			})
 		})
@@ -37,7 +37,7 @@ var _ = Describe("QuickStart", func() {
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](1),
 				WorkerMachineCount:       ptr.To[int64](1),
-				ClusterName:              ptr.To(fmt.Sprintf("capn-ubuntu-%s", util.RandomString(6))),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-debian-%s", util.RandomString(6))),
 			}
 		})
 	})

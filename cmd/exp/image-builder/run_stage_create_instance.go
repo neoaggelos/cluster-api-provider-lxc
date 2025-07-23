@@ -22,7 +22,7 @@ func (*stageCreateInstance) run(ctx context.Context) error {
 		return fmt.Errorf("failed to pick image source for base image %q: %w", cfg.baseImage, err)
 	}
 
-	// LXD needs security.nesting=true for containers to be able to pull images
+	// LXD needs security.nesting=true for containerd to work properly (we need to pull images)
 	var config map[string]string
 	if cfg.instanceType == lxc.Container {
 		config = map[string]string{

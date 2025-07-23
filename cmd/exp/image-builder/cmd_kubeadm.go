@@ -51,6 +51,8 @@ var (
 						os:      "kubeadm",
 						release: kubeadmCfg.kubernetesVersion,
 						variant: wellKnownBaseImages[cfg.baseImage].variantName,
+
+						lxcRequireCgroupv2: true,
 					},
 				},
 				&stageExportImage{},

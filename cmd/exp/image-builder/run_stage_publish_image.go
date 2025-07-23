@@ -9,10 +9,14 @@ import (
 	incus "github.com/lxc/incus/v6/client"
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 type publishImageInfo struct {
 	name, os, release, variant string
+
+	lxcRequireCgroupv2 bool
 }
 
 type stagePublishImage struct {
@@ -42,22 +46,26 @@ func (s *stagePublishImage) run(ctx context.Context) error {
 
 	now := time.Now()
 	serial := fmt.Sprintf("%d%02d%02d%02d%02d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute())
+	properties := map[string]string{
+		"architecture": runtime.GOARCH,
+		"name":         s.info.name,
+		"description":  fmt.Sprintf("%s (%s)", s.info.name, serial),
+		"os":           s.info.os,
+		"release":      s.info.release,
+		"variant":      s.info.variant,
+		"serial":       serial,
+	}
+	if s.info.lxcRequireCgroupv2 && cfg.instanceType == lxc.Container {
+		properties["requirements.cgroupv2"] = "true"
+	}
 
 	log.FromContext(ctx).V(1).Info("Publishing image")
 	return lxcClient.WaitForOperation(ctx, "PublishImage", func() (incus.Operation, error) {
 		return lxcClient.CreateImage(api.ImagesPost{
 			ImagePut: api.ImagePut{
-				Properties: map[string]string{
-					"architecture": runtime.GOARCH,
-					"name":         s.info.name,
-					"description":  fmt.Sprintf("%s (%s)", s.info.name, serial),
-					"os":           s.info.os,
-					"release":      s.info.release,
-					"variant":      s.info.variant,
-					"serial":       serial,
-				},
-				Public:    true,
-				ExpiresAt: time.Now().AddDate(10, 0, 0),
+				Properties: properties,
+				Public:     true,
+				ExpiresAt:  time.Now().AddDate(10, 0, 0),
 			},
 			Source: &api.ImagesPostSource{
 				Type: "instance",

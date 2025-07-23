@@ -18,7 +18,12 @@ func runStages(stages ...stage) error {
 		ctx := log.IntoContext(gCtx, log.FromContext(gCtx).WithValues("stage.name", stage.name(), "stage.index", fmt.Sprintf("%d/%d", idx+1, len(stages))))
 
 		if slices.Contains(cfg.skipStages, stage.name()) {
-			log.FromContext(ctx).Info("Skipping stage")
+			log.FromContext(ctx).Info("Skipping stage", "skip", cfg.skipStages)
+			continue
+		}
+
+		if len(cfg.onlyStages) > 0 && !slices.Contains(cfg.onlyStages, stage.name()) {
+			log.FromContext(ctx).Info("Skipping stage", "only", cfg.onlyStages)
 			continue
 		}
 

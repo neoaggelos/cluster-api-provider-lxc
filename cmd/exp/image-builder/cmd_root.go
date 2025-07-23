@@ -31,6 +31,7 @@ var (
 
 		// build step configuration
 		skipStages          []string
+		onlyStages          []string
 		instanceGracePeriod time.Duration
 
 		// output
@@ -113,7 +114,10 @@ func init() {
 
 	rootCmd.PersistentFlags().StringSliceVar(&cfg.skipStages, "skip", nil,
 		"Skip stages while building the image")
+	rootCmd.PersistentFlags().StringSliceVar(&cfg.onlyStages, "only", nil,
+		"Run specific stages while building the image")
 	_ = rootCmd.PersistentFlags().MarkHidden("skip")
+	_ = rootCmd.PersistentFlags().MarkHidden("only")
 
 	rootCmd.PersistentFlags().DurationVar(&cfg.instanceGracePeriod, "instance-grace-period", defaultInstanceGracePeriod,
 		"[advanced] Grace period before stopping instance, such that all disk writes complete")

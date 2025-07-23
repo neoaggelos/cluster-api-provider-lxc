@@ -126,12 +126,20 @@ type LXCMachineSpec struct {
 type LXCMachineImageSource struct {
 	// Name is the image name or alias.
 	//
-	// Note that Incus and Canonical LXD use incompatible image servers
-	// for Ubuntu images. To address this issue, setting image name to
-	// `ubuntu:VERSION` is a shortcut for:
+	// Note that Incus and Canonical LXD use incompatible image servers. To help
+	// mitigate this issue, the following image names are automatically recognized:
 	//
-	//   - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
-	//   - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
+	//   - "ubuntu:VERSION" (e.g. "ubuntu:24.04")
+	//     - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
+	//     - LXD: 	"ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
+	//
+	//   - "debian:VERSION" (e.g. "debian:12")
+	//     - Incus: "images:debian/VERSION/cloud" (from https://images.linuxcontainers.org)
+	//     - LXD: 	"images:debian/VERSION/cloud" (from https://images.lxd.canonical.com)
+	//
+	//   - "images:IMAGE" (e.g. "images:almalinux/9/cloud")
+	//     - Incus: "images:IMAGE" (from https://images.linuxcontainers.org)
+	//     - LXD: 	"images:IMAGE" (from https://images.lxd.canonical.com)
 	//
 	// +optional
 	Name string `json:"name"`

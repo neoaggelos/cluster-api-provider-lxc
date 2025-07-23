@@ -61,11 +61,11 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 	var image api.InstanceSource
 	switch {
 	case strings.HasPrefix(lxcMachine.Spec.Image.Name, "ubuntu:"):
-		ubuntuImage, isUbuntuImage, err := lxcClient.GetDefaultUbuntuImage(ctx, lxcMachine.Spec.Image.Name)
+		source, parsed, err := lxcClient.TryParseImageSource(ctx, lxcMachine.Spec.Image.Name)
 		if err != nil {
 			return nil, err
-		} else if isUbuntuImage {
-			image = ubuntuImage
+		} else if parsed {
+			image = source
 		}
 	case lxcMachine.Spec.Image.IsZero():
 		if machine.Spec.Version == nil {

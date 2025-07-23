@@ -133,15 +133,19 @@ spec:
                             description: Fingerprint is the image fingerprint.
                             type: string
                           name:
-                            description: |-
-                              Name is the image name or alias.
-
-                              Note that Incus and Canonical LXD use incompatible image servers
-                              for Ubuntu images. To address this issue, setting image name to
-                              `ubuntu:VERSION` is a shortcut for:
-
-                                - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
-                                - LXD: "ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
+                            description: "Name is the image name or alias.\n\nNote
+                              that Incus and Canonical LXD use incompatible image
+                              servers. To help\nmitigate this issue, the following
+                              image names are automatically recognized:\n\n  - \"ubuntu:VERSION\"
+                              (e.g. \"ubuntu:24.04\")\n    - Incus: \"images:ubuntu/VERSION/cloud\"
+                              (from https://images.linuxcontainers.org)\n    - LXD:
+                              \t\"ubuntu:VERSION\" (from https://cloud-images.ubuntu.com/releases)\n\n
+                              \ - \"debian:VERSION\" (e.g. \"debian:12\")\n    - Incus:
+                              \"images:debian/VERSION/cloud\" (from https://images.linuxcontainers.org)\n
+                              \   - LXD: \t\"images:debian/VERSION/cloud\" (from https://images.lxd.canonical.com)\n\n
+                              \ - \"images:IMAGE\" (e.g. \"images:almalinux/9/cloud\")\n
+                              \   - Incus: \"images:IMAGE\" (from https://images.linuxcontainers.org)\n
+                              \   - LXD: \t\"images:IMAGE\" (from https://images.lxd.canonical.com)"
                             type: string
                           protocol:
                             description: Protocol is the protocol to use for fetching

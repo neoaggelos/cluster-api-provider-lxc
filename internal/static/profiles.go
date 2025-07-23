@@ -5,6 +5,8 @@ import (
 
 	"github.com/lxc/incus/v6/shared/api"
 	"sigs.k8s.io/yaml"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 var (
@@ -59,7 +61,7 @@ func DefaultKubeadmProfile(privileged bool, serverName string) api.ProfilePut {
 	switch {
 	case privileged:
 		return defaultKubeadm
-	case serverName == "lxd":
+	case serverName == lxc.LXD:
 		return defaultLXDKubeadmUnprivileged
 	default:
 		return defaultKubeadmUnprivileged

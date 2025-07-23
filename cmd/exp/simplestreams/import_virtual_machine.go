@@ -16,6 +16,8 @@ import (
 	"github.com/lxc/incus/v6/shared/api"
 	"github.com/lxc/incus/v6/shared/simplestreams"
 	"sigs.k8s.io/yaml"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 func importVirtualMachineImage(index simplestreams.Stream, products simplestreams.Products) error {
@@ -182,9 +184,9 @@ func importVirtualMachineImage(index simplestreams.Stream, products simplestream
 	}
 
 	switch importCfg.serverType {
-	case "incus":
+	case lxc.Incus:
 		metadataProductVersionItem.CombinedSha256DiskKvmImg = info.CombinedSha256
-	case "lxd":
+	case lxc.LXD:
 		metadataProductVersionItem.CombinedSha256DiskImg = info.CombinedSha256
 	}
 

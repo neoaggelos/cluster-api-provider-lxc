@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 var (
@@ -22,7 +24,7 @@ var (
 		Short:   "Import images into a simplestreams index",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			switch importCfg.serverType {
-			case "lxd", "incus":
+			case lxc.Incus, lxc.LXD:
 			default:
 				return fmt.Errorf("invalid value for --server-type argument %q, must be one of [incus, lxd]", importCfg.serverType)
 			}
@@ -47,7 +49,7 @@ func init() {
 		"Path to image unified tarball to add in the simplestreams index directory")
 	importCmd.PersistentFlags().StringSliceVar(&importCfg.imageAliases, "image-alias", nil,
 		"List of aliases to add to the image. This is ignored if the product exists already")
-	importCmd.PersistentFlags().StringVar(&importCfg.serverType, "server-type", "incus",
+	importCmd.PersistentFlags().StringVar(&importCfg.serverType, "server-type", lxc.Incus,
 		"Server to create simplestreams index for. Must be one of [incus, lxd]")
 
 	_ = importCmd.MarkPersistentFlagRequired("image-path")

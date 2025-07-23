@@ -12,6 +12,12 @@ const (
 	// VirtualMachine is the instance type for virtual-machine instances.
 	VirtualMachine = "virtual-machine"
 
+	// Incus is the server name for Incus servers.
+	Incus = "incus"
+
+	// LXD is the server name for Canonical LXD servers.
+	LXD = "lxd"
+
 	// instanceCreateTimeout is the timeout for creating an instance.
 	instanceCreateTimeout = 180 * time.Second
 

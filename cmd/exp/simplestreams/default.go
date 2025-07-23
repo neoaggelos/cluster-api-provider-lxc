@@ -1,16 +1,18 @@
 package main
 
+import "github.com/lxc/cluster-api-provider-incus/internal/lxc"
+
 var (
 	containerFTypeByServer = map[string]string{
-		"incus": "incus_combined.tar.gz",
-		"lxd":   "lxd_combined.tar.gz",
+		lxc.Incus: "incus_combined.tar.gz",
+		lxc.LXD:   "lxd_combined.tar.gz",
 	}
 	vmMetadataFTypeByServer = map[string]string{
-		"incus": "incus.tar.xz",
-		"lxd":   "lxd.tar.xz",
+		lxc.Incus: "incus.tar.xz",
+		lxc.LXD:   "lxd.tar.xz",
 	}
 	vmRootfsFTypeByServer = map[string]string{
-		"incus": "disk-kvm.img",
-		"lxd":   "disk1.img",
+		lxc.Incus: "disk-kvm.img",
+		lxc.LXD:   "disk1.img",
 	}
 )

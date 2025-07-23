@@ -27,14 +27,14 @@ func (c *Client) TryParseImageSource(ctx context.Context, imageName string) (api
 func (c *Client) getDefaultUbuntuImage(ctx context.Context, version string) (api.InstanceSource, bool, error) {
 	serverName := c.GetServerName(ctx)
 	switch serverName {
-	case "incus":
+	case Incus:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    fmt.Sprintf("ubuntu/%s/cloud", version),
 			Server:   "https://images.linuxcontainers.org",
 			Protocol: "simplestreams",
 		}, true, nil
-	case "lxd":
+	case LXD:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    version,
@@ -49,14 +49,14 @@ func (c *Client) getDefaultUbuntuImage(ctx context.Context, version string) (api
 func (c *Client) getDefaultDebianImage(ctx context.Context, version string) (api.InstanceSource, bool, error) {
 	serverName := c.GetServerName(ctx)
 	switch serverName {
-	case "incus":
+	case Incus:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    fmt.Sprintf("debian/%s/cloud", version),
 			Server:   "https://images.linuxcontainers.org",
 			Protocol: "simplestreams",
 		}, true, nil
-	case "lxd":
+	case LXD:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    fmt.Sprintf("debian/%s/cloud", version),
@@ -71,14 +71,14 @@ func (c *Client) getDefaultDebianImage(ctx context.Context, version string) (api
 func (c *Client) getDefaultRepoImage(ctx context.Context, image string) (api.InstanceSource, bool, error) {
 	serverName := c.GetServerName(ctx)
 	switch serverName {
-	case "incus":
+	case Incus:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    image,
 			Server:   "https://images.linuxcontainers.org",
 			Protocol: "simplestreams",
 		}, true, nil
-	case "lxd":
+	case LXD:
 		return api.InstanceSource{
 			Type:     "image",
 			Alias:    image,

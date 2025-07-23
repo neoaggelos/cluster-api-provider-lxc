@@ -14,7 +14,7 @@ import (
 // GetServerName returns one of "incus", "lxd" or "unknown", depending on the server type.
 func (c *Client) GetServerName(ctx context.Context) string {
 	switch c.serverInfo.Environment.Server {
-	case "incus", "lxd":
+	case Incus, LXD:
 		return c.serverInfo.Environment.Server
 	default:
 		return "unknown"

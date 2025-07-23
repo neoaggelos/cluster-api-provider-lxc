@@ -189,7 +189,7 @@ fi
 
 # apt install requirements
 apt update
-apt install curl iptables ethtool --no-install-recommends --yes
+apt install curl iptables ethtool kmod --no-install-recommends --yes
 if [ "$KUBERNETES_VERSION" "<" "v1.32" ]; then
   apt install conntrack --no-install-recommends --yes
 fi

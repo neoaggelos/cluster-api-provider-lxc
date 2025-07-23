@@ -15,14 +15,20 @@ jobs:
       matrix:
         include:
         # amd64 images
-        - { infrastructure: incus,  type: container,        arch: amd64 }
-        - { infrastructure: incus,  type: virtual-machine,  arch: amd64 }
-        - { infrastructure: lxd,    type: virtual-machine,  arch: amd64 }
+        - { infrastructure: incus,  type: container,        base: ubuntu, arch: amd64 }
+        - { infrastructure: incus,  type: virtual-machine,  base: ubuntu, arch: amd64 }
+        - { infrastructure: lxd,    type: virtual-machine,  base: ubuntu, arch: amd64 }
+        - { infrastructure: incus,  type: container,        base: debian, arch: amd64 }
+        - { infrastructure: incus,  type: virtual-machine,  base: debian, arch: amd64 }
+        - { infrastructure: lxd,    type: virtual-machine,  base: debian, arch: amd64 }
 
         # arm64 images
-        - { infrastructure: incus,  type: container,        arch: arm64 }
-        # - { infrastructure: incus,  type: virtual-machine,  arch: arm64 }    # arm64 runners do not support kvm
-        # - { infrastructure: lxd,    type: virtual-machine,  arch: arm64 }    # arm64 runners do not support kvm
+        - { infrastructure: incus,  type: container,        base: ubuntu, arch: arm64 }
+        # - { infrastructure: incus,  type: virtual-machine,  base: ubuntu, arch: arm64 }   # arm64 runners do not support kvm
+        # - { infrastructure: lxd,    type: virtual-machine,  base: ubuntu, arch: arm64 }   # arm64 runners do not support kvm
+        - { infrastructure: incus,  type: container,        base: debian,    arch: arm64 }
+        # - { infrastructure: incus,  type: virtual-machine,  base: debian,    arch: arm64 }   # arm64 runners do not support kvm
+        # - { infrastructure: lxd,    type: virtual-machine,  base: debian,    arch: arm64 }   # arm64 runners do not support kvm
     runs-on: ${{ matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     steps:
       - name: Checkout
@@ -39,10 +45,14 @@ jobs:
 
       - name: Build image
         run: |
-          go run ./cmd/exp/image-builder kubeadm --v=4 --kubernetes-version=${{ inputs.version }} --instance-type=${{ matrix.type }} --output=kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.arch }}.tar.gz
+          go run ./cmd/exp/image-builder kubeadm --v=4 \
+            --base-image=${{ matrix.base }} \
+            --kubernetes-version=${{ inputs.version }} \
+            --instance-type=${{ matrix.type }} \
+            --output=kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.base }}-${{ matrix.arch }}.tar.gz
 
       - name: Upload image
         uses: actions/upload-artifact@v4
         with:
-          name: kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.arch }}
-          path: kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.arch }}.tar.gz
+          name: kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.base }}-${{ matrix.arch }}
+          path: kubeadm-${{ inputs.version }}-${{ matrix.infrastructure }}-${{ matrix.type }}-${{ matrix.base }}-${{ matrix.arch }}.tar.gz

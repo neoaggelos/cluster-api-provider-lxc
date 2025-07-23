@@ -60,11 +60,12 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 
 	var image api.InstanceSource
 	switch {
-	case strings.HasPrefix(lxcMachine.Spec.Image.Name, "ubuntu:"):
+	case lxcMachine.Spec.Image.Name != "":
 		source, parsed, err := lxcClient.TryParseImageSource(ctx, lxcMachine.Spec.Image.Name)
 		if err != nil {
 			return nil, err
 		} else if parsed {
+			// FIXME: add logging to communicate which image is being used
 			image = source
 		}
 	case lxcMachine.Spec.Image.IsZero():

@@ -13,6 +13,12 @@ import (
 func loggingProgressHandler(ctx context.Context, name string) func(api.Operation) {
 	idx := 0
 	return func(o api.Operation) {
+		// reduce log noise for command execute operations unless --v=5 or higher
+		if _, ok := o.Metadata["command"]; ok && !log.FromContext(ctx).V(5).Enabled() {
+			delete(o.Metadata, "environment")
+			delete(o.Metadata, "fds")
+		}
+
 		log := log.FromContext(ctx).WithValues("operation.name", name, "operation.uuid", o.ID, "operation.metadata", o.Metadata, "operation.status", o.Status)
 
 		switch {

@@ -16,11 +16,11 @@ var (
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if cfg.imageAlias == "" {
-				cfg.imageAlias = fmt.Sprintf("haproxy-u%s", cfg.ubuntuVersion)
+				cfg.imageAlias = "haproxy"
 			}
 
 			log.FromContext(gCtx).WithValues(
-				"ubuntu-version", cfg.ubuntuVersion,
+				"base-image", cfg.baseImage,
 				"instance-type", cfg.instanceType,
 				"image-alias", cfg.imageAlias,
 			).Info("Building haproxy image")
@@ -34,10 +34,10 @@ var (
 				&stageStopInstance{},
 				&stagePublishImage{
 					info: publishImageInfo{
-						name:    fmt.Sprintf("haproxy %s %s", getUbuntuReleaseName(cfg.ubuntuVersion), runtime.GOARCH),
+						name:    fmt.Sprintf("haproxy %s %s", wellKnownBaseImages[cfg.baseImage].fullName, runtime.GOARCH),
 						os:      "haproxy",
-						release: getUbuntuReleaseName(cfg.ubuntuVersion),
-						variant: "ubuntu",
+						release: wellKnownBaseImages[cfg.baseImage].releaseName,
+						variant: wellKnownBaseImages[cfg.baseImage].variantName,
 					},
 				},
 				&stageExportImage{},

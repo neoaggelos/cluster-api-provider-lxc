@@ -17,9 +17,9 @@ func (*stageCreateInstance) name() string { return "create-instance" }
 // incus launch image:ubuntu/24.04/cloud
 // incus launch image:ubuntu/24.04/cloud --vm -d root,size=5GiB
 func (*stageCreateInstance) run(ctx context.Context) error {
-	image, _, err := lxcClient.TryParseImageSource(ctx, fmt.Sprintf("ubuntu:%s", cfg.ubuntuVersion))
+	image, _, err := lxcClient.TryParseImageSource(ctx, cfg.baseImage)
 	if err != nil {
-		return fmt.Errorf("failed to pick ubuntu image for version %q: %w", cfg.ubuntuVersion, err)
+		return fmt.Errorf("failed to pick image source for base image %q: %w", cfg.baseImage, err)
 	}
 
 	// LXD needs security.nesting=true for containers to be able to pull images

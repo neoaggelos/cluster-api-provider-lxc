@@ -34,7 +34,7 @@ Use `./bin/image-builder haproxy --help` for a list of all available options.
 ```bash
 ./bin/image-builder haproxy --v=4 --output image-haproxy.tar.gz \
   --image-alias haproxy/u24 \
-  --ubuntu-version 24.04
+  --base-image ubuntu:24.04
 ```
 
 This will build a haproxy image based on Ubuntu 24.04, save it on the server as `haproxy/u24` and also export it to the local file `image-haproxy.tar.gz`

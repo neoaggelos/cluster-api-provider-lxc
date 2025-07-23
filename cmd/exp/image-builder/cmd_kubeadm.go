@@ -31,7 +31,7 @@ var (
 
 			log.FromContext(gCtx).WithValues(
 				"kubernetes-version", kubeadmCfg.kubernetesVersion,
-				"ubuntu-version", cfg.ubuntuVersion,
+				"base-image", cfg.baseImage,
 				"instance-type", cfg.instanceType,
 				"image-alias", cfg.imageAlias,
 			).Info("Building kubeadm image")
@@ -47,10 +47,10 @@ var (
 				&stageStopInstance{},
 				&stagePublishImage{
 					info: publishImageInfo{
-						name:    fmt.Sprintf("kubeadm %s ubuntu %s %s", kubeadmCfg.kubernetesVersion, getUbuntuReleaseName(cfg.ubuntuVersion), runtime.GOARCH),
+						name:    fmt.Sprintf("kubeadm %s %s %s", kubeadmCfg.kubernetesVersion, wellKnownBaseImages[cfg.baseImage].fullName, runtime.GOARCH),
 						os:      "kubeadm",
 						release: kubeadmCfg.kubernetesVersion,
-						variant: "ubuntu",
+						variant: wellKnownBaseImages[cfg.baseImage].variantName,
 					},
 				},
 				&stageExportImage{},

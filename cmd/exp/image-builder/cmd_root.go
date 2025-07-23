@@ -19,7 +19,7 @@ var (
 		configRemoteName string
 
 		// base image configuration
-		ubuntuVersion string
+		baseImage string
 
 		// builder configuration
 		instanceName     string
@@ -54,10 +54,14 @@ var (
 				return fmt.Errorf("invalid value for --instance-type argument %q, must be one of [container, virtual-machine]", cfg.instanceType)
 			}
 
-			switch cfg.ubuntuVersion {
-			case "22.04", "24.04":
+			switch cfg.baseImage {
+			case "debian":
+				cfg.baseImage = "debian:12"
+			case "ubuntu":
+				cfg.baseImage = "ubuntu:24.04"
+			case "debian:12", "ubuntu:22.04", "ubuntu:24.04":
 			default:
-				return fmt.Errorf("invalid value for --ubuntu-version argument %q, must be one of [22.04, 24.04]", cfg.ubuntuVersion)
+				return fmt.Errorf("invalid value for --base-image argument %q, must be one of [ubuntu:22.04, ubuntu:24.04, debian:12]", cfg.baseImage)
 			}
 
 			opts, err := lxc.ConfigurationFromLocal(cfg.configFile, cfg.configRemoteName, false)
@@ -94,8 +98,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfg.configRemoteName, "config-remote-name", "",
 		"Override remote to use from configuration file")
 
-	rootCmd.PersistentFlags().StringVar(&cfg.ubuntuVersion, "ubuntu-version", defaultUbuntuVersion,
-		"Ubuntu version to use to launch instance (one of 22.04|24.04)")
+	rootCmd.PersistentFlags().StringVar(&cfg.baseImage, "base-image", defaultBaseImage,
+		"Base image for launching builder instance (one of ubuntu:22.04|ubuntu:24.04|debian:12)")
 
 	rootCmd.PersistentFlags().StringVar(&cfg.instanceName, "instance-name", defaultInstanceName,
 		"Name for the builder instance")

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	defaultUbuntuVersion = "24.04"
+	defaultBaseImage = "ubuntu:24.04"
 
 	defaultInstanceName     = "capn-builder"
 	defaultInstanceType     = lxc.Container

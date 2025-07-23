@@ -33,9 +33,9 @@ Use `./bin/image-builder kubeadm --help` for a list of all available options.
 
 ```bash
 ./bin/image-builder kubeadm --v=4 --output image-kubeadm.tar.gz \
-  --image-alias kubeadm/v1.33.0/ubuntu/24.04 \
-  --ubuntu-version 24.04 \
-  --kubernetes-version v1.33.0
+  --kubernetes-version v1.33.0 \
+  --base-image ubuntu:24.04 \
+  --image-alias kubeadm/v1.33.0/ubuntu/24.04
 ```
 
 This will build a kubeadm image for Kubernetes v1.33.0, save it with alias `kubeadm/v1.33.0/ubuntu/24.04` and also export it to `image-kubeadm.tar.gz`.
@@ -44,9 +44,9 @@ This will build a kubeadm image for Kubernetes v1.33.0, save it with alias `kube
 
 ```bash
 ./bin/image-builder kubeadm --v=4 --output image-kubeadm-kvm.tar.gz \
-  --image-alias kubeadm/v1.33.0/ubuntu/24.04/kvm \
-  --ubuntu-version 24.04 \
   --kubernetes-version v1.33.0 \
+  --base-image ubuntu:24.04 \
+  --image-alias kubeadm/v1.33.0/ubuntu/24.04/kvm \
   --instance-type virtual-machine
 ```
 

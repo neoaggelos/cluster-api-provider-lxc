@@ -23,7 +23,7 @@ type stagePublishImage struct {
 	info publishImageInfo
 }
 
-func (s *stagePublishImage) name() string { return fmt.Sprintf("publish-%s-image", s.info.name) }
+func (s *stagePublishImage) name() string { return fmt.Sprintf("publish-%s-image", s.info.os) }
 
 // incus publish capn-builder capn-builder-image
 func (s *stagePublishImage) run(ctx context.Context) error {

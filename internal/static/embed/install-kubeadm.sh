@@ -179,7 +179,7 @@ if uname -m | grep -q aarch64; then ARCH=arm64; fi
 echo net.ipv4.ip_forward=1 | tee /etc/sysctl.d/99-clusterapi.conf
 echo fs.inotify.max_user_instances=8192 | tee -a /etc/sysctl.d/99-clusterapi.conf
 echo fs.inotify.max_user_watches=524288 | tee -a /etc/sysctl.d/99-clusterapi.conf
-sysctl --system
+sysctl --system || true
 
 # kernel
 if ! systemd-detect-virt --container --quiet 2>/dev/null; then

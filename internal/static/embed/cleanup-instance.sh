@@ -6,9 +6,12 @@
 set -xeu
 
 apt-get purge -y \
-  ubuntu-pro-client libx11-data iso-codes language-pack-en-base \
-  vim openssh-client groff-base gnupg polkitd \
+  libx11-data iso-codes vim openssh-client groff-base gnupg polkitd \
   python3-babel python3-pygments python3-launchpadlib python3-markdown-it python3-mdurl
+
+if cat /etc/os-release | grep ID=ubuntu -q; then
+  apt-get purge -y ubuntu-pro-client language-pack-en-base
+fi
 
 apt-get autoremove -y && apt-get clean && apt-get autoclean
 rm -rf \
@@ -39,5 +42,13 @@ mkdir -p /var/tmp /var/log /tmp
 if which cloud-init; then
   cloud-init clean --machine-id --seed --logs
 fi
+
+# NOTE(neoaggelos): to address virtual-machine images not booting up
+# [    2.229864] systemd[1]: System cannot boot: Missing /etc/machine-id and /etc is mounted read-only.
+# [    2.231808] systemd[1]: Booting up is supported only when:
+# [    2.232901] systemd[1]: 1) /etc/machine-id exists and is populated.
+# [    2.234297] systemd[1]: 2) /etc/machine-id exists and is empty.
+# [    2.235592] systemd[1]: 3) /etc/machine-id is missing and /etc is writable.
+touch /etc/machine-id
 
 find /usr/lib/python3* | grep __pycache__ | xargs rm -rf

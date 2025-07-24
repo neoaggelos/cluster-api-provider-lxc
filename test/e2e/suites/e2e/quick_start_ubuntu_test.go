@@ -36,8 +36,8 @@ var _ = Describe("QuickStart", func() {
 					InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
 					Flavor:                   ptr.To(shared.FlavorDefault),
-					ControlPlaneMachineCount: ptr.To[int64](3),
-					WorkerMachineCount:       ptr.To[int64](3),
+					ControlPlaneMachineCount: ptr.To[int64](1),
+					WorkerMachineCount:       ptr.To[int64](1),
 					ClusterName:              ptr.To(fmt.Sprintf("capn-ubuntu-%s", util.RandomString(4))),
 				}
 			})

@@ -58,7 +58,13 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 		}
 	}
 
-	var image api.InstanceSource
+	image := api.InstanceSource{
+		Type:        "image",
+		Protocol:    lxcMachine.Spec.Image.Protocol,
+		Server:      lxcMachine.Spec.Image.Server,
+		Alias:       lxcMachine.Spec.Image.Name,
+		Fingerprint: lxcMachine.Spec.Image.Fingerprint,
+	}
 	switch {
 	case lxcMachine.Spec.Image.Name != "":
 		source, parsed, err := lxcClient.TryParseImageSource(ctx, lxcMachine.Spec.Image.Name)
@@ -87,14 +93,6 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 			Protocol: "simplestreams",
 			Server:   lxc.DefaultSimplestreamsServer,
 			Alias:    fmt.Sprintf("kubeadm/%s", version),
-		}
-	default:
-		image = api.InstanceSource{
-			Type:        "image",
-			Protocol:    lxcMachine.Spec.Image.Protocol,
-			Server:      lxcMachine.Spec.Image.Server,
-			Alias:       lxcMachine.Spec.Image.Name,
-			Fingerprint: lxcMachine.Spec.Image.Fingerprint,
 		}
 	}
 

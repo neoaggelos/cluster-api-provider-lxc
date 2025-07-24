@@ -55,9 +55,14 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 		}
 	}
 
-	var image api.InstanceSource
-	switch {
-	case lxcMachine.Spec.Image.IsZero():
+	image := api.InstanceSource{
+		Type:        "image",
+		Protocol:    lxcMachine.Spec.Image.Protocol,
+		Server:      lxcMachine.Spec.Image.Server,
+		Alias:       lxcMachine.Spec.Image.Name,
+		Fingerprint: lxcMachine.Spec.Image.Fingerprint,
+	}
+	if lxcMachine.Spec.Image.IsZero() {
 		if machine.Spec.Version == nil {
 			return nil, utils.TerminalError(fmt.Errorf("no image source specified on LXCMachineTemplate and Machine %q does not have a Kubernetes version", machine.Name))
 		}
@@ -82,14 +87,6 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 			Protocol: "oci",
 			Server:   "https://docker.io",
 			Alias:    fmt.Sprintf("kindest/node:%s", version),
-		}
-	default:
-		image = api.InstanceSource{
-			Type:        "image",
-			Protocol:    lxcMachine.Spec.Image.Protocol,
-			Server:      lxcMachine.Spec.Image.Server,
-			Alias:       lxcMachine.Spec.Image.Name,
-			Fingerprint: lxcMachine.Spec.Image.Fingerprint,
 		}
 	}
 

@@ -32,11 +32,6 @@ var _ = Describe("QuickStart", func() {
 					ControlPlaneMachineCount: ptr.To[int64](3),
 					WorkerMachineCount:       ptr.To[int64](3),
 					ClusterName:              ptr.To(fmt.Sprintf("capn-default-%s", util.RandomString(4))),
-
-					ClusterctlVariables: map[string]string{
-						"LOAD_BALANCER":  "keepalived: {host: 10.0.0.240}",
-						"LXC_IMAGE_NAME": "eb9e20509c2e",
-					},
 				}
 			})
 		})

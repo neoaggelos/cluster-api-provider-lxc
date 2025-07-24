@@ -47,8 +47,8 @@ var _ = Describe("QuickStart", func() {
 
 				Flavor:                   ptr.To(shared.FlavorDefault),
 				ControlPlaneMachineCount: ptr.To[int64](3),
-				WorkerMachineCount:       ptr.To[int64](0),
-				ClusterName:              ptr.To(fmt.Sprintf("capn-oci-%s", util.RandomString(6))),
+				WorkerMachineCount:       ptr.To[int64](1),
+				ClusterName:              ptr.To(fmt.Sprintf("capn-oci-%s", util.RandomString(4))),
 			}
 		})
 	})

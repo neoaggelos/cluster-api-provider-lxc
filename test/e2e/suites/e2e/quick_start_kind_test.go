@@ -52,7 +52,7 @@ func applyDefaultKindCNI(ctx context.Context, input clusterctl.ApplyCustomCluste
 }
 
 var _ = Describe("QuickStart", func() {
-	Context("Kind", Label("PRBlocking"), func() {
+	Context("Kind", func() {
 		BeforeEach(func(ctx context.Context) {
 			lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())
@@ -71,25 +71,52 @@ var _ = Describe("QuickStart", func() {
 			})
 		})
 
-		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
-			return e2e.QuickStartSpecInput{
-				E2EConfig:              e2eCtx.E2EConfig,
-				ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
-				BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
-				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
-				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
-				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				InfrastructureProvider: ptr.To("incus:v0.88.99"),
+		Context("Privileged", Label("PRBlocking"), func() {
+			e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+				return e2e.QuickStartSpecInput{
+					E2EConfig:              e2eCtx.E2EConfig,
+					ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
+					BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
+					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
+					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
+					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
+					InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
-				Flavor:                   ptr.To(shared.FlavorDefault),
-				ControlPlaneMachineCount: ptr.To[int64](3),
-				WorkerMachineCount:       ptr.To[int64](1),
-				ClusterName:              ptr.To(fmt.Sprintf("capn-kind-%s", util.RandomString(6))),
+					Flavor:                   ptr.To(shared.FlavorDefault),
+					ControlPlaneMachineCount: ptr.To[int64](3),
+					WorkerMachineCount:       ptr.To[int64](1),
+					ClusterName:              ptr.To(fmt.Sprintf("capn-kind-%s", util.RandomString(4))),
 
-				ControlPlaneWaiters: clusterctl.ControlPlaneWaiters{
-					WaitForControlPlaneMachinesReady: applyDefaultKindCNI,
-				},
-			}
+					ControlPlaneWaiters: clusterctl.ControlPlaneWaiters{
+						WaitForControlPlaneMachinesReady: applyDefaultKindCNI,
+					},
+				}
+			})
+		})
+
+		Context("Unprivileged", func() {
+			e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+				return e2e.QuickStartSpecInput{
+					E2EConfig:              e2eCtx.E2EConfig,
+					ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
+					BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
+					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
+					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
+					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
+					InfrastructureProvider: ptr.To("incus:v0.88.99"),
+
+					Flavor:                   ptr.To(shared.FlavorDefault),
+					ControlPlaneMachineCount: ptr.To[int64](3),
+					WorkerMachineCount:       ptr.To[int64](1),
+					ClusterName:              ptr.To(fmt.Sprintf("capn-kind-unprivileged-%s", util.RandomString(4))),
+
+					ControlPlaneWaiters: clusterctl.ControlPlaneWaiters{
+						WaitForControlPlaneMachinesReady: applyDefaultKindCNI,
+					},
+
+					ClusterctlVariables: map[string]string{"PRIVILEGED": "false"},
+				}
+			})
 		})
 	})
 })

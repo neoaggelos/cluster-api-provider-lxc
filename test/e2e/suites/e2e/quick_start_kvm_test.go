@@ -19,7 +19,7 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("KVM", Label("PRBlocking"), Label("Flaky"), func() {
+	Context("KVM", func() {
 		BeforeEach(func(ctx context.Context) {
 			lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())
@@ -38,21 +38,45 @@ var _ = Describe("QuickStart", func() {
 				"WORKER_MACHINE_TYPE": lxc.VirtualMachine,
 			})
 		})
-		e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
-			return e2e.QuickStartSpecInput{
-				E2EConfig:              e2eCtx.E2EConfig,
-				ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
-				BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
-				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
-				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
-				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				InfrastructureProvider: ptr.To("incus:v0.88.99"),
 
-				Flavor:                   ptr.To(shared.FlavorDefault),
-				ControlPlaneMachineCount: ptr.To[int64](1),
-				WorkerMachineCount:       ptr.To[int64](1),
-				ClusterName:              ptr.To(fmt.Sprintf("capn-kvm-%s", util.RandomString(6))),
-			}
+		Context("Privileged", Label("PRBlocking"), func() {
+			e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+				return e2e.QuickStartSpecInput{
+					E2EConfig:              e2eCtx.E2EConfig,
+					ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
+					BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
+					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
+					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
+					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
+					InfrastructureProvider: ptr.To("incus:v0.88.99"),
+
+					Flavor:                   ptr.To(shared.FlavorDefault),
+					ControlPlaneMachineCount: ptr.To[int64](1),
+					WorkerMachineCount:       ptr.To[int64](1),
+					ClusterName:              ptr.To(fmt.Sprintf("capn-kvm-%s", util.RandomString(4))),
+				}
+			})
+		})
+
+		Context("Unprivileged", func() {
+			e2e.QuickStartSpec(context.TODO(), func() e2e.QuickStartSpecInput {
+				return e2e.QuickStartSpecInput{
+					E2EConfig:              e2eCtx.E2EConfig,
+					ClusterctlConfigPath:   e2eCtx.Environment.ClusterctlConfigPath,
+					BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
+					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
+					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
+					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
+					InfrastructureProvider: ptr.To("incus:v0.88.99"),
+
+					Flavor:                   ptr.To(shared.FlavorDefault),
+					ControlPlaneMachineCount: ptr.To[int64](1),
+					WorkerMachineCount:       ptr.To[int64](1),
+					ClusterName:              ptr.To(fmt.Sprintf("capn-kvm-unprivileged-%s", util.RandomString(4))),
+
+					ClusterctlVariables: map[string]string{"PRIVILEGED": "false"},
+				}
+			})
 		})
 	})
 })

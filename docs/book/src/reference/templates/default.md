@@ -91,7 +91,32 @@ Set `DEPLOY_KUBE_FLANNEL=true` to deploy the default kube-flannel CNI on the clu
 
 `LXC_IMAGE_NAME` must be set if creating a cluster with a Kubernetes version for which no [pre-built Kubeadm images](../default-simplestreams-server.md#provided-images) are available. It is recommended to build [custom images](../../howto/images/kubeadm.md) in this case.
 
-Alternatively, you can pick a default Ubuntu image with `ubuntu:24.04`, and set `INSTALL_KUBEADM=true` to inject `preKubeadmCommands` that install kubeadm and necessary tools on the instance prior to bootstrapping.
+Note that Incus and Canonical LXD use incompatible image servers. To help mitigate this issue, the following image names are recognized:
+
+{{#tabs name:"lxc-image-name" tabs:"Incus,Canonical LXD" }}
+{{#tab Incus }}
+
+- `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
+- `debian:VERSION` => `debian/VERSION/cloud` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
+- `images:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
+- `capi:IMAGE` => `IMAGE` from [https://d14dnvi2l3tc5t.cloudfront.net](https://d14dnvi2l3tc5t.cloudfront.net) ([default simplestreams server](../default-simplestreams-server.md))
+- `capi-stg:IMAGE` => `IMAGE` from [https://djapqxqu5n2qu.cloudfront.net](https://djapqxqu5n2qu.cloudfront.net) (staging simplestreams server)
+
+{{#/tab }}
+{{#tab Canonical LXD }}
+
+- `ubuntu:VERSION` => `VERSION` from [https://cloud-images.ubuntu.com/releases](https://cloud-images.ubuntu.com/releases)
+- `debian:VERSION` => `debian/VERSION/cloud` from [https://images.lxd.canonical.com](https://images.lxd.canonical.com)
+- `images:IMAGE` => `IMAGE` from [https://images.lxd.canonical.com](https://images.lxd.canonical.com)
+- `capi:IMAGE` => `IMAGE` from [https://d14dnvi2l3tc5t.cloudfront.net](https://d14dnvi2l3tc5t.cloudfront.net) ([default simplestreams server](../default-simplestreams-server.md))
+- `capi-stg:IMAGE` => `IMAGE` from [https://djapqxqu5n2qu.cloudfront.net](https://djapqxqu5n2qu.cloudfront.net) (staging simplestreams server)
+
+{{#/tab }}
+{{#/tabs }}
+
+`INSTALL_KUBEADM=true` should be set if using an image without kubeadm installed. In this case, the cluster template will inject `preKubeadmCommands` to install Kubeadm using the [install-kubeadm.sh](../../static/v0.1/install-kubeadm.sh) script. Note that this is only meant for development purposes.
+
+Finally, if the image name contains the text `VERSION`, it will be replaced with the Kubernetes version of the cluster (sourced from the Machine object).
 
 ### `CONTROL_PLANE_MACHINE_TYPE` and `WORKER_MACHINE_TYPE`
 

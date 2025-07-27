@@ -18,14 +18,15 @@ export WORKER_MACHINE_COUNT=1
 ## [optional] Use unprivileged containers.
 #export PRIVILEGED=false
 
-## [optional] Base image to use. This must be set if there are no base images for your Kubernetes version.
-## See https://lxc.github.io/cluster-api-provider-incus/reference/default-simplestreams-server.html#provided-images
+## [optional] Base image to use. This must be set if there are no base images for the target Kubernetes version.
 ##
-## You can use `ubuntu:VERSION`, which resolves to:
-## - Incus:  Image `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
-## - LXD:    Image `VERSION` from https://cloud-images.ubuntu.com/releases
+## See [1] for a list of pre-built kubeadm images that are available.
+## See [2] for a list of well-known image prefixes that are supported, e.g. "ubuntu:24.04" or "debian:12"
 ##
-## Set INSTALL_KUBEADM=true to inject preKubeadmCommands to install kubeadm for the cluster Kubernetes version.
+## Set INSTALL_KUBEADM=true to inject preKubeadmCommands to install kubeadm for the target Kubernetes version.
+##
+## [1]: https://capn.linuxcontainers.org/reference/default-simplestreams-server.html#provided-images
+## [2]: https://capn.linuxcontainers.org/reference/templates/default.html#lxc_image_name-and-install_kubeadm
 #export LXC_IMAGE_NAME="ubuntu:24.04"
 #export INSTALL_KUBEADM="true"
 

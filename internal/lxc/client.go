@@ -64,7 +64,7 @@ func New(ctx context.Context, config Configuration, options ...Option) (*Client,
 		return nil, fmt.Errorf("failed to retrieve server information: %w", err)
 	}
 
-	log.V(2).Info("Initialized client")
+	log.V(5).Info("Initialized client")
 
 	c := &Client{InstanceServer: client, serverInfo: server}
 	for _, o := range options {

@@ -1,8 +1,9 @@
 package lxc
 
 import (
-	"context"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/lxc/incus/v6/shared/api"
@@ -10,82 +11,77 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
-func (c *Client) TryParseImageSource(ctx context.Context, imageName string) (api.InstanceSource, bool, error) {
-	if version, ok := strings.CutPrefix(imageName, "ubuntu:"); ok {
-		return c.getDefaultUbuntuImage(ctx, version)
-	}
-	if version, ok := strings.CutPrefix(imageName, "debian:"); ok {
-		return c.getDefaultDebianImage(ctx, version)
-	}
-	if image, ok := strings.CutPrefix(imageName, "images:"); ok {
-		return c.getDefaultRepoImage(ctx, image)
-	}
-
-	return api.InstanceSource{}, false, nil
+type imageInfo struct {
+	server    string
+	transform func(in string) string
 }
 
-func (c *Client) getDefaultUbuntuImage(ctx context.Context, version string) (api.InstanceSource, bool, error) {
-	serverName := c.GetServerName(ctx)
-	switch serverName {
-	case Incus:
-		return api.InstanceSource{
-			Type:     "image",
-			Alias:    fmt.Sprintf("ubuntu/%s/cloud", version),
-			Server:   "https://images.linuxcontainers.org",
-			Protocol: "simplestreams",
-		}, true, nil
-	case LXD:
-		return api.InstanceSource{
-			Type:     "image",
-			Alias:    version,
-			Server:   "https://cloud-images.ubuntu.com/releases/",
-			Protocol: "simplestreams",
-		}, true, nil
-	default:
-		return api.InstanceSource{}, false, utils.TerminalError(fmt.Errorf("image name is %q, but server is %q. Images with 'ubuntu:' prefix are only allowed for Incus and LXD", version, serverName))
+var (
+	// wellKnownImagePrefixes defines (by server type) well-known image prefixes.
+	wellKnownImagePrefixes = map[string]map[string]imageInfo{
+		Incus: {
+			"ubuntu": { // "ubuntu:24.04" -> "ubuntu/24.04/cloud" from "https://images.linuxcontainers.org"
+				server:    DefaultIncusSimplestreamsServer,
+				transform: func(in string) string { return fmt.Sprintf("ubuntu/%s/cloud", in) },
+			},
+			"debian": { // "debian:12" -> "debian/12/cloud" from "https://images.linuxcontainers.org"
+				server:    DefaultIncusSimplestreamsServer,
+				transform: func(in string) string { return fmt.Sprintf("debian/%s/cloud", in) },
+			},
+			"images": { // "images:IMAGE" -> "IMAGE" from "https://images.linuxcontainers.org"
+				server:    DefaultIncusSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+			"capi": { // "capi:IMAGE" -> "IMAGE" from "https://d14dnvi2l3tc5t.cloudfront.net"
+				server:    DefaultSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+			"capi-stg": { // "capi-stg:IMAGE" -> "IMAGE" from "https://djapqxqu5n2qu.cloudfront.net"
+				server:    DefaultStagingSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+		},
+		LXD: {
+			"ubuntu": { // "ubuntu:24.04" -> "24.04" from "https://cloud-images.ubuntu.com/releases/"
+				server:    DefaultLXDUbuntuSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+			"debian": { // "debian:12" -> "debian/12/cloud" from "https://images.lxd.canonical.com"
+				server:    DefaultLXDSimplestreamsServer,
+				transform: func(in string) string { return fmt.Sprintf("debian/%s/cloud", in) },
+			},
+			"images": { // "images:IMAGE" -> "IMAGE" from "https://images.lxd.canonical.com"
+				server:    DefaultLXDSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+			"capi": { // "capi:IMAGE" -> "IMAGE" from "https://d14dnvi2l3tc5t.cloudfront.net"
+				server:    DefaultSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+			"capi-stg": { // "capi-stg:IMAGE" -> "IMAGE" from "https://djapqxqu5n2qu.cloudfront.net"
+				server:    DefaultStagingSimplestreamsServer,
+				transform: func(in string) string { return in },
+			},
+		},
 	}
-}
+)
 
-func (c *Client) getDefaultDebianImage(ctx context.Context, version string) (api.InstanceSource, bool, error) {
-	serverName := c.GetServerName(ctx)
-	switch serverName {
-	case Incus:
-		return api.InstanceSource{
-			Type:     "image",
-			Alias:    fmt.Sprintf("debian/%s/cloud", version),
-			Server:   "https://images.linuxcontainers.org",
-			Protocol: "simplestreams",
-		}, true, nil
-	case LXD:
-		return api.InstanceSource{
-			Type:     "image",
-			Alias:    fmt.Sprintf("debian/%s/cloud", version),
-			Server:   "https://images.lxd.canonical.com",
-			Protocol: "simplestreams",
-		}, true, nil
-	default:
-		return api.InstanceSource{}, false, utils.TerminalError(fmt.Errorf("image name is %q, but server is %q. Images with 'debian:' prefix are only allowed for Incus and LXD", version, serverName))
+func TryParseImageSource(serverName, imageName string) (api.InstanceSource, bool, error) {
+	parts := strings.Split(imageName, ":")
+	if len(parts) != 2 {
+		return api.InstanceSource{}, false, nil
 	}
-}
 
-func (c *Client) getDefaultRepoImage(ctx context.Context, image string) (api.InstanceSource, bool, error) {
-	serverName := c.GetServerName(ctx)
-	switch serverName {
-	case Incus:
+	if info, ok := wellKnownImagePrefixes[serverName][parts[0]]; ok {
 		return api.InstanceSource{
 			Type:     "image",
-			Alias:    image,
-			Server:   "https://images.linuxcontainers.org",
 			Protocol: "simplestreams",
+			Server:   info.server,
+			Alias:    info.transform(parts[1]),
 		}, true, nil
-	case LXD:
-		return api.InstanceSource{
-			Type:     "image",
-			Alias:    image,
-			Server:   "https://images.lxd.canonical.com",
-			Protocol: "simplestreams",
-		}, true, nil
-	default:
-		return api.InstanceSource{}, false, utils.TerminalError(fmt.Errorf("image name is %q, but server is %q. Images with 'images:' prefix are only allowed for Incus and LXD", image, serverName))
 	}
+	if prefixes := slices.Collect(maps.Keys(wellKnownImagePrefixes[serverName])); len(prefixes) > 0 {
+		return api.InstanceSource{}, false, utils.TerminalError(fmt.Errorf("unknown image prefix %q for server %q. must be one of %v", parts[0], serverName, prefixes))
+	}
+	return api.InstanceSource{}, false, utils.TerminalError(fmt.Errorf("server type %q does not spuport any image prefixes", serverName))
 }

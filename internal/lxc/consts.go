@@ -6,6 +6,18 @@ const (
 	// DefaultSimplestreamsServer is the default simplestreams server for fetching images.
 	DefaultSimplestreamsServer = "https://d14dnvi2l3tc5t.cloudfront.net"
 
+	// DefaultStagingSimplestreamsServer is the default staging simplestreams server for fetching images.
+	DefaultStagingSimplestreamsServer = "https://djapqxqu5n2qu.cloudfront.net"
+
+	// DefaultIncusSimplestreamsServer is the default simplestreams server for Incus.
+	DefaultIncusSimplestreamsServer = "https://images.linuxcontainers.org"
+
+	// DefaultLXDSimplestreamsServer is the default simplestreams server for Canonical LXD.
+	DefaultLXDSimplestreamsServer = "https://images.lxd.canonical.com"
+
+	// DefaultLXDUbuntuSimplestreamsServer is the default simplestreams server for Ubuntu images for Canonical LXD.
+	DefaultLXDUbuntuSimplestreamsServer = "https://cloud-images.ubuntu.com/releases/"
+
 	// Container is the instance type for container instances.
 	Container = "container"
 

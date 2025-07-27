@@ -127,19 +127,26 @@ type LXCMachineImageSource struct {
 	// Name is the image name or alias.
 	//
 	// Note that Incus and Canonical LXD use incompatible image servers. To help
-	// mitigate this issue, the following image names are automatically recognized:
+	// mitigate this issue, the following image names are recognized:
 	//
-	//   - "ubuntu:VERSION" (e.g. "ubuntu:24.04")
-	//     - Incus: "images:ubuntu/VERSION/cloud" (from https://images.linuxcontainers.org)
-	//     - LXD: 	"ubuntu:VERSION" (from https://cloud-images.ubuntu.com/releases)
+	// For Incus:
 	//
-	//   - "debian:VERSION" (e.g. "debian:12")
-	//     - Incus: "images:debian/VERSION/cloud" (from https://images.linuxcontainers.org)
-	//     - LXD: 	"images:debian/VERSION/cloud" (from https://images.lxd.canonical.com)
+	//   - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
+	//   - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
+	//   - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
+	//   - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+	//   - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
 	//
-	//   - "images:IMAGE" (e.g. "images:almalinux/9/cloud")
-	//     - Incus: "images:IMAGE" (from https://images.linuxcontainers.org)
-	//     - LXD: 	"images:IMAGE" (from https://images.lxd.canonical.com)
+	// For LXD:
+	//
+	//   - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
+	//   - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
+	//   - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
+	//   - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+	//   - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+	//
+	// Any instances of "VERSION" in the image name will be replaced with the machine version.
+	// For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
 	//
 	// +optional
 	Name string `json:"name"`

@@ -141,22 +141,30 @@ spec:
                                         description: Fingerprint is the image fingerprint.
                                         type: string
                                       name:
-                                        description: "Name is the image name or alias.\n\nNote
-                                          that Incus and Canonical LXD use incompatible
-                                          image servers. To help\nmitigate this issue,
-                                          the following image names are automatically
-                                          recognized:\n\n  - \"ubuntu:VERSION\" (e.g.
-                                          \"ubuntu:24.04\")\n    - Incus: \"images:ubuntu/VERSION/cloud\"
-                                          (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"ubuntu:VERSION\" (from https://cloud-images.ubuntu.com/releases)\n\n
-                                          \ - \"debian:VERSION\" (e.g. \"debian:12\")\n
-                                          \   - Incus: \"images:debian/VERSION/cloud\"
-                                          (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"images:debian/VERSION/cloud\"
-                                          (from https://images.lxd.canonical.com)\n\n
-                                          \ - \"images:IMAGE\" (e.g. \"images:almalinux/9/cloud\")\n
-                                          \   - Incus: \"images:IMAGE\" (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"images:IMAGE\" (from https://images.lxd.canonical.com)"
+                                        description: |-
+                                          Name is the image name or alias.
+
+                                          Note that Incus and Canonical LXD use incompatible image servers. To help
+                                          mitigate this issue, the following image names are recognized:
+
+                                          For Incus:
+
+                                            - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
+                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
+                                            - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
+                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+
+                                          For LXD:
+
+                                            - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
+                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
+                                            - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
+                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+
+                                          Any instances of "VERSION" in the image name will be replaced with the machine version.
+                                          For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
                                         type: string
                                       protocol:
                                         description: Protocol is the protocol to use
@@ -227,22 +235,30 @@ spec:
                                         description: Fingerprint is the image fingerprint.
                                         type: string
                                       name:
-                                        description: "Name is the image name or alias.\n\nNote
-                                          that Incus and Canonical LXD use incompatible
-                                          image servers. To help\nmitigate this issue,
-                                          the following image names are automatically
-                                          recognized:\n\n  - \"ubuntu:VERSION\" (e.g.
-                                          \"ubuntu:24.04\")\n    - Incus: \"images:ubuntu/VERSION/cloud\"
-                                          (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"ubuntu:VERSION\" (from https://cloud-images.ubuntu.com/releases)\n\n
-                                          \ - \"debian:VERSION\" (e.g. \"debian:12\")\n
-                                          \   - Incus: \"images:debian/VERSION/cloud\"
-                                          (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"images:debian/VERSION/cloud\"
-                                          (from https://images.lxd.canonical.com)\n\n
-                                          \ - \"images:IMAGE\" (e.g. \"images:almalinux/9/cloud\")\n
-                                          \   - Incus: \"images:IMAGE\" (from https://images.linuxcontainers.org)\n
-                                          \   - LXD: \t\"images:IMAGE\" (from https://images.lxd.canonical.com)"
+                                        description: |-
+                                          Name is the image name or alias.
+
+                                          Note that Incus and Canonical LXD use incompatible image servers. To help
+                                          mitigate this issue, the following image names are recognized:
+
+                                          For Incus:
+
+                                            - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
+                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
+                                            - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
+                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+
+                                          For LXD:
+
+                                            - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
+                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
+                                            - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
+                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+
+                                          Any instances of "VERSION" in the image name will be replaced with the machine version.
+                                          For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
                                         type: string
                                       protocol:
                                         description: Protocol is the protocol to use

@@ -17,7 +17,7 @@ func (*stageCreateInstance) name() string { return "create-instance" }
 // incus launch image:ubuntu/24.04/cloud
 // incus launch image:ubuntu/24.04/cloud --vm -d root,size=5GiB
 func (*stageCreateInstance) run(ctx context.Context) error {
-	image, _, err := lxcClient.TryParseImageSource(ctx, cfg.baseImage)
+	image, _, err := lxc.TryParseImageSource(lxcClient.GetServerName(), cfg.baseImage)
 	if err != nil {
 		return fmt.Errorf("failed to pick image source for base image %q: %w", cfg.baseImage, err)
 	}

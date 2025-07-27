@@ -55,28 +55,39 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 		}
 	}
 
+	var machineVersion string
+	if v := machine.Spec.Version; v != nil {
+		machineVersion = *v
+	}
+
+	imageSpec := lxcMachine.Spec.Image.DeepCopy()
+	if strings.Contains(imageSpec.Name, "VERSION") {
+		if machineVersion == "" {
+			return nil, utils.TerminalError(fmt.Errorf("image name %q contains VERSION but Machine %q does not have a Kubernetes version", imageSpec.Name, machine.Name))
+		}
+		imageSpec.Name = strings.ReplaceAll(imageSpec.Name, "VERSION", machineVersion)
+	}
+
 	image := api.InstanceSource{
 		Type:        "image",
-		Protocol:    lxcMachine.Spec.Image.Protocol,
-		Server:      lxcMachine.Spec.Image.Server,
-		Alias:       lxcMachine.Spec.Image.Name,
-		Fingerprint: lxcMachine.Spec.Image.Fingerprint,
+		Protocol:    imageSpec.Protocol,
+		Server:      imageSpec.Server,
+		Alias:       imageSpec.Name,
+		Fingerprint: imageSpec.Fingerprint,
 	}
-	if lxcMachine.Spec.Image.IsZero() {
-		if machine.Spec.Version == nil {
+	if imageSpec.IsZero() {
+		if machineVersion == "" {
 			return nil, utils.TerminalError(fmt.Errorf("no image source specified on LXCMachineTemplate and Machine %q does not have a Kubernetes version", machine.Name))
 		}
 
-		version := *machine.Spec.Version
-
 		// test if kindest/node image for this version exists on DockerHub, fail otherwise.
-		if _, err := crane.Head(fmt.Sprintf("docker.io/kindest/node:%s", version)); err != nil {
+		if _, err := crane.Head(fmt.Sprintf("docker.io/kindest/node:%s", machineVersion)); err != nil {
 			// example errors:
 			// HEAD https://index.docker.io/v2/kindest/node/manifests/v1.34.0-not-exist: unexpected status code 404 Not Found (HEAD responses have no body, use GET for details)
 			// HEAD https://index.docker.io/v2/kindest/node13131/manifests/v1.33.0: unexpected status code 401 Unauthorized (HEAD responses have no body, use GET for details)
 			// HEAD http://w00:5050/v2/kindest/node13131/manifests/v1.33.0: unexpected status code 404 Not Found (HEAD responses have no body, use GET for details)
 			if strings.Contains(err.Error(), "unexpected status code 4") {
-				return nil, utils.TerminalError(fmt.Errorf("no image source specified and could not find kindest/node:%s image on DockerHub: %w. Please consider using a different Kubernetes version, or build your own base image and set the image source on the LXCMachineTemplate resource", version, err))
+				return nil, utils.TerminalError(fmt.Errorf("no image source specified and could not find kindest/node:%s image on DockerHub: %w. Please consider using a different Kubernetes version, or build your own base image and set the image source on the LXCMachineTemplate resource", machineVersion, err))
 			} else {
 				return nil, fmt.Errorf("no image source specified and failed to connect to DockerHub: %w", err)
 			}
@@ -86,7 +97,7 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 			Type:     "image",
 			Protocol: "oci",
 			Server:   "https://docker.io",
-			Alias:    fmt.Sprintf("kindest/node:%s", version),
+			Alias:    fmt.Sprintf("kindest/node:%s", machineVersion),
 		}
 	}
 

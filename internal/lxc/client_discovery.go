@@ -1,7 +1,6 @@
 package lxc
 
 import (
-	"context"
 	"fmt"
 	"slices"
 	"strings"
@@ -12,7 +11,7 @@ import (
 )
 
 // GetServerName returns one of "incus", "lxd" or "unknown", depending on the server type.
-func (c *Client) GetServerName(ctx context.Context) string {
+func (c *Client) GetServerName() string {
 	switch c.serverInfo.Environment.Server {
 	case Incus, LXD:
 		return c.serverInfo.Environment.Server

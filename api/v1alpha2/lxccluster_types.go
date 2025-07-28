@@ -97,7 +97,7 @@ type LXCClusterLoadBalancer struct {
 	//
 	// The load balancer container is a single point of failure to access the workload cluster control plane. Therefore, it should only be used for development or evaluation clusters.
 	//
-	// Requires server extensions: "instance_oci"
+	// Requires server extensions: `instance_oci`
 	//
 	// +optional
 	OCI *LXCLoadBalancerInstance `json:"oci,omitempty"`
@@ -110,7 +110,7 @@ type LXCClusterLoadBalancer struct {
 	//
 	// When using the "ovn" mode, the load balancer address must be set in `.spec.controlPlaneEndpoint.host` on the LXCCluster object.
 	//
-	// Requires server extensions: "network_load_balancer", "network_load_balancer_health_checks"
+	// Requires server extensions: `network_load_balancer`, `network_load_balancer_health_checks`
 	//
 	// +optional
 	OVN *LXCLoadBalancerOVN `json:"ovn,omitempty"`

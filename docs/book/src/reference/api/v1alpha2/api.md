@@ -179,7 +179,7 @@ LXCLoadBalancerInstance
 <p>The controller will automatically update the list of backends on the haproxy configuration as control plane nodes are added or removed from the cluster.</p>
 <p>No other configuration is required for &ldquo;oci&rdquo; mode. The load balancer instance can be configured through the .instanceSpec field.</p>
 <p>The load balancer container is a single point of failure to access the workload cluster control plane. Therefore, it should only be used for development or evaluation clusters.</p>
-<p>Requires server extensions: &ldquo;instance_oci&rdquo;</p>
+<p>Requires server extensions: <code>instance_oci</code></p>
 </td>
 </tr>
 <tr>
@@ -197,7 +197,7 @@ LXCLoadBalancerOVN
 <p>The controller will automatically update the list of backends for the network load balancer as control plane nodes are added or removed from the cluster.</p>
 <p>The cluster administrator is responsible to ensure that the OVN network is configured properly and that the LXCMachineTemplate objects have appropriate profiles to use the OVN network.</p>
 <p>When using the &ldquo;ovn&rdquo; mode, the load balancer address must be set in <code>.spec.controlPlaneEndpoint.host</code> on the LXCCluster object.</p>
-<p>Requires server extensions: &ldquo;network_load_balancer&rdquo;, &ldquo;network_load_balancer_health_checks&rdquo;</p>
+<p>Requires server extensions: <code>network_load_balancer</code>, <code>network_load_balancer_health_checks</code></p>
 </td>
 </tr>
 <tr>
@@ -221,7 +221,7 @@ LXCLoadBalancerExternal
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>,
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>, 
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterTemplateResource">LXCClusterTemplateResource</a>)
 </p>
 <p>
@@ -714,6 +714,27 @@ a default image based on the load balancer type will be used.</p>
 </ul>
 </td>
 </tr>
+<tr>
+<td>
+<code>target</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Target where the load balancer machine should be provisioned, when
+infrastructure is a production cluster.</p>
+<p>Can be one of:</p>
+<ul>
+<li><code>name</code>: where <code>name</code> is the name of a cluster member.</li>
+<li><code>@name</code>: where <code>name</code> is the name of a cluster group.</li>
+</ul>
+<p>Target is ignored when infrastructure is single-node (e.g. for
+development purposes).</p>
+<p>For more information on cluster groups, you can refer to <a href="https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups">https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups</a></p>
+</td>
+</tr>
 </tbody>
 </table>
 <h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerOVN">LXCLoadBalancerOVN
@@ -806,7 +827,9 @@ string
 </td>
 <td>
 <em>(Optional)</em>
-<p>InstanceType is &ldquo;container&rdquo; or &ldquo;virtual-machine&rdquo;. Empty defaults to &ldquo;container&rdquo;.</p>
+<p>InstanceType is <code>container</code> or <code>virtual-machine</code>. Empty defaults to <code>container</code>.</p>
+<p>InstanceType may also be set to <code>kind</code>, in which case OCI containers using the kindest/node
+images will be created. This requires server extensions: <code>instance_oci</code>, <code>instance_oci_entrypoint</code>.</p>
 </td>
 </tr>
 <tr>
@@ -850,7 +873,7 @@ string
 <p>Devices allows overriding the configuration of the instance disk or network.</p>
 <p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
 <p>For example, to specify a different network for an instance, you can use:</p>
-<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+<pre><code class="language-yaml"># override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
@@ -868,11 +891,11 @@ map[string]string
 <p>Config allows overriding instance configuration keys.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+<li><code>cloud-init.user-data</code>: cloud-init config data</li>
+<li><code>user.cluster-name</code>: name of owning cluster</li>
+<li><code>user.cluster-namespace</code>: namespace of owning cluster</li>
+<li><code>user.cluster-role</code>: instance role (e.g. control-plane, worker)</li>
+<li><code>user.machine-name</code>: name of machine (should match instance hostname)</li>
 </ul>
 <p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
 for details.</p>
@@ -897,6 +920,27 @@ versions, refer to the documentation for more details on which versions
 are supported and how to build a base image for any version.</p>
 </td>
 </tr>
+<tr>
+<td>
+<code>target</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Target where the machine should be provisioned, when infrastructure
+is a production cluster.</p>
+<p>Can be one of:</p>
+<ul>
+<li><code>name</code>: where <code>name</code> is the name of a cluster member.</li>
+<li><code>@name</code>: where <code>name</code> is the name of a cluster group.</li>
+</ul>
+<p>Target is ignored when infrastructure is single-node (e.g. for
+development purposes).</p>
+<p>For more information on cluster groups, you can refer to <a href="https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups">https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups</a></p>
+</td>
+</tr>
 </table>
 </td>
 </tr>
@@ -918,7 +962,7 @@ LXCMachineStatus
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>,
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>, 
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineSpec">LXCMachineSpec</a>)
 </p>
 <p>
@@ -941,13 +985,26 @@ string
 <td>
 <em>(Optional)</em>
 <p>Name is the image name or alias.</p>
-<p>Note that Incus and Canonical LXD use incompatible image servers
-for Ubuntu images. To address this issue, setting image name to
-<code>ubuntu:VERSION</code> is a shortcut for:</p>
+<p>Note that Incus and Canonical LXD use incompatible image servers. To help
+mitigate this issue, the following image names are recognized:</p>
+<p>For Incus:</p>
 <ul>
-<li>Incus: &ldquo;images:ubuntu/VERSION/cloud&rdquo; (from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a>)</li>
-<li>LXD: &ldquo;ubuntu:VERSION&rdquo; (from <a href="https://cloud-images.ubuntu.com/releases">https://cloud-images.ubuntu.com/releases</a>)</li>
+<li><code>ubuntu:VERSION</code> =&gt; <code>ubuntu/VERSION/cloud</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
+<li><code>debian:VERSION</code> =&gt; <code>debian/VERSION/cloud</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
+<li><code>images:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
+<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://d14dnvi2l3tc5t.cloudfront.net">https://d14dnvi2l3tc5t.cloudfront.net</a></li>
+<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://djapqxqu5n2qu.cloudfront.net">https://djapqxqu5n2qu.cloudfront.net</a></li>
 </ul>
+<p>For LXD:</p>
+<ul>
+<li><code>ubuntu:VERSION</code> =&gt; <code>VERSION</code> from <a href="https://cloud-images.ubuntu.com/releases">https://cloud-images.ubuntu.com/releases</a></li>
+<li><code>debian:VERSION</code> =&gt; <code>debian/VERSION/cloud</code> from <a href="https://images.lxd.canonical.com">https://images.lxd.canonical.com</a></li>
+<li><code>images:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.lxd.canonical.com">https://images.lxd.canonical.com</a></li>
+<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://d14dnvi2l3tc5t.cloudfront.net">https://d14dnvi2l3tc5t.cloudfront.net</a></li>
+<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://djapqxqu5n2qu.cloudfront.net">https://djapqxqu5n2qu.cloudfront.net</a></li>
+</ul>
+<p>Any instances of <code>VERSION</code> in the image name will be replaced with the machine version.
+For example, to use debian based kubeadm images, you can set image name to &ldquo;capi:kubeadm/VERSION/debian&rdquo;</p>
 </td>
 </tr>
 <tr>
@@ -992,7 +1049,7 @@ string
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>,
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>, 
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineTemplateResource">LXCMachineTemplateResource</a>)
 </p>
 <p>
@@ -1027,7 +1084,9 @@ string
 </td>
 <td>
 <em>(Optional)</em>
-<p>InstanceType is &ldquo;container&rdquo; or &ldquo;virtual-machine&rdquo;. Empty defaults to &ldquo;container&rdquo;.</p>
+<p>InstanceType is <code>container</code> or <code>virtual-machine</code>. Empty defaults to <code>container</code>.</p>
+<p>InstanceType may also be set to <code>kind</code>, in which case OCI containers using the kindest/node
+images will be created. This requires server extensions: <code>instance_oci</code>, <code>instance_oci_entrypoint</code>.</p>
 </td>
 </tr>
 <tr>
@@ -1071,7 +1130,7 @@ string
 <p>Devices allows overriding the configuration of the instance disk or network.</p>
 <p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
 <p>For example, to specify a different network for an instance, you can use:</p>
-<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+<pre><code class="language-yaml"># override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
@@ -1089,11 +1148,11 @@ map[string]string
 <p>Config allows overriding instance configuration keys.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+<li><code>cloud-init.user-data</code>: cloud-init config data</li>
+<li><code>user.cluster-name</code>: name of owning cluster</li>
+<li><code>user.cluster-namespace</code>: namespace of owning cluster</li>
+<li><code>user.cluster-role</code>: instance role (e.g. control-plane, worker)</li>
+<li><code>user.machine-name</code>: name of machine (should match instance hostname)</li>
 </ul>
 <p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
 for details.</p>
@@ -1116,6 +1175,27 @@ the version of the machine.</p>
 <p>Note that the default source does not support images for all Kubernetes
 versions, refer to the documentation for more details on which versions
 are supported and how to build a base image for any version.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>target</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Target where the machine should be provisioned, when infrastructure
+is a production cluster.</p>
+<p>Can be one of:</p>
+<ul>
+<li><code>name</code>: where <code>name</code> is the name of a cluster member.</li>
+<li><code>@name</code>: where <code>name</code> is the name of a cluster group.</li>
+</ul>
+<p>Target is ignored when infrastructure is single-node (e.g. for
+development purposes).</p>
+<p>For more information on cluster groups, you can refer to <a href="https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups">https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups</a></p>
 </td>
 </tr>
 </tbody>
@@ -1331,7 +1411,9 @@ string
 </td>
 <td>
 <em>(Optional)</em>
-<p>InstanceType is &ldquo;container&rdquo; or &ldquo;virtual-machine&rdquo;. Empty defaults to &ldquo;container&rdquo;.</p>
+<p>InstanceType is <code>container</code> or <code>virtual-machine</code>. Empty defaults to <code>container</code>.</p>
+<p>InstanceType may also be set to <code>kind</code>, in which case OCI containers using the kindest/node
+images will be created. This requires server extensions: <code>instance_oci</code>, <code>instance_oci_entrypoint</code>.</p>
 </td>
 </tr>
 <tr>
@@ -1375,7 +1457,7 @@ string
 <p>Devices allows overriding the configuration of the instance disk or network.</p>
 <p>Device configuration must be formatted using the syntax &ldquo;<device>,<key>=<value>&rdquo;.</p>
 <p>For example, to specify a different network for an instance, you can use:</p>
-<pre><code class="language-yaml">  # override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
+<pre><code class="language-yaml"># override device &quot;eth0&quot;, to be of type &quot;nic&quot; and use network &quot;my-network&quot;
 devices:
 - eth0,type=nic,network=my-network
 </code></pre>
@@ -1393,11 +1475,11 @@ map[string]string
 <p>Config allows overriding instance configuration keys.</p>
 <p>Note that the provider will always set the following configuration keys:</p>
 <ul>
-<li>&ldquo;cloud-init.user-data&rdquo;: cloud-init config data</li>
-<li>&ldquo;user.cluster-name&rdquo;: name of owning cluster</li>
-<li>&ldquo;user.cluster-namespace&rdquo;: namespace of owning cluster</li>
-<li>&ldquo;user.cluster-role&rdquo;: instance role (e.g. control-plane, worker)</li>
-<li>&ldquo;user.machine-name&rdquo;: name of machine (should match instance hostname)</li>
+<li><code>cloud-init.user-data</code>: cloud-init config data</li>
+<li><code>user.cluster-name</code>: name of owning cluster</li>
+<li><code>user.cluster-namespace</code>: namespace of owning cluster</li>
+<li><code>user.cluster-role</code>: instance role (e.g. control-plane, worker)</li>
+<li><code>user.machine-name</code>: name of machine (should match instance hostname)</li>
 </ul>
 <p>See <a href="https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options">https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options</a>
 for details.</p>
@@ -1420,6 +1502,27 @@ the version of the machine.</p>
 <p>Note that the default source does not support images for all Kubernetes
 versions, refer to the documentation for more details on which versions
 are supported and how to build a base image for any version.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>target</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Target where the machine should be provisioned, when infrastructure
+is a production cluster.</p>
+<p>Can be one of:</p>
+<ul>
+<li><code>name</code>: where <code>name</code> is the name of a cluster member.</li>
+<li><code>@name</code>: where <code>name</code> is the name of a cluster group.</li>
+</ul>
+<p>Target is ignored when infrastructure is single-node (e.g. for
+development purposes).</p>
+<p>For more information on cluster groups, you can refer to <a href="https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups">https://linuxcontainers.org/incus/docs/main/explanation/clustering/#cluster-groups</a></p>
 </td>
 </tr>
 </table>

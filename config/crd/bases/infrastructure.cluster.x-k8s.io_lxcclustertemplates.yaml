@@ -149,21 +149,21 @@ spec:
 
                                           For Incus:
 
-                                            - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
-                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
-                                            - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
-                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+                                            - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
+                                            - `debian:VERSION` => `debian/VERSION/cloud` from https://images.linuxcontainers.org
+                                            - `images:IMAGE` => `IMAGE` from https://images.linuxcontainers.org
+                                            - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 
                                           For LXD:
 
-                                            - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
-                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
-                                            - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
-                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+                                            - `ubuntu:VERSION` => `VERSION` from https://cloud-images.ubuntu.com/releases
+                                            - `debian:VERSION` => `debian/VERSION/cloud` from https://images.lxd.canonical.com
+                                            - `images:IMAGE` => `IMAGE` from https://images.lxd.canonical.com
+                                            - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 
-                                          Any instances of "VERSION" in the image name will be replaced with the machine version.
+                                          Any instances of `VERSION` in the image name will be replaced with the machine version.
                                           For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
                                         type: string
                                       protocol:
@@ -208,7 +208,7 @@ spec:
 
                               The load balancer container is a single point of failure to access the workload cluster control plane. Therefore, it should only be used for development or evaluation clusters.
 
-                              Requires server extensions: "instance_oci"
+                              Requires server extensions: `instance_oci`
                             properties:
                               instanceSpec:
                                 description: InstanceSpec can be used to adjust the
@@ -243,21 +243,21 @@ spec:
 
                                           For Incus:
 
-                                            - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
-                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
-                                            - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
-                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+                                            - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
+                                            - `debian:VERSION` => `debian/VERSION/cloud` from https://images.linuxcontainers.org
+                                            - `images:IMAGE` => `IMAGE` from https://images.linuxcontainers.org
+                                            - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 
                                           For LXD:
 
-                                            - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
-                                            - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
-                                            - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
-                                            - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-                                            - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+                                            - `ubuntu:VERSION` => `VERSION` from https://cloud-images.ubuntu.com/releases
+                                            - `debian:VERSION` => `debian/VERSION/cloud` from https://images.lxd.canonical.com
+                                            - `images:IMAGE` => `IMAGE` from https://images.lxd.canonical.com
+                                            - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+                                            - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 
-                                          Any instances of "VERSION" in the image name will be replaced with the machine version.
+                                          Any instances of `VERSION` in the image name will be replaced with the machine version.
                                           For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
                                         type: string
                                       protocol:
@@ -302,7 +302,7 @@ spec:
 
                               When using the "ovn" mode, the load balancer address must be set in `.spec.controlPlaneEndpoint.host` on the LXCCluster object.
 
-                              Requires server extensions: "network_load_balancer", "network_load_balancer_health_checks"
+                              Requires server extensions: `network_load_balancer`, `network_load_balancer_health_checks`
                             properties:
                               networkName:
                                 description: NetworkName is the name of the network

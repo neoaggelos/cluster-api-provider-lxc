@@ -40,10 +40,10 @@ type LXCMachineSpec struct {
 	// +optional
 	ProviderID *string `json:"providerID,omitempty"`
 
-	// InstanceType is "container" or "virtual-machine". Empty defaults to "container".
+	// InstanceType is `container` or `virtual-machine`. Empty defaults to `container`.
 	//
-	// InstanceType may also be set to "kind", in which case OCI containers using the kindest/node
-	// images will be created. This requires server extensions: "instance_oci", "instance_oci_entrypoint".
+	// InstanceType may also be set to `kind`, in which case OCI containers using the kindest/node
+	// images will be created. This requires server extensions: `instance_oci`, `instance_oci_entrypoint`.
 	//
 	// +kubebuilder:validation:Enum:=container;virtual-machine;kind;""
 	// +optional
@@ -71,9 +71,9 @@ type LXCMachineSpec struct {
 	// For example, to specify a different network for an instance, you can use:
 	//
 	// ```yaml
-	//   # override device "eth0", to be of type "nic" and use network "my-network"
-	//   devices:
-	//   - eth0,type=nic,network=my-network
+	// # override device "eth0", to be of type "nic" and use network "my-network"
+	// devices:
+	// - eth0,type=nic,network=my-network
 	// ```
 	//
 	// +optional
@@ -83,11 +83,11 @@ type LXCMachineSpec struct {
 	//
 	// Note that the provider will always set the following configuration keys:
 	//
-	// - "cloud-init.user-data": cloud-init config data
-	// - "user.cluster-name": name of owning cluster
-	// - "user.cluster-namespace": namespace of owning cluster
-	// - "user.cluster-role": instance role (e.g. control-plane, worker)
-	// - "user.machine-name": name of machine (should match instance hostname)
+	// - `cloud-init.user-data`: cloud-init config data
+	// - `user.cluster-name`: name of owning cluster
+	// - `user.cluster-namespace`: namespace of owning cluster
+	// - `user.cluster-role`: instance role (e.g. control-plane, worker)
+	// - `user.machine-name`: name of machine (should match instance hostname)
 	//
 	// See https://linuxcontainers.org/incus/docs/main/reference/instance_options/#instance-options
 	// for details.
@@ -131,21 +131,21 @@ type LXCMachineImageSource struct {
 	//
 	// For Incus:
 	//
-	//   - "ubuntu:VERSION" => "ubuntu/VERSION/cloud" from https://images.linuxcontainers.org
-	//   - "debian:VERSION" => "debian/VERSION/cloud" from https://images.linuxcontainers.org
-	//   - "images:IMAGE" => "IMAGE" from https://images.linuxcontainers.org
-	//   - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-	//   - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+	//   - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
+	//   - `debian:VERSION` => `debian/VERSION/cloud` from https://images.linuxcontainers.org
+	//   - `images:IMAGE` => `IMAGE` from https://images.linuxcontainers.org
+	//   - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+	//   - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 	//
 	// For LXD:
 	//
-	//   - "ubuntu:VERSION" => "VERSION" from https://cloud-images.ubuntu.com/releases
-	//   - "debian:VERSION" => "debian/VERSION/cloud" from https://images.lxd.canonical.com
-	//   - "images:IMAGE" => "IMAGE" from https://images.lxd.canonical.com
-	//   - "capi:IMAGE" => "IMAGE" from https://d14dnvi2l3tc5t.cloudfront.net
-	//   - "capi-stg:IMAGE" => "IMAGE" from https://djapqxqu5n2qu.cloudfront.net
+	//   - `ubuntu:VERSION` => `VERSION` from https://cloud-images.ubuntu.com/releases
+	//   - `debian:VERSION` => `debian/VERSION/cloud` from https://images.lxd.canonical.com
+	//   - `images:IMAGE` => `IMAGE` from https://images.lxd.canonical.com
+	//   - `capi:IMAGE` => `IMAGE` from https://d14dnvi2l3tc5t.cloudfront.net
+	//   - `capi-stg:IMAGE` => `IMAGE` from https://djapqxqu5n2qu.cloudfront.net
 	//
-	// Any instances of "VERSION" in the image name will be replaced with the machine version.
+	// Any instances of `VERSION` in the image name will be replaced with the machine version.
 	// For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
 	//
 	// +optional

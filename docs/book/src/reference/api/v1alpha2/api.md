@@ -110,7 +110,7 @@ bool
 profile manually and set the <code>.spec.template.spec.profiles</code> field of all
 LXCMachineTemplate objects.</p>
 <p>For more details on the default kubeadm profile that is applied, see
-<a href="https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html">https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html</a></p>
+<a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
 </td>
 </tr>
 </table>
@@ -221,7 +221,7 @@ LXCLoadBalancerExternal
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterTemplateResource">LXCClusterTemplateResource</a>)
 </p>
 <p>
@@ -301,7 +301,7 @@ bool
 profile manually and set the <code>.spec.template.spec.profiles</code> field of all
 LXCMachineTemplate objects.</p>
 <p>For more details on the default kubeadm profile that is applied, see
-<a href="https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html">https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html</a></p>
+<a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
 </td>
 </tr>
 </tbody>
@@ -535,7 +535,7 @@ bool
 profile manually and set the <code>.spec.template.spec.profiles</code> field of all
 LXCMachineTemplate objects.</p>
 <p>For more details on the default kubeadm profile that is applied, see
-<a href="https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html">https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html</a></p>
+<a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
 </td>
 </tr>
 </table>
@@ -962,7 +962,7 @@ LXCMachineStatus
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineSpec">LXCMachineSpec</a>)
 </p>
 <p>
@@ -1049,7 +1049,7 @@ string
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineTemplateResource">LXCMachineTemplateResource</a>)
 </p>
 <p>

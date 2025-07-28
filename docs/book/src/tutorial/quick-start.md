@@ -171,7 +171,7 @@ This can be done with the following commands:
 mkdir -p ~/.cluster-api
 
 curl -o ~/.cluster-api/clusterctl.yaml \
-  https://lxc.github.io/cluster-api-provider-incus/static/v0.1/clusterctl.yaml
+  https://capn.linuxcontainers.org/static/v0.1/clusterctl.yaml
 ```
 
 Then, initialize `incus` infrastructure provider:

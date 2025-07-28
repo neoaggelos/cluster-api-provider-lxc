@@ -58,7 +58,7 @@ type LXCClusterSpec struct {
 	// LXCMachineTemplate objects.
 	//
 	// For more details on the default kubeadm profile that is applied, see
-	// https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html
+	// https://capn.linuxcontainers.org/reference/profile/kubeadm.html
 	//
 	// +optional
 	SkipDefaultKubeadmProfile bool `json:"skipDefaultKubeadmProfile"`

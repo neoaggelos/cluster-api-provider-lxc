@@ -17,18 +17,18 @@ The provider can be used in single-node development environments for evaluation 
 
 ## Documentation
 
-Please refer to our [book](https://lxc.github.io/cluster-api-provider-incus) for in-depth documentation.
+Please refer to our [book](https://capn.linuxcontainers.org) for in-depth documentation.
 
 ## Quick Start
 
-See [Quick Start](https://lxc.github.io/cluster-api-provider-incus/tutorial/quick-start.html) to launch a cluster on a single-node development environment.
+See [Quick Start](https://capn.linuxcontainers.org/tutorial/quick-start.html) to launch a cluster on a single-node development environment.
 
 ## Features
 
 - Supports [Incus](https://linuxcontainers.org/incus/introduction/), [Canonical LXD](https://canonical.com/lxd) and [Canonical MicroCloud](https://canonical.com/microcloud).
-- Support for [kube-vip](https://lxc.github.io/cluster-api-provider-incus/reference/templates/kube-vip.html) (production), [OVN network load balancers](https://lxc.github.io/cluster-api-provider-incus/reference/templates/ovn.html) or simple [haproxy containers](https://lxc.github.io/cluster-api-provider-incus/reference/templates/development.html) (development) for the cluster load balancer.
-- [Default simplestreams server](https://lxc.github.io/cluster-api-provider-incus/reference/default-simplestreams-server.html) with pre-built kubeadm images.
-- Supports virtual machines or LXC containers for the cluster machines. Automatically manages the [profile](https://lxc.github.io/cluster-api-provider-incus/reference/profile/kubeadm.html) for Kubernetes to work in LXC containers.
+- Support for [kube-vip](https://capn.linuxcontainers.org/reference/templates/kube-vip.html) (production), [OVN network load balancers](https://capn.linuxcontainers.org/reference/templates/ovn.html) or simple [haproxy containers](https://capn.linuxcontainers.org/reference/templates/development.html) (development) for the cluster load balancer.
+- [Default simplestreams server](https://capn.linuxcontainers.org/reference/default-simplestreams-server.html) with pre-built kubeadm images.
+- Supports virtual machines or LXC containers for the cluster machines. Automatically manages the [profile](https://capn.linuxcontainers.org/reference/profile/kubeadm.html) for Kubernetes to work in LXC containers.
 - Can be used for local development similar to CAPD for quickly iterating on custom bootstrap and control-plane providers, e.g. K3s, Canonical Kubernetes, etc.
 
 ## Project Roadmap
@@ -76,4 +76,4 @@ The `cluster-api-provider-incus` project would love your suggestions, contributi
 
 Remember that there are numerous effective ways to contribute to the project: raise a pull request to fix a bug, improve test coverage, improve existing documentation or even participate in GitHub issues. We want your help!
 
-Please refer to the [developer guide](https://lxc.github.io/cluster-api-provider-incus/howto/developer-guide.html) in order to get started with setting up a local environment for development and testing.
+Please refer to the [developer guide](https://capn.linuxcontainers.org/howto/developer-guide.html) in order to get started with setting up a local environment for development and testing.

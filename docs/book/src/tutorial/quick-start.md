@@ -200,7 +200,7 @@ We will create a cluster manifest using the [`default`](../reference/templates/d
 List the cluster template variables:
 
 ```bash
-clusterctl generate cluster c1 -i incus --flavor development --list-variables
+clusterctl generate cluster c1 -i incus --list-variables
 ```
 
 Example output:
@@ -217,6 +217,7 @@ Optional Variables:
   - CONTROL_PLANE_MACHINE_DEVICES   (defaults to "[]")
   - CONTROL_PLANE_MACHINE_FLAVOR    (defaults to "c2-m4")
   - CONTROL_PLANE_MACHINE_PROFILES  (defaults to "[default]")
+  - CONTROL_PLANE_MACHINE_TARGET    (defaults to "")
   - CONTROL_PLANE_MACHINE_TYPE      (defaults to "container")
   - DEPLOY_KUBE_FLANNEL             (defaults to "false")
   - INSTALL_KUBEADM                 (defaults to "false")
@@ -228,6 +229,7 @@ Optional Variables:
   - WORKER_MACHINE_DEVICES          (defaults to "[]")
   - WORKER_MACHINE_FLAVOR           (defaults to "c2-m4")
   - WORKER_MACHINE_PROFILES         (defaults to "[default]")
+  - WORKER_MACHINE_TARGET           (defaults to "")
   - WORKER_MACHINE_TYPE             (defaults to "container")
 ```
 

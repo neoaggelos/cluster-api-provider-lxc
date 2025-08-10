@@ -27,4 +27,9 @@ var wellKnownBaseImages = map[string]baseImageInfo{
 		releaseName: "bookworm",
 		variantName: "debian",
 	},
+	"debian:13": {
+		fullName:    "debian trixie",
+		releaseName: "trixie",
+		variantName: "debian",
+	},
 }

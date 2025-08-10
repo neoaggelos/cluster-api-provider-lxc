@@ -57,12 +57,12 @@ var (
 
 			switch cfg.baseImage {
 			case "debian":
-				cfg.baseImage = "debian:12"
+				cfg.baseImage = "debian:13"
 			case "ubuntu":
 				cfg.baseImage = "ubuntu:24.04"
-			case "debian:12", "ubuntu:22.04", "ubuntu:24.04":
+			case "debian:12", "debian:13", "ubuntu:22.04", "ubuntu:24.04":
 			default:
-				return fmt.Errorf("invalid value for --base-image argument %q, must be one of [ubuntu:22.04, ubuntu:24.04, debian:12]", cfg.baseImage)
+				return fmt.Errorf("invalid value for --base-image argument %q, must be one of [ubuntu:22.04, ubuntu:24.04, debian:12, debian:13]", cfg.baseImage)
 			}
 
 			opts, err := lxc.ConfigurationFromLocal(cfg.configFile, cfg.configRemoteName, false)

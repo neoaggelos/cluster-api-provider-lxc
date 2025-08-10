@@ -21,7 +21,7 @@ export WORKER_MACHINE_COUNT=1
 ## [optional] Base image to use. This must be set if there are no base images for the target Kubernetes version.
 ##
 ## See [1] for a list of pre-built kubeadm images that are available.
-## See [2] for a list of well-known image prefixes that are supported, e.g. "ubuntu:24.04" or "debian:12"
+## See [2] for a list of well-known image prefixes that are supported, e.g. "ubuntu:24.04" or "debian:13"
 ##
 ## Set INSTALL_KUBEADM=true to inject preKubeadmCommands to install kubeadm for the target Kubernetes version.
 ##

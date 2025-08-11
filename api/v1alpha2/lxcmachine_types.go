@@ -18,6 +18,7 @@ package v1alpha2
 
 import (
 	"fmt"
+	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
@@ -77,7 +78,7 @@ type LXCMachineSpec struct {
 	// ```
 	//
 	// +optional
-	Devices []string `json:"devices,omitempty"`
+	Devices Devices `json:"devices,omitempty"`
 
 	// Config allows overriding instance configuration keys.
 	//
@@ -121,6 +122,38 @@ type LXCMachineSpec struct {
 	//
 	// +optional
 	Target string `json:"target"`
+}
+
+type Devices []string
+
+// ToMap parses a list of "<device>,<key>=<value>,<key2>=<value2>" strings into a map of device configs.
+func (d Devices) ToMap() (map[string]map[string]string, error) {
+	if len(d) == 0 {
+		return nil, nil
+	}
+
+	m := make(map[string]map[string]string, len(d))
+	for _, spec := range d {
+		name, args, hasSeparator := strings.Cut(spec, ",")
+		if !hasSeparator {
+			return nil, fmt.Errorf("device spec %q is not using the expected %q format", spec, "<device>,<key>=<value>,<key2>=<value2>")
+		}
+
+		if _, ok := m[name]; !ok {
+			m[name] = map[string]string{}
+		}
+
+		for arg := range strings.SplitSeq(args, ",") {
+			key, value, hasEqual := strings.Cut(arg, "=")
+			if !hasEqual {
+				return nil, fmt.Errorf("device argument %q of device spec %q is not using the expected %q format", arg, spec, "<key>=<value>")
+			}
+
+			m[name][key] = value
+		}
+	}
+
+	return m, nil
 }
 
 type LXCMachineImageSource struct {

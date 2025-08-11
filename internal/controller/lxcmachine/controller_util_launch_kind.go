@@ -34,25 +34,9 @@ func launchKindInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcClus
 	instanceType := lxc.Container
 
 	// Parse device configurations
-	devices := map[string]map[string]string{}
-	for _, deviceSpec := range lxcMachine.Spec.Devices {
-		deviceName, deviceArgs, hasSeparator := strings.Cut(deviceSpec, ",")
-		if !hasSeparator {
-			return nil, utils.TerminalError(fmt.Errorf("device spec %q is not using the expected %q format", deviceSpec, "<device>,<key>=<value>,<key2>=<value2>"))
-		}
-
-		if _, ok := devices[deviceName]; !ok {
-			devices[deviceName] = map[string]string{}
-		}
-
-		for _, deviceArg := range strings.Split(deviceArgs, ",") {
-			key, value, hasEqual := strings.Cut(deviceArg, "=")
-			if !hasEqual {
-				return nil, utils.TerminalError(fmt.Errorf("device argument %q of device spec %q is not using the expected %q format", deviceArg, deviceSpec, "<key>=<value>"))
-			}
-
-			devices[deviceName][key] = value
-		}
+	devices, err := lxcMachine.Spec.Devices.ToMap()
+	if err != nil {
+		return nil, utils.TerminalError(fmt.Errorf("invalid .spec.devices on LXCMachine: %w", err))
 	}
 
 	var machineVersion string

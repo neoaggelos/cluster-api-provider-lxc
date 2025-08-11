@@ -127,9 +127,10 @@ type LXCMachineSpec struct {
 type Devices []string
 
 // ToMap parses a list of "<device>,<key>=<value>,<key2>=<value2>" strings into a map of device configs.
+// ToMap always returns a non-nil map.
 func (d Devices) ToMap() (map[string]map[string]string, error) {
 	if len(d) == 0 {
-		return nil, nil
+		return map[string]map[string]string{}, nil
 	}
 
 	m := make(map[string]map[string]string, len(d))

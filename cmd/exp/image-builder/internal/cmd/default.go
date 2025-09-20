@@ -9,9 +9,10 @@ import (
 var (
 	defaultBaseImage = "ubuntu:24.04"
 
-	defaultInstanceName     = "capn-builder"
-	defaultInstanceType     = lxc.Container
-	defaultInstanceProfiles = []string{"default"}
+	defaultInstanceName           = "capn-builder"
+	defaultInstanceType           = lxc.Container
+	defaultInstanceProfiles       = []string{"default"}
+	defaultValidationInstanceName = "capn-validator"
 
 	defaultInstanceStopGracePeriod = 2 * time.Minute
 

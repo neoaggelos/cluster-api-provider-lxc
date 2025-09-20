@@ -25,9 +25,10 @@ func newKubeadmCmd() *cobra.Command {
 		baseImage string
 
 		// builder configuration
-		instanceName     string
-		instanceProfiles []string
-		instanceType     string
+		instanceName           string
+		instanceProfiles       []string
+		instanceType           string
+		validationInstanceName string
 
 		// image alias configuration
 		imageAlias string
@@ -120,13 +121,13 @@ func newKubeadmCmd() *cobra.Command {
 				{Name: "export-image", Action: action.ExportImage(lxcClient, flags.imageAlias, flags.outputFile)},
 				{Name: "delete-instance", Action: action.DeleteInstance(lxcClient, flags.instanceName)},
 				{Name: "validate-image", Action: action.Chain(
-					action.LaunchInstance(lxcClient, flags.instanceName, (&lxc.LaunchOptions{}).
+					action.LaunchInstance(lxcClient, flags.validationInstanceName, (&lxc.LaunchOptions{}).
 						MaybeWithImage(api.InstanceSource{Type: "image", Alias: flags.imageAlias}).
 						WithInstanceType(api.InstanceType(flags.instanceType)).
 						WithProfiles(flags.instanceProfiles),
 					),
-					action.ExecInstance(lxcClient, flags.instanceName, static.ValidateKubeadmImageScript()),
-					action.DeleteInstance(lxcClient, flags.instanceName),
+					action.ExecInstance(lxcClient, flags.validationInstanceName, static.ValidateKubeadmImageScript()),
+					action.DeleteInstance(lxcClient, flags.validationInstanceName),
 				)},
 			}
 
@@ -159,6 +160,8 @@ func newKubeadmCmd() *cobra.Command {
 		"Type of image to build (one of container|virtual-machine)")
 	cmd.Flags().StringSliceVar(&flags.instanceProfiles, "instance-profile", defaultInstanceProfiles,
 		"Profiles to use to launch the builder instance")
+	cmd.Flags().StringVar(&flags.validationInstanceName, "validation-instance-name", defaultValidationInstanceName,
+		"Name for the builder instance")
 
 	cmd.Flags().StringVar(&flags.imageAlias, "image-alias", "",
 		"Create image with alias. If not specified, a default is used based on config")

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"time"
@@ -13,7 +13,7 @@ var (
 	defaultInstanceType     = lxc.Container
 	defaultInstanceProfiles = []string{"default"}
 
-	defaultInstanceGracePeriod = 2 * time.Minute
+	defaultInstanceStopGracePeriod = 2 * time.Minute
 
 	defaultPullExtraImages = []string{
 		"docker.io/flannel/flannel-cni-plugin:v1.6.0-flannel1",

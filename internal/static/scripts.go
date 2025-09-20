@@ -9,6 +9,9 @@ var (
 	//go:embed embed/install-haproxy.sh
 	installHaproxyScript string
 
+	//go:embed embed/pull-images.sh
+	pullImagesScript string
+
 	//go:embed embed/generate-manifest.sh
 	generateManifestScript string
 
@@ -33,6 +36,10 @@ var (
 
 func InstallKubeadmScript() string {
 	return installKubeadmScript
+}
+
+func PullImagesScript() string {
+	return pullImagesScript
 }
 
 func ValidateKubeadmImageScript() string {

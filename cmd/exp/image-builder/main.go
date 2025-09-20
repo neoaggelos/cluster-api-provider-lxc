@@ -4,9 +4,10 @@ import (
 	"context"
 	"os"
 
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/cmd"
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
+
+	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/cmd"
 )
 
 var (

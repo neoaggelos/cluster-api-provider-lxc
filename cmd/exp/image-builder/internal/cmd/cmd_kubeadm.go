@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/blang/semver/v4"
+	"github.com/lxc/incus/v6/shared/api"
+	"github.com/spf13/cobra"
+	"sigs.k8s.io/controller-runtime/pkg/log"
+
 	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/action"
 	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/stage"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
-	"github.com/lxc/incus/v6/shared/api"
-	"github.com/spf13/cobra"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 func newKubeadmCmd() *cobra.Command {

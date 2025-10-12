@@ -27,7 +27,7 @@ func (c *Client) WithProgressHandler(f func(api.Operation)) {
 }
 
 func New(ctx context.Context, config Configuration, options ...Option) (*Client, error) {
-	log := log.FromContext(ctx).WithValues("lxc.server", config.ServerURL)
+	log := log.FromContext(ctx)
 
 	var (
 		client incus.InstanceServer
@@ -35,6 +35,7 @@ func New(ctx context.Context, config Configuration, options ...Option) (*Client,
 	)
 	switch {
 	case strings.HasPrefix(config.ServerURL, "https://"):
+		log = log.WithValues("lxc.server", config.ServerURL)
 		switch {
 		case config.InsecureSkipVerify:
 			log = log.WithValues("lxc.insecure-skip-verify", true)
@@ -60,7 +61,14 @@ func New(ctx context.Context, config Configuration, options ...Option) (*Client,
 			return nil, fmt.Errorf("failed to initialize client over HTTPS: %w", err)
 		}
 	case strings.HasPrefix(config.ServerURL, "unix://"):
-		if client, err = incus.ConnectIncusUnixWithContext(ctx, strings.TrimPrefix(config.ServerURL, "unix://"), nil); err != nil {
+		socket, ok := strings.CutPrefix(config.ServerURL, "unix://")
+		if ok && socket == "" {
+			if socket, err = getDefaultUnixSocketPath(); err != nil {
+				return nil, fmt.Errorf("failed to detect default local unix socket path: %w", err)
+			}
+		}
+		log = log.WithValues("lxc.server", fmt.Sprintf("unix://%s", socket))
+		if client, err = incus.ConnectIncusUnixWithContext(ctx, socket, nil); err != nil {
 			return nil, fmt.Errorf("failed to initialize client over unix socket: %w", err)
 		}
 	default:

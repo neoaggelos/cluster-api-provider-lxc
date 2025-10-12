@@ -86,28 +86,13 @@ func (o Configuration) ToSecret(name string, namespace string) *corev1.Secret {
 	}
 }
 
-func defaultConfigFiles() []string {
-	var files []string
-
-	for _, file := range []string{
-		os.ExpandEnv("${HOME}/.config/incus/config.yml"),
-		os.ExpandEnv("${HOME}/snap/lxd/common/config/config.yml"),
-	} {
-		if _, err := os.Stat(file); err == nil {
-			files = append(files, file)
-		}
-	}
-
-	return append(files, "")
-}
-
 // ConfigurationFromLocal attempts to load client options from the local node configuration file.
 // ConfigurationFromLocal will attempt to use well-known locations.
 // ConfigurationFromLocal returns the loaded Configuration, as well as the path of the config file.
 func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHTTPS bool) (Configuration, string, error) {
 	var tryConfigFiles []string
 	if configFile == "" {
-		tryConfigFiles = defaultConfigFiles()
+		tryConfigFiles = getDefaultConfigFiles()
 	} else {
 		tryConfigFiles = []string{configFile}
 	}

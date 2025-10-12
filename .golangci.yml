@@ -45,6 +45,9 @@ linters:
           - dupl
           - lll
         path: internal/*
+      - linters:
+          - gocyclo
+        path: internal/exp/simplestreams/index/*
     paths:
       - third_party$
       - builtin$

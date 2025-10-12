@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 // Run runs a list of stages, with optional filtering criteria.

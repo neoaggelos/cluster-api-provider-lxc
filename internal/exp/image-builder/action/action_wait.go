@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 
 // Wait is an Action that blocks for the specified amount of time.

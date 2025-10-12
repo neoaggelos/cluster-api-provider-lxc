@@ -86,11 +86,27 @@ func (o Configuration) ToSecret(name string, namespace string) *corev1.Secret {
 	}
 }
 
-// ConfigurationFromLocal attempts to load client options from the local node configuration.
+func defaultConfigFiles() []string {
+	var files []string
+
+	for _, file := range []string{
+		os.ExpandEnv("${HOME}/.config/incus/config.yml"),
+		os.ExpandEnv("${HOME}/snap/lxd/common/config/config.yml"),
+	} {
+		if _, err := os.Stat(file); err == nil {
+			files = append(files, file)
+		}
+	}
+
+	return append(files, "")
+}
+
+// ConfigurationFromLocal attempts to load client options from the local node configuration file.
+// ConfigurationFromLocal will attempt to use well-known locations.
 func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHTTPS bool) (Configuration, error) {
 	var tryConfigFiles []string
 	if configFile == "" {
-		tryConfigFiles = []string{"", os.ExpandEnv("${HOME}/.config/incus/config.yml"), os.ExpandEnv("${HOME}/snap/lxd/common/config/config.yml")}
+		tryConfigFiles = defaultConfigFiles()
 	} else {
 		tryConfigFiles = []string{configFile}
 	}
@@ -108,11 +124,6 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 			remoteName = config.DefaultRemote
 		}
 
-		if !config.HasClientCertificate() {
-			errs = append(errs, fmt.Errorf("failed to load credentials from %q: no client certificate", configFile))
-			continue
-		}
-
 		remote, ok := config.Remotes[remoteName]
 		if !ok {
 			errs = append(errs, fmt.Errorf("failed to load credentials from %q: remote %q not found", configFile, remoteName))
@@ -124,11 +135,16 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 			continue
 		}
 
-		if strings.HasPrefix(remote.Addr, "unix://") {
+		if strings.HasPrefix(remote.Addr, "unix://") || strings.HasPrefix(remote.Addr, "http://") {
 			return Configuration{
 				ServerURL: remote.Addr,
 				Project:   remote.Project,
 			}, nil
+		}
+
+		if !config.HasClientCertificate() {
+			errs = append(errs, fmt.Errorf("failed to load credentials from %q: no client certificate", configFile))
+			continue
 		}
 
 		serverCrt, err := os.ReadFile(config.ServerCertPath(remoteName))

@@ -7,7 +7,7 @@ import (
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/simplestreams/internal/cmd"
+	"github.com/lxc/cluster-api-provider-incus/cmd/exp/simplestreams/cmd"
 )
 
 var (

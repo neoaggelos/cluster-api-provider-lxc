@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/action"
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/stage"
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/image-builder/action"
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/image-builder/stage"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
@@ -79,24 +79,24 @@ func newHaproxyCmd() *cobra.Command {
 			}
 
 			stages := []stage.Stage{
-				{Name: "create-instance", Action: action.LaunchInstance(lxcClient, flags.instanceName, (&lxc.LaunchOptions{}).
+				{Name: "create-instance", Action: action.LaunchInstance(flags.instanceName, (&lxc.LaunchOptions{}).
 					WithInstanceType(api.InstanceTypeContainer).
 					WithProfiles(flags.instanceProfiles).
 					WithImage(image),
 				)},
-				// {Name: "pre-run-commands", Action: action.ExecInstance(lxcClient, flags.instanceName, <TODO>, <TODO>)},
-				{Name: "install-haproxy", Action: action.ExecInstance(lxcClient, flags.instanceName, static.InstallHaproxyScript())},
-				// {Name: "post-run-commands", Action: action.ExecInstance(lxcClient, flags.instanceName, <TODO>, <TODO>)},
-				{Name: "prepare-instance", Action: action.ExecInstance(lxcClient, flags.instanceName, static.CleanupInstanceScript())},
-				{Name: "stop-instance", Action: action.StopInstance(lxcClient, flags.instanceName)},
-				{Name: "publish-image", Action: action.PublishImage(lxcClient, flags.instanceName, flags.imageAlias, action.PublishImageInfo{
+				// {Name: "pre-run-commands", Action: action.ExecInstance( flags.instanceName, <TODO>, <TODO>)},
+				{Name: "install-haproxy", Action: action.ExecInstance(flags.instanceName, static.InstallHaproxyScript())},
+				// {Name: "post-run-commands", Action: action.ExecInstance( flags.instanceName, <TODO>, <TODO>)},
+				{Name: "prepare-instance", Action: action.ExecInstance(flags.instanceName, static.CleanupInstanceScript())},
+				{Name: "stop-instance", Action: action.StopInstance(flags.instanceName)},
+				{Name: "publish-image", Action: action.PublishImage(flags.instanceName, flags.imageAlias, action.PublishImageInfo{
 					Name:            fmt.Sprintf("haproxy %s %s", wellKnownBaseImages[flags.baseImage].fullName, runtime.GOARCH),
 					OperatingSystem: "haproxy",
 					Release:         wellKnownBaseImages[flags.baseImage].releaseName,
 					Variant:         wellKnownBaseImages[flags.baseImage].variantName,
 				})},
-				{Name: "export-image", Action: action.ExportImage(lxcClient, flags.imageAlias, flags.outputFile)},
-				{Name: "delete-instance", Action: action.DeleteInstance(lxcClient, flags.instanceName)},
+				{Name: "export-image", Action: action.ExportImage(flags.imageAlias, flags.outputFile)},
+				{Name: "delete-instance", Action: action.DeleteInstance(flags.instanceName)},
 			}
 
 			log.FromContext(cmd.Context()).WithValues(
@@ -105,7 +105,7 @@ func newHaproxyCmd() *cobra.Command {
 				"image-alias", flags.imageAlias,
 			).Info("Building haproxy image")
 
-			if err := stage.Run(cmd.Context(), flags.skipStages, flags.onlyStages, flags.dryRun, stages...); err != nil {
+			if err := stage.Run(cmd.Context(), lxcClient, flags.skipStages, flags.onlyStages, flags.dryRun, stages...); err != nil {
 				return fmt.Errorf("failed to run kubeadm stages: %w", err)
 			}
 

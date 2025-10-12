@@ -12,8 +12,8 @@ import (
 )
 
 // CopyInstanceFile is an Action that copies the contents of an instance file on the local disk.
-func CopyInstanceFile(lxcClient *lxc.Client, name string, instanceFile string, outputFile string) Action {
-	return func(ctx context.Context) error {
+func CopyInstanceFile(name string, instanceFile string, outputFile string) Action {
+	return func(ctx context.Context, lxcClient *lxc.Client) error {
 		of, err := os.Create(outputFile)
 		if err != nil {
 			return fmt.Errorf("failed to create output file: %w", err)

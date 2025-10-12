@@ -12,8 +12,8 @@ import (
 )
 
 // LaunchInstance is an Action that launches an instance and waits for its agent to come up.
-func LaunchInstance(lxcClient *lxc.Client, name string, launchOpts *lxc.LaunchOptions) Action {
-	return func(ctx context.Context) error {
+func LaunchInstance(name string, launchOpts *lxc.LaunchOptions) Action {
+	return func(ctx context.Context, lxcClient *lxc.Client) error {
 		// set size of root volume to 5GB, otherwise publishing virtual machine images takes a very long time.
 		pools, err := lxcClient.GetStoragePools()
 		if err != nil {

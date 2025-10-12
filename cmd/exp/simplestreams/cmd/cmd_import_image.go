@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/simplestreams/internal/index"
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/simplestreams/index"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 )
 

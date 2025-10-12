@@ -23,8 +23,8 @@ type PublishImageInfo struct {
 }
 
 // PublishImage is an Action that publishes an image from an existing instance.
-func PublishImage(lxcClient *lxc.Client, instanceName string, imageAliasName string, info PublishImageInfo) Action {
-	return func(ctx context.Context) error {
+func PublishImage(instanceName string, imageAliasName string, info PublishImageInfo) Action {
+	return func(ctx context.Context, lxcClient *lxc.Client) error {
 		instance, _, err := lxcClient.GetInstance(instanceName)
 		if err != nil {
 			return fmt.Errorf("failed to get instance: %w", err)

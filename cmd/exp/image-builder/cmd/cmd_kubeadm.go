@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/action"
-	"github.com/lxc/cluster-api-provider-incus/cmd/exp/image-builder/internal/stage"
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/image-builder/action"
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/image-builder/stage"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"github.com/lxc/cluster-api-provider-incus/internal/static"
 )
@@ -98,37 +98,37 @@ func newKubeadmCmd() *cobra.Command {
 			}
 
 			stages := []stage.Stage{
-				{Name: "create-instance", Action: action.LaunchInstance(lxcClient, flags.instanceName, (&lxc.LaunchOptions{}).
+				{Name: "create-instance", Action: action.LaunchInstance(flags.instanceName, (&lxc.LaunchOptions{}).
 					WithInstanceType(api.InstanceType(flags.instanceType)).
 					WithProfiles(flags.instanceProfiles).
 					WithImage(image),
 				)},
-				// {Name: "pre-run-commands", Action: action.ExecInstance(lxcClient, flags.instanceName, <TODO>, <TODO>)},
-				{Name: "install-kubeadm", Action: action.ExecInstance(lxcClient, flags.instanceName, static.InstallKubeadmScript(), flags.kubernetesVersion)},
-				{Name: "pull-extra-images", Action: action.ExecInstance(lxcClient, flags.instanceName, static.PullImagesScript(), flags.pullExtraImages...)},
-				{Name: "generate-manifest", Action: action.ExecInstance(lxcClient, flags.instanceName, static.GenerateManifestScript())},
-				{Name: "export-manifest", Action: action.CopyInstanceFile(lxcClient, flags.instanceName, "/opt/manifest.txt", flags.outputManifestFile)},
-				// {Name: "post-run-commands", Action: action.ExecInstance(lxcClient, flags.instanceName, <TODO>, <TODO>)},
-				{Name: "prepare-instance", Action: action.ExecInstance(lxcClient, flags.instanceName, static.CleanupInstanceScript())},
+				// {Name: "pre-run-commands", Action: action.ExecInstance(flags.instanceName, <TODO>, <TODO>)},
+				{Name: "install-kubeadm", Action: action.ExecInstance(flags.instanceName, static.InstallKubeadmScript(), flags.kubernetesVersion)},
+				{Name: "pull-extra-images", Action: action.ExecInstance(flags.instanceName, static.PullImagesScript(), flags.pullExtraImages...)},
+				{Name: "generate-manifest", Action: action.ExecInstance(flags.instanceName, static.GenerateManifestScript())},
+				{Name: "export-manifest", Action: action.CopyInstanceFile(flags.instanceName, "/opt/manifest.txt", flags.outputManifestFile)},
+				// {Name: "post-run-commands", Action: action.ExecInstance(flags.instanceName, <TODO>, <TODO>)},
+				{Name: "prepare-instance", Action: action.ExecInstance(flags.instanceName, static.CleanupInstanceScript())},
 				{Name: "stop-grace-period", Action: action.Wait(flags.instanceStopGracePeriod)},
-				{Name: "stop-instance", Action: action.StopInstance(lxcClient, flags.instanceName)},
-				{Name: "publish-image", Action: action.PublishImage(lxcClient, flags.instanceName, flags.imageAlias, action.PublishImageInfo{
+				{Name: "stop-instance", Action: action.StopInstance(flags.instanceName)},
+				{Name: "publish-image", Action: action.PublishImage(flags.instanceName, flags.imageAlias, action.PublishImageInfo{
 					Name:               fmt.Sprintf("kubeadm %s %s %s", flags.kubernetesVersion, wellKnownBaseImages[flags.baseImage].fullName, runtime.GOARCH),
 					OperatingSystem:    "kubeadm",
 					Release:            flags.kubernetesVersion,
 					Variant:            wellKnownBaseImages[flags.baseImage].variantName,
 					LXCRequireCgroupv2: true,
 				})},
-				{Name: "export-image", Action: action.ExportImage(lxcClient, flags.imageAlias, flags.outputFile)},
-				{Name: "delete-instance", Action: action.DeleteInstance(lxcClient, flags.instanceName)},
+				{Name: "export-image", Action: action.ExportImage(flags.imageAlias, flags.outputFile)},
+				{Name: "delete-instance", Action: action.DeleteInstance(flags.instanceName)},
 				{Name: "validate-image", Action: action.Chain(
-					action.LaunchInstance(lxcClient, flags.validationInstanceName, (&lxc.LaunchOptions{}).
+					action.LaunchInstance(flags.validationInstanceName, (&lxc.LaunchOptions{}).
 						WithInstanceType(api.InstanceType(flags.instanceType)).
 						WithProfiles(flags.instanceProfiles).
 						WithImage(lxc.Image{Alias: flags.imageAlias}),
 					),
-					action.ExecInstance(lxcClient, flags.validationInstanceName, static.ValidateKubeadmImageScript()),
-					action.DeleteInstance(lxcClient, flags.validationInstanceName),
+					action.ExecInstance(flags.validationInstanceName, static.ValidateKubeadmImageScript()),
+					action.DeleteInstance(flags.validationInstanceName),
 				)},
 			}
 
@@ -139,7 +139,7 @@ func newKubeadmCmd() *cobra.Command {
 				"image-alias", flags.imageAlias,
 			).Info("Building kubeadm image")
 
-			if err := stage.Run(cmd.Context(), flags.skipStages, flags.onlyStages, flags.dryRun, stages...); err != nil {
+			if err := stage.Run(cmd.Context(), lxcClient, flags.skipStages, flags.onlyStages, flags.dryRun, stages...); err != nil {
 				return fmt.Errorf("failed to run kubeadm stages: %w", err)
 			}
 

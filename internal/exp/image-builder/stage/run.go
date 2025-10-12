@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // Run runs a list of stages, with optional filtering criteria.
-func Run(ctx context.Context, skipStages, onlyStages []string, dryRun bool, stages ...Stage) error {
+func Run(ctx context.Context, lxcClient *lxc.Client, skipStages, onlyStages []string, dryRun bool, stages ...Stage) error {
 	for idx, stage := range stages {
 		ctx := log.IntoContext(ctx, log.FromContext(ctx).WithValues("stage.name", stage.Name, "stage.index", fmt.Sprintf("%d/%d", idx+1, len(stages))))
 
@@ -29,7 +30,7 @@ func Run(ctx context.Context, skipStages, onlyStages []string, dryRun bool, stag
 		}
 
 		log.FromContext(ctx).Info("Starting stage")
-		if err := stage.Action(ctx); err != nil {
+		if err := stage.Action(ctx, lxcClient); err != nil {
 			return fmt.Errorf("failure during stage %q: %w", stage.Name, err)
 		}
 		log.FromContext(ctx).Info("Completed stage")

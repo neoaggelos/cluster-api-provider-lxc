@@ -13,8 +13,8 @@ import (
 )
 
 // ExportImage is an Action that downloads a unified image tarball and saves to a local file.
-func ExportImage(lxcClient *lxc.Client, imageAliasName string, outputFile string) Action {
-	return func(ctx context.Context) (rerr error) {
+func ExportImage(imageAliasName string, outputFile string) Action {
+	return func(ctx context.Context, lxcClient *lxc.Client) (rerr error) {
 		image, _, err := lxcClient.GetImageAlias(imageAliasName)
 		if err != nil {
 			return fmt.Errorf("failed to find image for alias %q: %w", imageAliasName, err)

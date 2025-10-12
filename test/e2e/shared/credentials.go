@@ -34,7 +34,7 @@ func ensureLXCClientOptions(e2eCtx *E2EContext) {
 	configFile := e2eCtx.E2EConfig.GetVariableOrEmpty(LXCLoadConfigFile)
 	remoteName := e2eCtx.E2EConfig.GetVariableOrEmpty(LXCLoadRemoteName)
 	Logf("Looking for infrastructure credentials in local node (configFile: %q, remoteName: %q)", configFile, remoteName)
-	options, err := lxc.ConfigurationFromLocal(configFile, remoteName, true)
+	options, _, err := lxc.ConfigurationFromLocal(configFile, remoteName, true)
 	Expect(err).ToNot(HaveOccurred(), "Failed to find infrastructure credentials in local node")
 
 	e2eCtx.Settings.LXCClientOptions = options

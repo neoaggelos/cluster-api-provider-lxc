@@ -103,7 +103,8 @@ func defaultConfigFiles() []string {
 
 // ConfigurationFromLocal attempts to load client options from the local node configuration file.
 // ConfigurationFromLocal will attempt to use well-known locations.
-func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHTTPS bool) (Configuration, error) {
+// ConfigurationFromLocal returns the loaded Configuration, as well as the path of the config file.
+func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHTTPS bool) (Configuration, string, error) {
 	var tryConfigFiles []string
 	if configFile == "" {
 		tryConfigFiles = defaultConfigFiles()
@@ -139,7 +140,7 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 			return Configuration{
 				ServerURL: remote.Addr,
 				Project:   remote.Project,
-			}, nil
+			}, configFile, nil
 		}
 
 		if !config.HasClientCertificate() {
@@ -171,8 +172,8 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 			ClientCrt: string(clientCrt),
 			ClientKey: string(clientKey),
 			Project:   remote.Project,
-		}, nil
+		}, configFile, nil
 	}
 
-	return Configuration{}, errors.Join(errs...)
+	return Configuration{}, "", errors.Join(errs...)
 }

@@ -63,7 +63,7 @@ func newHaproxyCmd() *cobra.Command {
 		},
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := lxc.ConfigurationFromLocal(flags.configFile, flags.configRemoteName, false)
+			opts, _, err := lxc.ConfigurationFromLocal(flags.configFile, flags.configRemoteName, false)
 			if err != nil {
 				return fmt.Errorf("failed to read client credentials: %w", err)
 			}

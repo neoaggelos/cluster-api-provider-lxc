@@ -82,7 +82,7 @@ func newKubeadmCmd() *cobra.Command {
 			if _, err := semver.ParseTolerant(flags.kubernetesVersion); err != nil {
 				return fmt.Errorf("--kubernetes-version %q is not valid semver: %w", flags.kubernetesVersion, err)
 			}
-			opts, err := lxc.ConfigurationFromLocal(flags.configFile, flags.configRemoteName, false)
+			opts, _, err := lxc.ConfigurationFromLocal(flags.configFile, flags.configRemoteName, false)
 			if err != nil {
 				return fmt.Errorf("failed to read client credentials: %w", err)
 			}

@@ -2,7 +2,7 @@
 
 # Usage:
 #    $ install-go.sh              # source Go version from go.mod
-#    $ install-go.sh 1.24.7       # install specific Go version
+#    $ install-go.sh 1.25.3       # install specific Go version
 #
 # Description:
 #    - Download go version and install under /usr/local/go

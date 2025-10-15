@@ -22,7 +22,6 @@ import (
 	"context"
 	"path/filepath"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/cluster-api/test/framework"
 	"sigs.k8s.io/cluster-api/test/framework/bootstrap"
@@ -45,8 +44,8 @@ func createClusterctlLocalRepository(config *clusterctl.E2EConfig, repositoryFol
 }
 
 // setupBootstrapCluster installs Cluster API components via clusterctl.
-func setupBootstrapCluster(config *clusterctl.E2EConfig, scheme *runtime.Scheme, useExistingCluster bool) (bootstrap.ClusterProvider, framework.ClusterProxy) {
-	Logf("Running setupBootstrapCluster (useExistingCluster: %t)", useExistingCluster)
+func setupBootstrapCluster(e2eCtx *E2EContext) {
+	Logf("Running setupBootstrapCluster (useExistingCluster: %t)", e2eCtx.Settings.UseExistingCluster)
 
 	// We only want to set clusterProvider if we create a new bootstrap cluster in this test.
 	// If we re-use an existing one, we don't want to delete it afterwards, so we don't set it.
@@ -54,9 +53,9 @@ func setupBootstrapCluster(config *clusterctl.E2EConfig, scheme *runtime.Scheme,
 	var kubeconfigPath string
 
 	// try to use an existing cluster
-	if useExistingCluster {
+	if e2eCtx.Settings.UseExistingCluster {
 		// If the kubeContext is locked: try to use the default kubeconfig with the current context
-		kubeContext := config.GetVariableOrEmpty(KubeContext)
+		kubeContext := e2eCtx.E2EConfig.GetVariableOrEmpty(KubeContext)
 		if kubeContext != "" {
 			testKubeconfigPath := clientcmd.NewDefaultClientConfigLoadingRules().GetDefaultFilename()
 			kubecfg, err := clientcmd.LoadFromFile(testKubeconfigPath)
@@ -75,9 +74,8 @@ func setupBootstrapCluster(config *clusterctl.E2EConfig, scheme *runtime.Scheme,
 	// If useExistingCluster was false or we couldn't find an existing cluster in the default kubeconfig with the configured kubeContext, let's create a new one
 	if kubeconfigPath == "" {
 		clusterProvider = bootstrap.CreateKindBootstrapClusterAndLoadImages(context.TODO(), bootstrap.CreateKindBootstrapClusterAndLoadImagesInput{
-			Name:               config.ManagementClusterName,
-			RequiresDockerSock: config.HasDockerProvider(),
-			Images:             config.Images,
+			Name:   e2eCtx.E2EConfig.ManagementClusterName,
+			Images: e2eCtx.E2EConfig.Images,
 		})
 		Expect(clusterProvider).ToNot(BeNil(), "Failed to create a bootstrap cluster")
 
@@ -85,10 +83,11 @@ func setupBootstrapCluster(config *clusterctl.E2EConfig, scheme *runtime.Scheme,
 		Expect(kubeconfigPath).To(BeAnExistingFile(), "Failed to get the kubeconfig file for the bootstrap cluster")
 	}
 
-	clusterProxy := framework.NewClusterProxy("bootstrap", kubeconfigPath, scheme)
+	clusterProxy := framework.NewClusterProxy("bootstrap", kubeconfigPath, e2eCtx.Environment.Scheme)
 	Expect(clusterProxy).ToNot(BeNil(), "Failed to get a bootstrap cluster proxy")
 
-	return clusterProvider, clusterProxy
+	e2eCtx.Environment.BootstrapClusterProvider = clusterProvider
+	e2eCtx.Environment.BootstrapClusterProxy = clusterProxy
 }
 
 // initBootstrapCluster uses kind to create a cluster.

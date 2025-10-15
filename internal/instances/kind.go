@@ -30,9 +30,11 @@ func KindLaunchOptions(in KindLaunchOptionsInput) (*lxc.LaunchOptions, error) {
 	opts := (&lxc.LaunchOptions{}).
 		WithInstanceType(api.InstanceTypeContainer).
 		WithImage(lxc.KindestNodeImage(in.KubernetesVersion)).
-		WithReplacements(map[string]*strings.Replacer{
-			// Incus unprivileged containers cannot edit /etc/resolv.conf, so do not let the entrypoint attempt it.
-			"/usr/local/bin/entrypoint": strings.NewReplacer(">/etc/resolv.conf", ">/etc/local-resolv.conf"),
+		WithReplacements(map[string]map[string]string{
+			"/usr/local/bin/entrypoint": {
+				// Incus unprivileged containers cannot edit /etc/resolv.conf, so do not let the entrypoint attempt it.
+				">/etc/resolv.conf": ">/etc/local-resolv.conf",
+			},
 		}).
 		WithSymlinks(map[string]string{
 			// Incus will inject its own PID 1 init process unless the entrypoint is one of "/init", "/sbin/init", "/s6-init".
@@ -84,8 +86,10 @@ func KindLaunchOptions(in KindLaunchOptionsInput) (*lxc.LaunchOptions, error) {
 
 	// pod network CIDR
 	if len(in.PodNetworkCIDR) > 0 {
-		opts = opts.WithReplacements(map[string]*strings.Replacer{
-			"/kind/manifests/default-cni.yaml": strings.NewReplacer("{{ .PodSubnet }}", in.PodNetworkCIDR),
+		opts = opts.WithReplacements(map[string]map[string]string{
+			"/kind/manifests/default-cni.yaml": {
+				"{{ .PodSubnet }}": in.PodNetworkCIDR,
+			},
 		})
 	}
 

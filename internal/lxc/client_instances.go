@@ -122,7 +122,13 @@ func (c *Client) WaitForLaunchInstance(ctx context.Context, name string, opts *L
 			return nil, fmt.Errorf("failed to replace text in %q: failed to close reader: %w", path, err)
 		}
 
-		if newContents := replacer.Replace(contents); newContents == contents {
+		// NOTE(neoaggelos): this is slow, but acceptably simple for our use case.
+		newContents := contents
+		for old, new := range replacer {
+			newContents = strings.ReplaceAll(newContents, old, new)
+		}
+
+		if newContents == contents {
 			continue
 		} else if err := c.CreateInstanceFile(name, path, incus.InstanceFileArgs{
 			Content:   bytes.NewReader([]byte(newContents)),

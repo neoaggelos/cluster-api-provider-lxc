@@ -2,7 +2,6 @@ package lxc
 
 import (
 	"maps"
-	"strings"
 
 	"github.com/lxc/incus/v6/shared/api"
 )
@@ -16,9 +15,9 @@ type LaunchOptions struct {
 	// Not supported by virtual-machine instance types.
 	createFiles []instanceFileCreator
 	// replacements are a list of string replacements to perform on files on the machine.
-	// The replacer is expected to be idempotent.
+	// The replacement is expected to be idempotent.
 	// Not supported by virtual-machine instance types.
-	replacements map[string]*strings.Replacer
+	replacements map[string]map[string]string
 	// devices is instance device configuration.
 	devices map[string]map[string]string
 	// config is instance configuration.
@@ -85,7 +84,7 @@ func (o *LaunchOptions) WithDirectories(new ...string) *LaunchOptions {
 }
 
 // WithReplacements appends instance file replacements.
-func (o *LaunchOptions) WithReplacements(new map[string]*strings.Replacer) *LaunchOptions {
+func (o *LaunchOptions) WithReplacements(new map[string]map[string]string) *LaunchOptions {
 	if o.replacements == nil {
 		o.replacements = maps.Clone(new)
 	} else {

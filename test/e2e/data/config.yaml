@@ -77,6 +77,9 @@ providers:
       new: "imagePullPolicy: IfNotPresent"
     - old: "--v=2"
       new: "--v=4"
+    ## NOTE(neoaggelos): see relevant note in unix_socket_patch.yaml
+    - old: "volumes: \\[\\]"
+      new: "volumes: ${CAPN_VOLUMES:=[]}"
 
 # default variables for the e2e test; those values could be overridden via env variables, thus
 # allowing the same e2e config file to be re-used in different prow jobs e.g. each one with a K8s version permutation

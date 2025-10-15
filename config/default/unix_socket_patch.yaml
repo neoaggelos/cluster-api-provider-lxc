@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        volumeMounts: ${CAPN_VOLUME_MOUNTS:=[]}
+      securityContext:
+        runAsNonRoot: ${CAPN_RUN_AS_NON_ROOT:=true}
+        runAsUser: ${CAPN_RUN_AS_USER:= }
+
+      # NOTE(neoaggelos): we cannot set "volumes: ${CAPN_VOLUMES:=[]}", as that is
+      # is illegal in kustomize and results in error. instead, we manually 'sed -i'
+      # the desired value afterwards.
+      volumes: []

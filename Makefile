@@ -183,6 +183,9 @@ release: manifests generate kustomize ## Generate a consolidated YAML with CRDs 
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default > dist/infrastructure-components.yaml
 
+	## NOTE(neoaggelos): see relevant note in unix_socket_patch.yaml
+	sed -i 's,volumes: \[\],volumes: $${CAPN_VOLUMES:=[]},' dist/infrastructure-components.yaml
+
 .PHONY: dist
 dist: release ## Generate release assets.
 	cp templates/clusterclass*.yaml dist/

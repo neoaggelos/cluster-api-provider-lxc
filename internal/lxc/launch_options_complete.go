@@ -14,6 +14,9 @@ import (
 func (o *LaunchOptions) complete(serverName string) error {
 	// virtual machines instances do not support unixSocket, createFiles or replacements
 	if o.instanceType == api.InstanceTypeVM {
+		if o.unixSocket {
+			return utils.TerminalError(fmt.Errorf("mounting unix socket not supported for virtual-machine instances"))
+		}
 		if len(o.createFiles) > 0 {
 			ops := make([]string, 0, len(o.createFiles))
 			for _, f := range o.createFiles {
@@ -42,6 +45,23 @@ func (o *LaunchOptions) complete(serverName string) error {
 		}
 	}
 	o.image = image
+
+	// load unix socket to /run-unix.socket inside the instance
+	if o.unixSocket {
+		path, err := GetDefaultUnixSocketPathFor(serverName)
+		if err != nil {
+			return fmt.Errorf("failed to get unix socket path: %w", err)
+		}
+
+		o = o.WithDevices(map[string]map[string]string{
+			"00-unix-socket": {
+				"type":   "disk",
+				"source": path,
+				"path":   "/run-unix.socket",
+				"shift":  "true",
+			},
+		})
+	}
 
 	return nil
 }

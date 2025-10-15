@@ -63,7 +63,7 @@ func New(ctx context.Context, config Configuration, options ...Option) (*Client,
 	case strings.HasPrefix(config.ServerURL, "unix://"):
 		socket, ok := strings.CutPrefix(config.ServerURL, "unix://")
 		if ok && socket == "" {
-			if socket, err = getDefaultUnixSocketPath(); err != nil {
+			if socket, err = findDefaultUnixSocketPath(); err != nil {
 				return nil, fmt.Errorf("failed to detect default local unix socket path: %w", err)
 			}
 		}

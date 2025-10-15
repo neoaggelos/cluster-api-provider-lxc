@@ -30,6 +30,8 @@ type LaunchOptions struct {
 	flavor string
 	// instanceType is the instance type.
 	instanceType api.InstanceType
+	// unixSocket bind mounts the admin unix socket into the instance at /run-unix.socket (potentially insecure).
+	unixSocket bool
 }
 
 // WithInstanceTemplates appends instance templates.
@@ -137,5 +139,11 @@ func (o *LaunchOptions) WithFlavor(v string) *LaunchOptions {
 // WithInstanceType sets the instance type (container or virtual-machine)
 func (o *LaunchOptions) WithInstanceType(v api.InstanceType) *LaunchOptions {
 	o.instanceType = v
+	return o
+}
+
+// WithUnixSocket bind mounts the admin unix socket into the instance at /run-unix.socket (potentially insecure).
+func (o *LaunchOptions) WithUnixSocket(v bool) *LaunchOptions {
+	o.unixSocket = v
 	return o
 }

@@ -60,14 +60,14 @@ func Node1BeforeSuite(ctx context.Context, e2eCtx *E2EContext) []byte {
 	Logf("Creating a clusterctl local repository into %q", e2eCtx.Settings.ArtifactFolder)
 	e2eCtx.Environment.ClusterctlConfigPath = createClusterctlLocalRepository(e2eCtx.E2EConfig, filepath.Join(e2eCtx.Settings.ArtifactFolder, "repository"))
 
+	Logf("Ensuring infrastructure credentials can be used")
+	ensureLXCClientOptions(e2eCtx)
+
 	Logf("Setting up the bootstrap cluster")
 	setupBootstrapCluster(e2eCtx)
 
 	Logf("Initializing the bootstrap cluster")
 	initBootstrapCluster(e2eCtx)
-
-	Logf("Ensuring infrastructure credentials can be used")
-	ensureLXCClientOptions(e2eCtx)
 
 	Logf("Ensuring system images")
 	ensureLXCSystemImages(e2eCtx)

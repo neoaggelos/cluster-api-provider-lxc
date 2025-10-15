@@ -6,8 +6,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 	"github.com/lxc/incus/v6/shared/api"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
 // complete launch options and verify
@@ -53,6 +54,8 @@ func (o *LaunchOptions) complete(serverName string) error {
 			return fmt.Errorf("failed to get unix socket path: %w", err)
 		}
 
+		// NOTE(neoaggelos): disable SA4006: this value of o is never used (staticcheck)
+		//nolint:staticcheck
 		o = o.WithDevices(map[string]map[string]string{
 			"00-unix-socket": {
 				"type":   "disk",

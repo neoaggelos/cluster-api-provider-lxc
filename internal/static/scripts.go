@@ -32,6 +32,12 @@ var (
 
 	//go:embed embed/cloud-init-launch.service
 	cloudInitLaunchSystemdServiceTemplate string
+
+	//go:embed embed/kind-default-storage.yaml
+	kindDefaultStorageManifestYAML string
+
+	//go:embed embed/kube-flannel.yaml
+	kubeFlannelManifestYAML string
 )
 
 func InstallKubeadmScript() string {
@@ -72,4 +78,12 @@ func CloudInitUserDataTemplate() string {
 
 func CloudInitLaunchSystemdServiceTemplate() string {
 	return cloudInitLaunchSystemdServiceTemplate
+}
+
+func KindDefaultStorageManifestYAML() string {
+	return kindDefaultStorageManifestYAML
+}
+
+func KubeFlannelManifestYAML() string {
+	return kubeFlannelManifestYAML
 }

@@ -37,6 +37,10 @@ func (c *Client) SupportsNetworkLoadBalancers() error {
 	return c.serverSupportsExtensions("network_load_balancer", "network_load_balancer_health_check")
 }
 
+func (c *Client) SupportsContainerDiskTmpfs() error {
+	return c.serverSupportsExtensions("container_disk_tmpfs")
+}
+
 func (c *Client) SupportsInstanceKVM() error {
 	if !slices.Contains(strings.Split(c.serverInfo.Environment.Driver, " | "), "qemu") {
 		return utils.TerminalError(fmt.Errorf("server is missing driver qemu, supported drivers are: %q", c.serverInfo.Environment.Driver))

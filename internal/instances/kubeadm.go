@@ -12,9 +12,10 @@ import (
 type KubeadmLaunchOptionsInput struct {
 	KubernetesVersion string
 
-	InstanceType api.InstanceType
-	Privileged   bool
-	SkipProfile  bool
+	InstanceType             api.InstanceType
+	Privileged               bool
+	SkipProfile              bool
+	SkipInstallKubeadmScript bool
 
 	ServerName string
 
@@ -25,10 +26,13 @@ type KubeadmLaunchOptionsInput struct {
 func KubeadmLaunchOptions(in KubeadmLaunchOptionsInput) *lxc.LaunchOptions {
 	opts := (&lxc.LaunchOptions{}).
 		WithInstanceType(in.InstanceType).
-		WithImage(lxc.CapnImage(fmt.Sprintf("kubeadm/%s", in.KubernetesVersion))).
-		WithInstanceTemplates(map[string]string{
+		WithImage(lxc.CapnImage(fmt.Sprintf("kubeadm/%s", in.KubernetesVersion)))
+
+	if !in.SkipInstallKubeadmScript {
+		opts = opts.WithInstanceTemplates(map[string]string{
 			"/opt/cluster-api/install-kubeadm.sh": static.InstallKubeadmScript(),
 		})
+	}
 
 	// add cloud-init
 	if len(in.CloudInit) > 0 {

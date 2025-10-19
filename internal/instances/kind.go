@@ -34,6 +34,8 @@ func KindLaunchOptions(in KindLaunchOptionsInput) (*lxc.LaunchOptions, error) {
 			"/usr/local/bin/entrypoint": {
 				// Incus unprivileged containers cannot edit /etc/resolv.conf, so do not let the entrypoint attempt it.
 				">/etc/resolv.conf": ">/etc/local-resolv.conf",
+				// Use overlayfs as default containerd snapshotter.
+				"${KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER:-}": "${KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER:-overlayfs}",
 			},
 		}).
 		WithSymlinks(map[string]string{

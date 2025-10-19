@@ -77,7 +77,7 @@ func (l *managerOCI) Reconfigure(ctx context.Context) error {
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("loadbalancer.instance", l.name))
 
-	config, err := getLoadBalancerConfiguration(ctx, l.lxcClient, l.clusterName, l.clusterNamespace)
+	config, err := getLoadBalancerConfiguration(ctx, l.lxcClient, filterClusterControlPlaneInstances(l.clusterName, l.clusterNamespace))
 	if err != nil {
 		return fmt.Errorf("failed to build load balancer configuration: %w", err)
 	}

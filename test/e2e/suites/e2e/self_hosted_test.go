@@ -54,6 +54,20 @@ var _ = Describe("SelfHosted", func() {
 			Expect(filepath.IsAbs(preloadImages), fmt.Sprintf("%s must be an absolute path", shared.PreloadImages))
 		}
 	})
+	BeforeEach(func(ctx context.Context) {
+		if e2eCtx.Settings.LXCClientOptions.ServerURL == "unix://" {
+			lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
+			Expect(err).ToNot(HaveOccurred())
+
+			path, err := lxc.GetDefaultUnixSocketPathFor(lxcClient.GetServerName())
+			Expect(err).ToNot(HaveOccurred(), "Failed to retrieve unix socket path")
+
+			e2eCtx.OverrideVariables(map[string]string{
+				"CONTROL_PLANE_MACHINE_DEVICES": fmt.Sprintf("['unix-socket,type=disk,path=/run-unix.socket,shift=true,source=%s']", path),
+				"WORKER_MACHINE_DEVICES":        fmt.Sprintf("['unix-socket,type=disk,path=/run-unix.socket,shift=true,source=%s']", path),
+			})
+		}
+	})
 	e2e.SelfHostedSpec(context.TODO(), func() e2e.SelfHostedSpecInput {
 		return e2e.SelfHostedSpecInput{
 			E2EConfig:              e2eCtx.E2EConfig,

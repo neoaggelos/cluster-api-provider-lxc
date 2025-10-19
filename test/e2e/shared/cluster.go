@@ -73,7 +73,11 @@ func setupBootstrapCluster(e2eCtx *E2EContext) {
 
 	// If useExistingCluster was false or we couldn't find an existing cluster in the default kubeconfig with the configured kubeContext, let's create a new one
 	if kubeconfigPath == "" {
-		clusterProvider = bootstrap.CreateKindBootstrapClusterAndLoadImages(context.TODO(), bootstrap.CreateKindBootstrapClusterAndLoadImagesInput{
+		if e2eCtx.Settings.LXCClientOptions.ServerURL == "unix://" {
+			Logf("Mounting admin unix socket to kind instance")
+			SetEnvVar("KINI_MOUNT_UNIX_SOCKET", "1", false)
+		}
+		clusterProvider = CreateKindBootstrapClusterAndLoadImages(context.TODO(), bootstrap.CreateKindBootstrapClusterAndLoadImagesInput{
 			Name:   e2eCtx.E2EConfig.ManagementClusterName,
 			Images: e2eCtx.E2EConfig.Images,
 		})
@@ -92,6 +96,13 @@ func setupBootstrapCluster(e2eCtx *E2EContext) {
 
 // initBootstrapCluster uses kind to create a cluster.
 func initBootstrapCluster(e2eCtx *E2EContext) {
+	if e2eCtx.Settings.LXCClientOptions.ServerURL == "unix://" {
+		Logf("Controller manager pod will mount admin unix socket")
+		SetEnvVar("CAPN_VOLUMES", "[{name: unix-socket, hostPath: {path: /run-unix.socket}}]", false)
+		SetEnvVar("CAPN_VOLUME_MOUNTS", "[{name: unix-socket, mountPath: /run-unix.socket}]", false)
+		SetEnvVar("CAPN_RUN_AS_NON_ROOT", "false", false)
+		SetEnvVar("CAPN_RUN_AS_USER", "0", false)
+	}
 	clusterctl.InitManagementClusterAndWatchControllerLogs(context.TODO(), clusterctl.InitManagementClusterAndWatchControllerLogsInput{
 		ClusterProxy:            e2eCtx.Environment.BootstrapClusterProxy,
 		ClusterctlConfigPath:    e2eCtx.Environment.ClusterctlConfigPath,

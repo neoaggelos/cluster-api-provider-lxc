@@ -34,6 +34,11 @@ SHELL = /usr/bin/env bash -o pipefail
 
 REPO_ROOT := $(shell git rev-parse --show-toplevel)
 
+## Location to install dependencies and tools
+LOCALBIN ?= $(shell pwd)/bin
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
 .PHONY: all
 all: build
 
@@ -105,27 +110,31 @@ endif
 .PHONY: e2e-image
 e2e-image: TAG = e2e ## Build controller image for e2e tests
 e2e-image: ko-build
+e2e-image: ko-load-kini
 
 E2E_DATA_DIR ?= $(REPO_ROOT)/test/e2e/data
 ARTIFACTS ?= $(REPO_ROOT)/_artifacts
 
 E2E_GINKGO_ARGS ?=
 .PHONY: test-e2e
-test-e2e: ginkgo kustomize ## Run e2e tests
-	time $(GINKGO) \
-		-tags=e2e \
-		-fail-fast -timeout=3h \
-		-v -show-node-events -trace \
-		-github-output \
-		-nodes=$(E2E_GINKGO_PARALLEL) \
-		-focus="$(E2E_GINKGO_FOCUS)" $(_SKIP_ARGS) \
-		-output-dir="$(ARTIFACTS)" -junit-report=junit.e2e_suite.1.xml \
-		$(E2E_GINKGO_ARGS) \
-		./test/e2e/suites/e2e/... -- \
-			-config-path="$(E2E_CONFIG_PATH)" \
-			-artifacts-folder="$(ARTIFACTS)" \
-			-data-folder="$(E2E_DATA_DIR)" \
-			$(E2E_ARGS)
+test-e2e: ginkgo kustomize kini ## Run e2e tests
+	env \
+		PATH=$(LOCALBIN):$(PATH) \
+		KINI_DOCKER_LOG=$(ARTIFACTS)/kini-docker.log \
+		time $(GINKGO) \
+			-tags=e2e \
+			-fail-fast -timeout=3h \
+			-v -show-node-events -trace \
+			-github-output \
+			-nodes=$(E2E_GINKGO_PARALLEL) \
+			-focus="$(E2E_GINKGO_FOCUS)" $(_SKIP_ARGS) \
+			-output-dir="$(ARTIFACTS)" -junit-report=junit.e2e_suite.1.xml \
+			$(E2E_GINKGO_ARGS) \
+			./test/e2e/suites/e2e/... -- \
+				-config-path="$(E2E_CONFIG_PATH)" \
+				-artifacts-folder="$(ARTIFACTS)" \
+				-data-folder="$(E2E_DATA_DIR)" \
+				$(E2E_ARGS)
 
 .PHONY: run-test-conformance
 run-test-conformance: ginkgo kustomize
@@ -153,6 +162,7 @@ test-conformance-fast: KUBETEST_CONFIGURATION = $(E2E_DATA_DIR)/kubetest/conform
 test-conformance-fast: run-test-conformance ## Run conformance tests (fast)
 
 ##@ Build
+TARBALL ?= $(LOCALBIN)/cluster-api-provider-incus.tar
 
 .PHONY: build
 build: manifests generate fmt vet ## Build manager binary.
@@ -164,8 +174,12 @@ run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./cmd/main.go --diagnostics-address=":" --v=${V}
 
 .PHONY: ko-build
-ko-build: ko ## Build manager image and load to local docker instance.
-	$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$(LOCAL_PLATFORM) --local
+ko-build: ko $(LOCALBIN) ## Build manager image and load to local docker instance.
+	$(KO) build ./cmd --bare --tags $(TAG) --sbom=none --platform=$(LOCAL_PLATFORM) --tarball $(TARBALL) --push=false
+
+.PHONY: ko-load-kini
+ko-load-kini: ko-build kini ## Import manager image to kini cache.
+	KINI_DOCKER_LOGV=5 $(KINI) docker load -i $(TARBALL)
 
 .PHONY: ko-login
 ko-login: ko ## Configure credentials for pushing images (needs USERNAME and PASSWORD).
@@ -192,6 +206,16 @@ dist: release ## Generate release assets.
 	cp templates/cluster-template*.yaml dist/
 	cp metadata.yaml dist/
 
+##@ Kini
+
+KINI ?= $(LOCALBIN)/kini
+
+.PHONY: kini
+kini: $(LOCALBIN) ## Build kini for development
+	go build -o $(KINI) ./cmd/exp/kini
+	ln -sf kini $(LOCALBIN)/docker
+	ln -sf kini $(LOCALBIN)/kind
+
 ##@ Deployment
 
 ifndef ignore-not-found
@@ -216,11 +240,6 @@ undeploy: kustomize ## Undeploy controller from the K8s cluster specified in ~/.
 	$(KUSTOMIZE) build config/default | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
 
 ##@ Dependencies
-
-## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/bin
-$(LOCALBIN):
-	mkdir -p $(LOCALBIN)
 
 ## Tool Binaries
 KUBECTL ?= kubectl

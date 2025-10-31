@@ -134,7 +134,7 @@ type LXCClusterLoadBalancer struct {
 	// CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
 	// Please use it with caution, as there are no checks to ensure the validity of the configuration.
 	// +optional
-	CustomHAProxyConfigTemplate string `json:"customHAProxyConfigTemplateRef,omitempty"`
+	CustomHAProxyConfigTemplate string `json:"customHAProxyConfigTemplate,omitempty"`
 }
 
 type LXCLoadBalancerInstance struct {

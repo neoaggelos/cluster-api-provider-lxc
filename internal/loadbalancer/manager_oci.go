@@ -84,16 +84,15 @@ func (l *managerOCI) Reconfigure(ctx context.Context) error {
 		return fmt.Errorf("failed to build load balancer configuration: %w", err)
 	}
 
-	var haproxyCfg []byte
+	haproxyCfgTemplate := DefaultHaproxyTemplate
 	if l.customHAProxyConfigTemplate != "" {
 		log.FromContext(ctx).V(1).Info("Using custom HAProxy configuration template")
-		haproxyCfg = []byte(l.customHAProxyConfigTemplate)
-	} else {
-		log.FromContext(ctx).V(1).Info("Using default HAProxy configuration template")
-		haproxyCfg, err = renderHaproxyConfiguration(config, DefaultHaproxyTemplate)
-		if err != nil {
-			return fmt.Errorf("failed to render load balancer config: %w", err)
-		}
+		haproxyCfgTemplate = l.customHAProxyConfigTemplate
+	}
+
+	haproxyCfg, err := renderHaproxyConfiguration(config, haproxyCfgTemplate)
+	if err != nil {
+		return fmt.Errorf("failed to render load balancer config: %w", err)
 	}
 
 	log.FromContext(ctx).V(1).WithValues("path", "/usr/local/etc/haproxy/haproxy.cfg", "servers", config.BackendServers).Info("Write haproxy config")

@@ -80,11 +80,6 @@ spec:
                 maxProperties: 1
                 minProperties: 1
                 properties:
-                  customHAProxyConfigTemplate:
-                    description: |-
-                      CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
-                      Please use it with caution, as there are no checks to ensure the validity of the configuration.
-                    type: string
                   external:
                     description: |-
                       External will not create a load balancer. It must be used alongside something like kube-vip, otherwise the cluster will fail to provision.
@@ -133,6 +128,11 @@ spec:
 
                       The load balancer container is a single point of failure to access the workload cluster control plane. Therefore, it should only be used for development or evaluation clusters.
                     properties:
+                      customHAProxyConfigTemplate:
+                        description: |-
+                          CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
+                          Please use it with caution, as there are no checks to ensure the validity of the configuration.
+                        type: string
                       instanceSpec:
                         description: InstanceSpec can be used to adjust the load balancer
                           instance configuration.
@@ -226,6 +226,11 @@ spec:
 
                       Requires server extensions: `instance_oci`
                     properties:
+                      customHAProxyConfigTemplate:
+                        description: |-
+                          CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
+                          Please use it with caution, as there are no checks to ensure the validity of the configuration.
+                        type: string
                       instanceSpec:
                         description: InstanceSpec can be used to adjust the load balancer
                           instance configuration.

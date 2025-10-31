@@ -80,6 +80,11 @@ spec:
                 maxProperties: 1
                 minProperties: 1
                 properties:
+                  customHAProxyConfigTemplateRef:
+                    description: |-
+                      CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
+                      Please use it with caution, as there are no checks to ensure the validity of the configuration.
+                    type: string
                   external:
                     description: |-
                       External will not create a load balancer. It must be used alongside something like kube-vip, otherwise the cluster will fail to provision.

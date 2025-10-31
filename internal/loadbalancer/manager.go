@@ -35,8 +35,9 @@ func ManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluste
 			clusterName:      cluster.Name,
 			clusterNamespace: cluster.Namespace,
 
-			name: lxcCluster.GetLoadBalancerInstanceName(),
-			spec: lxcCluster.Spec.LoadBalancer.LXC.InstanceSpec,
+			name:                        lxcCluster.GetLoadBalancerInstanceName(),
+			spec:                        lxcCluster.Spec.LoadBalancer.LXC.InstanceSpec,
+			customHAProxyConfigTemplate: lxcCluster.Spec.LoadBalancer.CustomHAProxyConfigTemplate,
 		}
 	case lxcCluster.Spec.LoadBalancer.OCI != nil:
 		return &managerOCI{
@@ -44,8 +45,9 @@ func ManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluste
 			clusterName:      cluster.Name,
 			clusterNamespace: cluster.Namespace,
 
-			name: lxcCluster.GetLoadBalancerInstanceName(),
-			spec: lxcCluster.Spec.LoadBalancer.OCI.InstanceSpec,
+			name:                        lxcCluster.GetLoadBalancerInstanceName(),
+			spec:                        lxcCluster.Spec.LoadBalancer.OCI.InstanceSpec,
+			customHAProxyConfigTemplate: lxcCluster.Spec.LoadBalancer.CustomHAProxyConfigTemplate,
 		}
 	case lxcCluster.Spec.LoadBalancer.OVN != nil:
 		return &managerOVN{

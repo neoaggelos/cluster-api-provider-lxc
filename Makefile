@@ -137,6 +137,7 @@ test-e2e: ginkgo kustomize kini ## Run e2e tests
 				$(E2E_ARGS)
 
 .PHONY: run-test-conformance
+run-test-conformance: TAG = e2e
 run-test-conformance: ginkgo kustomize ko-load-docker
 	env \
 		KUBETEST_CONFIGURATION="$(KUBETEST_CONFIGURATION)" \

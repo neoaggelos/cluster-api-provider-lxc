@@ -57,6 +57,7 @@ spec:
         example: lxc-secret
         description: Name of secret with infrastructure credentials
   - name: loadBalancer
+    required: true
     schema:
       openAPIV3Schema:
         type: object
@@ -129,6 +130,7 @@ spec:
         maxProperties: 1
         minProperties: 1
   - name: instance
+    required: true
     schema:
       openAPIV3Schema:
         type: object
@@ -167,6 +169,7 @@ spec:
             default: false
             description: Inject preKubeadmCommands that install Kubeadm on the instance. This is useful if using a plain Ubuntu image.
   - name: etcdImageTag
+    required: false
     schema:
       openAPIV3Schema:
         type: string
@@ -174,6 +177,7 @@ spec:
         example: 3.5.16-0
         description: etcdImageTag sets the tag for the etcd image.
   - name: coreDNSImageTag
+    required: false
     schema:
       openAPIV3Schema:
         type: string
@@ -181,6 +185,7 @@ spec:
         example: v1.11.3
         description: coreDNSImageTag sets the tag for the coreDNS image.
   - name: privileged
+    required: false
     schema:
       openAPIV3Schema:
         type: boolean

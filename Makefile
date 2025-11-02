@@ -137,8 +137,10 @@ test-e2e: ginkgo kustomize kini ## Run e2e tests
 				$(E2E_ARGS)
 
 .PHONY: run-test-conformance
-run-test-conformance: ginkgo kustomize
+run-test-conformance: ginkgo kustomize kini
 	env \
+		PATH=$(LOCALBIN):$(PATH) \
+		KINI_DOCKER_LOG=$(ARTIFACTS)/kini-docker.log \
 		KUBETEST_CONFIGURATION="$(KUBETEST_CONFIGURATION)" \
 		time $(GINKGO) \
 			-tags=e2e \

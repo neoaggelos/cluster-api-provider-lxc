@@ -29,7 +29,7 @@ func SetupEnvironment(ctx context.Context, docker bool, kind bool) (string, func
 		return nil
 	}
 
-	self, err := filepath.Abs(os.Args[0])
+	self, err := os.Executable()
 	if err != nil {
 		_ = cleanup()
 		return "", nil, fmt.Errorf("failed to identity absolute path to %q: %w", os.Args[0], err)

@@ -38,6 +38,7 @@ jobs:
             dist/metadata.yaml
             dist/cluster-template*.yaml
             dist/clusterclass-*.yaml
+            dist/kini-*
           generate_release_notes: true
           draft: ${{ contains(github.ref_name, 'rc') }}
           prerelease: ${{ contains(github.ref_name, 'rc') }}

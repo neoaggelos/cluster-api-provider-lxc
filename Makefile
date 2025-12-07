@@ -206,10 +206,11 @@ release: manifests generate kustomize ## Generate a consolidated YAML with CRDs 
 	sed -i 's,volumes: \[\],volumes: $${CAPN_VOLUMES:=[]},' dist/infrastructure-components.yaml
 
 .PHONY: dist
-dist: release ## Generate release assets.
+dist: release kini-release ## Generate release assets.
 	cp templates/clusterclass*.yaml dist/
 	cp templates/cluster-template*.yaml dist/
 	cp metadata.yaml dist/
+	cp $(LOCALBIN)/kini-* dist/
 
 ##@ Kini
 
@@ -217,9 +218,14 @@ KINI ?= $(LOCALBIN)/kini
 
 .PHONY: kini
 kini: $(LOCALBIN) ## Build kini for development
-	go build -o $(KINI) ./cmd/exp/kini
+	./hack/scripts/kini/build.sh $(KINI) $(TAG)
+
 	ln -sf kini $(LOCALBIN)/docker
 	ln -sf kini $(LOCALBIN)/kind
+
+.PHONY: kini-cross
+kini-release: $(LOCALBIN) ## Build kini release binaries
+	./hack/scripts/kini/build-cross.sh $(LOCALBIN) $(TAG)
 
 ##@ Deployment
 

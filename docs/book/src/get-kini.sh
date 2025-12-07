@@ -1,0 +1,1 @@
+../../../hack/scripts/kini/get-kini.sh

@@ -14,7 +14,7 @@ import (
 )
 
 var _ = Describe("ClusterUpgrade", func() {
-	Context("Default", Label("PRBlocking"), func() {
+	Context("Default", func() {
 		e2e.ClusterUpgradeConformanceSpec(context.TODO(), func() e2e.ClusterUpgradeConformanceSpecInput {
 			return e2e.ClusterUpgradeConformanceSpecInput{
 				E2EConfig:              e2eCtx.E2EConfig,

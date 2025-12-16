@@ -24,6 +24,10 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Prepare runner
+        run: |
+          ./hack/scripts/ci/setup-github-actions.sh
+
       - name: Setup infrastructure
         run: |
           ./hack/scripts/ci/setup-ovn-localhost.sh

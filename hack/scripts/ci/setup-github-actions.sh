@@ -9,6 +9,9 @@
 # /dev/root        72G   58G   15G  80% /
 
 if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
+  # Print available space before cleanup
+  df -h /
+
   # These finish fast and give back around 2GB (used: 58GB -> 56GB)
   time sudo apt purge llvm*
   time sudo apt autoremove
@@ -54,4 +57,7 @@ if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
     /usr/share/man \
     /usr/share/miniconda \
     /usr/share/swift | xargs -n1 -t time sudo rm -rf
+
+  # Print available space after cleanup
+  df -h /
 fi

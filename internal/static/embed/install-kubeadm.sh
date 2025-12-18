@@ -177,6 +177,7 @@ if uname -m | grep -q aarch64; then ARCH=arm64; fi
 
 # sysctl
 echo net.ipv4.ip_forward=1 | tee /etc/sysctl.d/99-clusterapi.conf
+echo net.ipv6.conf.all.forwarding=1 | tee -a /etc/sysctl.d/99-clusterapi.conf
 echo fs.inotify.max_user_instances=8192 | tee -a /etc/sysctl.d/99-clusterapi.conf
 echo fs.inotify.max_user_watches=524288 | tee -a /etc/sysctl.d/99-clusterapi.conf
 sysctl --system || true

@@ -671,6 +671,19 @@ LXCLoadBalancerMachineSpec
 <p>InstanceSpec can be used to adjust the load balancer instance configuration.</p>
 </td>
 </tr>
+<tr>
+<td>
+<code>customHAProxyConfigTemplate</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
+Please use it with caution, as there are no checks to ensure the validity of the configuration.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerKubeVIP">LXCLoadBalancerKubeVIP
@@ -1088,16 +1101,16 @@ mitigate this issue, the following image names are recognized:</p>
 <li><code>ubuntu:VERSION</code> =&gt; <code>ubuntu/VERSION/cloud</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
 <li><code>debian:VERSION</code> =&gt; <code>debian/VERSION/cloud</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
 <li><code>images:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.linuxcontainers.org">https://images.linuxcontainers.org</a></li>
-<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://d14dnvi2l3tc5t.cloudfront.net">https://d14dnvi2l3tc5t.cloudfront.net</a></li>
-<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://djapqxqu5n2qu.cloudfront.net">https://djapqxqu5n2qu.cloudfront.net</a></li>
+<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.capn.open-cloud.xyz">https://images.capn.open-cloud.xyz</a></li>
+<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images-stg.capn.open-cloud.xyz">https://images-stg.capn.open-cloud.xyz</a></li>
 </ul>
 <p>For LXD:</p>
 <ul>
 <li><code>ubuntu:VERSION</code> =&gt; <code>VERSION</code> from <a href="https://cloud-images.ubuntu.com/releases">https://cloud-images.ubuntu.com/releases</a></li>
 <li><code>debian:VERSION</code> =&gt; <code>debian/VERSION/cloud</code> from <a href="https://images.lxd.canonical.com">https://images.lxd.canonical.com</a></li>
 <li><code>images:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.lxd.canonical.com">https://images.lxd.canonical.com</a></li>
-<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://d14dnvi2l3tc5t.cloudfront.net">https://d14dnvi2l3tc5t.cloudfront.net</a></li>
-<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://djapqxqu5n2qu.cloudfront.net">https://djapqxqu5n2qu.cloudfront.net</a></li>
+<li><code>capi:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images.capn.open-cloud.xyz">https://images.capn.open-cloud.xyz</a></li>
+<li><code>capi-stg:IMAGE</code> =&gt; <code>IMAGE</code> from <a href="https://images-stg.capn.open-cloud.xyz">https://images-stg.capn.open-cloud.xyz</a></li>
 </ul>
 <p>Any instances of <code>VERSION</code> in the image name will be replaced with the machine version.
 For example, to use debian based kubeadm images, you can set image name to &ldquo;capi:kubeadm/VERSION/debian&rdquo;</p>

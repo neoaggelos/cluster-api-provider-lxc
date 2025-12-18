@@ -2,9 +2,15 @@
 
 The `cluster-api-provider-incus` project runs a simplestreams server with pre-built kubeadm images for specific Kubernetes versions.
 
-The default simplestreams server is available through an Amazon CloudFront distribution at [https://d14dnvi2l3tc5t.cloudfront.net](https://d14dnvi2l3tc5t.cloudfront.net).
+The default simplestreams server is available through an Amazon CloudFront distribution at [https://images.capn.open-cloud.xyz](https://images.capn.open-cloud.xyz).
 
 Running infrastructure costs are kindly subsidized by the [National Technical University Of Athens].
+
+> **WARNING: In 2025-12-19, the default simplestreams server has migrated to a new location.**
+>
+> **The new URL is at [https://images.capn.open-cloud.xyz](https://images.capn.open-cloud.xyz).**
+>
+> **For more details, refer to [https://github.com/lxc/cluster-api-provider-incus/issues/180](https://github.com/lxc/cluster-api-provider-incus/issues/180)**
 
 ## Table Of Contents
 
@@ -30,15 +36,10 @@ The following images are currently provided:
 | Image Alias     | Base Image   | Description                            | amd64 | arm64 |
 | --------------- | ------------ | -------------------------------------- | ----- | ----- |
 | haproxy         | Ubuntu 24.04 | Haproxy image for development clusters | X     | X     |
-| kubeadm/v1.31.5 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.31.5   | X     |       |
-| kubeadm/v1.32.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.32.0   | X     |       |
-| kubeadm/v1.32.1 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.32.1   | X     |       |
-| kubeadm/v1.32.2 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.32.2   | X     |       |
-| kubeadm/v1.32.3 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.32.3   | X     |       |
-| kubeadm/v1.32.4 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.32.4   | X     | X     |
 | kubeadm/v1.33.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.33.0   | X     | X     |
 | kubeadm/v1.33.5 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.33.5   | X     | X     |
 | kubeadm/v1.34.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.34.0   | X     | X     |
+| kubeadm/v1.35.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.35.0   | X     | X     |
 
 Note that the table above might be out of date. See [streams/v1/index.json] and [streams/v1/images.json] for the list of versions currently available.
 
@@ -51,7 +52,7 @@ Note that the table above might be out of date. See [streams/v1/index.json] and 
 Configure the `capi` remote:
 
 ```bash
-incus remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
+incus remote add capi https://images.capn.open-cloud.xyz --protocol=simplestreams
 ```
 
 List available images (with filters):
@@ -59,23 +60,23 @@ List available images (with filters):
 ```bash
 incus image list capi:                                  # list all images
 incus image list capi: type=virtual-machine             # list kvm images
-incus image list capi: release=v1.33.0                  # list v1.33.0 images
+incus image list capi: release=v1.35.0                  # list v1.35.0 images
 incus image list capi: arch=amd64                       # list amd64 images
 ```
 
 Example output:
 
 ```bash
-# incus image list capi: release=v1.33.0
-+--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-----------------------+
-|             ALIAS              | FINGERPRINT  | PUBLIC |             DESCRIPTION              | ARCHITECTURE |      TYPE       |    SIZE    |      UPLOAD DATE      |
-+--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-----------------------+
-| kubeadm/v1.33.0 (3 more)       | 2c9a39642b86 | yes    | kubeadm v1.33.0 amd64 (202505182020) | x86_64       | VIRTUAL-MACHINE | 1074.31MiB | 2025/05/18 03:00 EEST |
-+--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-----------------------+
-| kubeadm/v1.33.0 (3 more)       | 4562457b34fd | yes    | kubeadm v1.33.0 amd64 (202505182020) | x86_64       | CONTAINER       | 683.60MiB  | 2025/05/18 03:00 EEST |
-+--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-----------------------+
-| kubeadm/v1.33.0/arm64 (1 more) | b377834c4842 | yes    | kubeadm v1.33.0 arm64 (202505182023) | aarch64      | CONTAINER       | 664.59MiB  | 2025/05/18 03:00 EEST |
-+--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-----------------------+
+# incus image list capi: release=v1.35.0
++--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+----------------------+
+|             ALIAS              | FINGERPRINT  | PUBLIC |             DESCRIPTION              | ARCHITECTURE |      TYPE       |    SIZE    |     UPLOAD DATE      |
++--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+----------------------+
+| kubeadm/v1.35.0 (3 more)       | a2a90287e692 | yes    | kubeadm v1.35.0 amd64 (202512182137) | x86_64       | CONTAINER       | 586.96MiB  | 2025/12/18 02:00 EET |
++--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+----------------------+
+| kubeadm/v1.35.0 (3 more)       | dfcc37a45736 | yes    | kubeadm v1.35.0 amd64 (202512182138) | x86_64       | VIRTUAL-MACHINE | 1107.94MiB | 2025/12/18 02:00 EET |
++--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+----------------------+
+| kubeadm/v1.35.0/arm64 (1 more) | e19b3bedafc1 | yes    | kubeadm v1.35.0 arm64 (202512182140) | aarch64      | CONTAINER       | 540.61MiB  | 2025/12/18 02:00 EET |
++--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+----------------------+
 ```
 
 {{#/tab }}
@@ -85,7 +86,7 @@ Example output:
 Configure the `capi` remote:
 
 ```bash
-lxc remote add capi https://d14dnvi2l3tc5t.cloudfront.net --protocol=simplestreams
+lxc remote add capi https://images.capn.open-cloud.xyz --protocol=simplestreams
 ```
 
 List available images (with filters):
@@ -104,11 +105,11 @@ Example output:
 +--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-------------------------------+
 |             ALIAS              | FINGERPRINT  | PUBLIC |             DESCRIPTION              | ARCHITECTURE |      TYPE       |    SIZE    |          UPLOAD DATE          |
 +--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-------------------------------+
-| kubeadm/v1.33.0 (3 more)       | 4027cf8489e1 | yes    | kubeadm v1.33.0 amd64 (202505161311) | x86_64       | VIRTUAL-MACHINE | 1063.82MiB | May 16, 2025 at 12:00am (UTC) |
+| kubeadm/v1.35.0 (3 more)       | a2a90287e692 | yes    | kubeadm v1.35.0 amd64 (202512182137) | x86_64       | CONTAINER       | 586.96MiB  | Dec 18, 2025 at 12:00am (UTC) |
 +--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-------------------------------+
-| kubeadm/v1.33.0 (3 more)       | 4562457b34fd | yes    | kubeadm v1.33.0 amd64 (202505182020) | x86_64       | CONTAINER       | 683.60MiB  | May 18, 2025 at 12:00am (UTC) |
+| kubeadm/v1.35.0 (3 more)       | dfcc37a45736 | yes    | kubeadm v1.35.0 amd64 (202512182138) | x86_64       | VIRTUAL-MACHINE | 1107.94MiB | Dec 18, 2025 at 12:00am (UTC) |
 +--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-------------------------------+
-| kubeadm/v1.33.0/arm64 (1 more) | b377834c4842 | yes    | kubeadm v1.33.0 arm64 (202505182023) | aarch64      | CONTAINER       | 664.59MiB  | May 18, 2025 at 12:00am (UTC) |
+| kubeadm/v1.35.0/arm64 (1 more) | e19b3bedafc1 | yes    | kubeadm v1.35.0 arm64 (202512182140) | aarch64      | CONTAINER       | 540.61MiB  | Dec 18, 2025 at 12:00am (UTC) |
 +--------------------------------+--------------+--------+--------------------------------------+--------------+-----------------+------------+-------------------------------+
 ```
 
@@ -119,5 +120,5 @@ Example output:
 [National Technical University Of Athens]: https://ntua.gr/en
 [Incus]: https://linuxcontainers.org/incus/docs/main/
 [Canonical LXD]: https://canonical-lxd.readthedocs-hosted.com/en/
-[streams/v1/index.json]: https://d14dnvi2l3tc5t.cloudfront.net/streams/v1/index.json
-[streams/v1/images.json]: https://d14dnvi2l3tc5t.cloudfront.net/streams/v1/images.json
+[streams/v1/index.json]: https://images.capn.open-cloud.xyz/streams/v1/index.json
+[streams/v1/images.json]: https://images.capn.open-cloud.xyz/streams/v1/images.json

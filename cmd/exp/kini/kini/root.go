@@ -75,5 +75,7 @@ kini can also be used with an existing kind binary. You can do this as follows:
 		docker.NewCmd(),
 	)
 
+	cmd.AddCommand(newKiniVersionCmd())
+
 	return cmd
 }

@@ -9,12 +9,12 @@
 #     $ curl https://capn.linuxcontainers.org/get-kini.sh | SUDO= KINI_INSTALL_DIR=~/.local/bin bash
 #
 # 3). Install specific version
-#     $ curl https://capn.linuxcontainers.org/get-kini.sh | KINI_DOWNLOAD_URL=https://github.com/lxc/cluster-api-provider/releases/v0.8.2/download bash
+#     $ curl https://capn.linuxcontainers.org/get-kini.sh | KINI_DOWNLOAD_URL=https://github.com/lxc/cluster-api-provider-incus/releases/v0.8.2/download bash
 
 set -eu
 
 KINI_INSTALL_DIR="${KINI_INSTALL_DIR:-/usr/local/bin}"
-KINI_DOWNLOAD_URL="${KINI_DOWNLOAD_URL:-https://github.com/lxc/cluster-api-provider/releases/latest/download}"
+KINI_DOWNLOAD_URL="${KINI_DOWNLOAD_URL:-https://github.com/lxc/cluster-api-provider-incus/releases/latest/download}"
 
 # infer SUDO, if not running as root
 SUDO="${SUDO:-sudo}"
@@ -40,7 +40,7 @@ echo "Downloading ${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}"
 (
   set -x
   mkdir -p "/tmp/kini$$"
-  curl "${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}" -f -o "/tmp/kini$$/kini"
+  curl "${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}" -fSL -o "/tmp/kini$$/kini"
 
   chmod +x "/tmp/kini$$/kini"
 

@@ -40,7 +40,7 @@ echo "Downloading ${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}"
 (
   set -x
   mkdir -p "/tmp/kini$$"
-  curl "${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}" -f -o "/tmp/kini$$/kini"
+  curl "${KINI_DOWNLOAD_URL}/kini-${OS}-${ARCH}" -fSL -o "/tmp/kini$$/kini"
 
   chmod +x "/tmp/kini$$/kini"
 

@@ -56,7 +56,7 @@ LXCClusterSpec
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
 </a>
 </em>
@@ -245,7 +245,7 @@ LXCLoadBalancerExternal
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCCluster">LXCCluster</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterTemplateResource">LXCClusterTemplateResource</a>)
 </p>
 <p>
@@ -263,7 +263,7 @@ LXCLoadBalancerExternal
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
 </a>
 </em>
@@ -363,7 +363,7 @@ bool
 <td>
 <code>conditions</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.Conditions
 </a>
 </em>
@@ -467,7 +467,7 @@ LXCClusterTemplateResource
 <td>
 <code>metadata</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.ObjectMeta
 </a>
 </em>
@@ -497,7 +497,7 @@ LXCClusterSpec
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
 </a>
 </em>
@@ -1071,7 +1071,7 @@ LXCMachineStatus
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCLoadBalancerMachineSpec">LXCLoadBalancerMachineSpec</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineSpec">LXCMachineSpec</a>)
 </p>
 <p>
@@ -1158,7 +1158,7 @@ string
 </h3>
 <p>
 (<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachine">LXCMachine</a>,
 <a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineTemplateResource">LXCMachineTemplateResource</a>)
 </p>
 <p>
@@ -1356,7 +1356,7 @@ bool
 <td>
 <code>addresses</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 []sigs.k8s.io/cluster-api/api/v1beta1.MachineAddress
 </a>
 </em>
@@ -1370,7 +1370,7 @@ bool
 <td>
 <code>conditions</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.Conditions
 </a>
 </em>
@@ -1474,7 +1474,7 @@ LXCMachineTemplateResource
 <td>
 <code>metadata</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.2">
+<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
 sigs.k8s.io/cluster-api/api/v1beta1.ObjectMeta
 </a>
 </em>

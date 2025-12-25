@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/exp/simplestreams/index"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -85,7 +87,8 @@ func (m *manager) Sync(ctx context.Context, manifest Manifest) error {
 	if err != nil {
 		return fmt.Errorf("failed to open index at %q: %w", m.indexDir, err)
 	}
-	for imageID, image := range manifest.Images {
+	for _, imageID := range slices.Sorted(maps.Keys(manifest.Images)) {
+		image := manifest.Images[imageID]
 		imageCtx := log.IntoContext(ctx, log.FromContext(ctx, "image", imageID))
 		if err := m.syncImage(imageCtx, index, imageID, image); err != nil {
 			return fmt.Errorf("failed to sync %q: %w", imageID, err)

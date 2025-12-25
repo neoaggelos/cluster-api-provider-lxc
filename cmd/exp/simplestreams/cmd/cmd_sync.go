@@ -35,7 +35,12 @@ func newSyncCmd() *cobra.Command {
 				return fmt.Errorf("failed to parse manifest: %w", err)
 			}
 
-			if err := sync.NewManager(flags.rootDir, flags.stagingDir, http.DefaultClient).Sync(cmd.Context(), manifest); err != nil {
+			mgr, err := sync.NewManager(flags.rootDir, flags.stagingDir, http.DefaultClient)
+			if err != nil {
+				return fmt.Errorf("failed to initialize manager: %w", err)
+			}
+
+			if err := mgr.Sync(cmd.Context(), manifest); err != nil {
 				return fmt.Errorf("failed to sync images: %w", err)
 			}
 			return nil

@@ -1,74 +1,74 @@
 ---
 images:
-## HAPROXY IMAGES
-- id: haproxy-amd64
-  type: container
-  alias: [haproxy, haproxy/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/haproxy-ubuntu-amd64.tar.gz
-  checksum: sha256:a41edb560ff9c00c9ff2f2f93c13a40d4df35ca0421a92bc34422efcac1b6371
-- id: haproxy-arm64
-  type: container
-  alias: [haproxy, haproxy/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/haproxy-ubuntu-arm64.tar.gz
-  checksum: sha256:9a44d76f35d0b94bab95c4948a61b5ee0a0eefce0f4c138fe6f6cce271c798f6
+  ## HAPROXY IMAGES
+  haproxy-amd64:
+    type: container
+    alias: [haproxy, haproxy/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/haproxy-ubuntu-amd64.tar.gz
+    checksum: sha256:a41edb560ff9c00c9ff2f2f93c13a40d4df35ca0421a92bc34422efcac1b6371
+  haproxy-arm64:
+    type: container
+    alias: [haproxy, haproxy/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/haproxy-ubuntu-arm64.tar.gz
+    checksum: sha256:9a44d76f35d0b94bab95c4948a61b5ee0a0eefce0f4c138fe6f6cce271c798f6
 
-## KUBEADM IMAGES
-- id: kubeadm-v1.33.0-container-amd64
-  type: container
-  alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-container-ubuntu-amd64.tar.gz
-  checksum: sha256:9da34cb94756590b0bdbfead20284eb7a003aa6041d80dd7df60ee0f5cdc3b7d
-- id: kubeadm-v1.33.0-container-arm64
-  type: container
-  alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-container-ubuntu-arm64.tar.gz
-  checksum: sha256:407888558ad75ec1526f88fb6c0f0aed00e8e391ee8b70357a7856e488e82e97
-- id: kubeadm-v1.33.0-virtual-machine-amd64
-  type: virtual-machine
-  alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-virtual-machine-ubuntu-amd64.tar.gz
+  ## KUBEADM IMAGES
+  kubeadm-v1.33.0-container-amd64:
+    type: container
+    alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-container-ubuntu-amd64.tar.gz
+    checksum: sha256:9da34cb94756590b0bdbfead20284eb7a003aa6041d80dd7df60ee0f5cdc3b7d
+  kubeadm-v1.33.0-container-arm64:
+    type: container
+    alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-container-ubuntu-arm64.tar.gz
+    checksum: sha256:407888558ad75ec1526f88fb6c0f0aed00e8e391ee8b70357a7856e488e82e97
+  kubeadm-v1.33.0-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.33.0, kubeadm/v1.33.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.0-virtual-machine-ubuntu-amd64.tar.gz
 
-- id: kubeadm-v1.33.5-container-amd64
-  type: container
-  alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-amd64.tar.gz
-  checksum: sha256:d97e020dae111fa03b673d271a86d8a45d2a0eb28ab95734382544274cdb4e30
-- id: kubeadm-v1.33.5-container-arm64
-  type: container
-  alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
-  checksum: sha256:d97e020dae111fa03b673d271a86d8a45d2a0eb28ab95734382544274cdb4e30
-- id: kubeadm-v1.33.5-virtual-machine-amd64
-  type: virtual-machine
-  alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-virtual-machine-ubuntu-amd64.tar.gz
+  kubeadm-v1.33.5-container-amd64:
+    type: container
+    alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-amd64.tar.gz
+    checksum: sha256:d97e020dae111fa03b673d271a86d8a45d2a0eb28ab95734382544274cdb4e30
+  kubeadm-v1.33.5-container-arm64:
+    type: container
+    alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
+    checksum: sha256:d97e020dae111fa03b673d271a86d8a45d2a0eb28ab95734382544274cdb4e30
+  kubeadm-v1.33.5-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.33.5, kubeadm/v1.33.5/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-virtual-machine-ubuntu-amd64.tar.gz
 
-- id: kubeadm-v1.34.0-container-amd64
-  type: container
-  alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.34.0-container-ubuntu-amd64.tar.gz
-  checksum: sha256:dbc7878f880f3c62a85c21ca0e2b7218033c8e0c7bdb3d820d48d6ebfb1c4dc3
-- id: kubeadm-v1.34.0-container-arm64
-  type: container
-  alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
-  checksum: sha256:e2a8798e70f067e5c03996bd18ec81f7a41d6eaabb2e9bb6063a0e0e7637402c
-- id: kubeadm-v1.34.0-virtual-machine-amd64
-  type: virtual-machine
-  alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.34.0-virtual-machine-ubuntu-amd64.tar.gz
+  kubeadm-v1.34.0-container-amd64:
+    type: container
+    alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.34.0-container-ubuntu-amd64.tar.gz
+    checksum: sha256:dbc7878f880f3c62a85c21ca0e2b7218033c8e0c7bdb3d820d48d6ebfb1c4dc3
+  kubeadm-v1.34.0-container-arm64:
+    type: container
+    alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
+    checksum: sha256:e2a8798e70f067e5c03996bd18ec81f7a41d6eaabb2e9bb6063a0e0e7637402c
+  kubeadm-v1.34.0-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.34.0-virtual-machine-ubuntu-amd64.tar.gz
 
-- id: kubeadm-v1.35.0-container-amd64
-  type: container
-  alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.35.0-container-ubuntu-amd64.tar.gz
-  checksum: sha256:a2a90287e6924d2de3598add7b164412ff28f563ffaf3f29b20e1ebcefabed7c
-- id: kubeadm-v1.35.0-container-arm64
-  type: container
-  alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
-  checksum: sha256:e19b3bedafc18100a2833da3eda2a1a4aaa64eaf5415310f602e931ae92bd418
-- id: kubeadm-v1.35.0-virtual-machine-amd64
-  type: virtual-machine
-  alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
-  source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.35.0-virtual-machine-ubuntu-amd64.tar.gz
+  kubeadm-v1.35.0-container-amd64:
+    type: container
+    alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.35.0-container-ubuntu-amd64.tar.gz
+    checksum: sha256:a2a90287e6924d2de3598add7b164412ff28f563ffaf3f29b20e1ebcefabed7c
+  kubeadm-v1.35.0-container-arm64:
+    type: container
+    alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
+    checksum: sha256:e19b3bedafc18100a2833da3eda2a1a4aaa64eaf5415310f602e931ae92bd418
+  kubeadm-v1.35.0-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.35.0-virtual-machine-ubuntu-amd64.tar.gz

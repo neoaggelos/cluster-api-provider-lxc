@@ -1,0 +1,51 @@
+name: Build Haproxy Images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write   # for release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        # amd64 images
+        - { type: container, base: ubuntu, arch: amd64 }
+        - { type: container, base: debian, arch: amd64 }
+        # arm64 images
+        - { type: container, base: ubuntu, arch: arm64 }
+        - { type: container, base: debian, arch: arm64 }
+    runs-on: ${{ matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Prepare runner
+        run: |
+          ./hack/scripts/ci/setup-github-actions.sh
+
+      - name: Setup infrastructure
+        run: |
+          ./hack/scripts/ci/setup-incus.sh
+
+      - name: Build image
+        run: |
+          go run ./cmd/exp/image-builder haproxy --v=4 \
+            --base-image=${{ matrix.base }} \
+            --output=haproxy-${{ matrix.base }}-${{ matrix.arch }}.tar.gz
+
+      - name: Release image
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Kubeadm images
+          tag_name: kubeadm-images
+          files: |
+            haproxy-${{ matrix.base }}-${{ matrix.arch }}.tar.gz
+          make_latest: "false"

@@ -24,6 +24,7 @@ func NewCmd() *cobra.Command {
 
 	cmd.AddGroup(&cobra.Group{ID: "operations", Title: "Available operations:"})
 	cmd.AddCommand(newShowCmd())
+	cmd.AddCommand(newSyncCmd())
 	cmd.AddCommand(newImportCmd())
 
 	return cmd

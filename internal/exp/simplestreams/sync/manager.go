@@ -10,9 +10,10 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/exp/simplestreams/index"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
+
+	"github.com/lxc/cluster-api-provider-incus/internal/exp/simplestreams/index"
 )
 
 // manager handles syncing images into a target directory.
@@ -55,7 +56,6 @@ func (m *manager) syncImage(ctx context.Context, index *index.Index, imageID str
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("failed to download image: GET %q failed: %s", image.Source, resp.Status)
 	}
-	defer resp.Body.Close()
 
 	f, err := os.Create(filepath.Join(m.stagingDir, imageID))
 	if err != nil {
@@ -66,6 +66,9 @@ func (m *manager) syncImage(ctx context.Context, index *index.Index, imageID str
 	}
 	if err := f.Close(); err != nil {
 		return fmt.Errorf("failed to download image: failed to write file: %w", err)
+	}
+	if err := resp.Body.Close(); err != nil {
+		return fmt.Errorf("failed to download image: failed to fetch: %w", err)
 	}
 
 	if image.Checksum != "" {

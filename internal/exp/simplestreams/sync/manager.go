@@ -153,7 +153,7 @@ func (m *manager) Sync(ctx context.Context, manifest Manifest) error {
 	}
 
 	if err := m.syncHashes(ctx, index); err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("failed to sync files.sha256: %w", err)
 	}
 
 	return nil

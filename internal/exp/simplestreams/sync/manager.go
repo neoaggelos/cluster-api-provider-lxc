@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
+	"time"
 
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
@@ -84,6 +86,54 @@ func (m *manager) syncImage(ctx context.Context, index *index.Index, imageID str
 	return nil
 }
 
+func (m *manager) syncManifest(ctx context.Context, manifest Manifest) error {
+	log.FromContext(ctx).Info("Writing images.yaml")
+	b, err := yaml.Marshal(manifest)
+	if err != nil {
+		return fmt.Errorf("failed to format YAML: %w", err)
+	}
+	if err := os.WriteFile(filepath.Join(m.indexDir, "images.yaml"), b, 0644); err != nil {
+		return fmt.Errorf("failed to write file: %w", err)
+	}
+
+	return nil
+}
+
+func (m *manager) syncHashes(ctx context.Context, index *index.Index) error {
+	hashes := map[string]string{}
+	for _, path := range []string{
+		"streams/v1/index.json",
+		"streams/v1/images.json",
+		"images.yaml",
+	} {
+		hash, err := calculateFileSha256(filepath.Join(m.indexDir, path))
+		if err != nil {
+			return fmt.Errorf("failed to calculate sha256 of %q: %w", path, err)
+		}
+		hashes[path] = hash
+	}
+
+	for _, product := range index.Products.Products {
+		for _, version := range product.Versions {
+			for _, item := range version.Items {
+				hashes[item.Path] = item.HashSha256
+			}
+		}
+	}
+
+	log.FromContext(ctx).Info("Writing files.sha256", "items", len(hashes))
+	lines := make([]string, 0, len(hashes)+1)
+	lines = append(lines, fmt.Sprintf("# generated at %v", time.Now()))
+	for _, key := range slices.Sorted(maps.Keys(hashes)) {
+		lines = append(lines, fmt.Sprintf("%s  %s", hashes[key], key))
+	}
+
+	if err := os.WriteFile(filepath.Join(m.indexDir, "files.sha256"), []byte(strings.Join(lines, "\n")), 0644); err != nil {
+		return fmt.Errorf("failed to write files.sha256: %w", err)
+	}
+	return nil
+}
+
 // Sync
 func (m *manager) Sync(ctx context.Context, manifest Manifest) error {
 	index, err := index.GetOrCreateIndex(m.indexDir)
@@ -98,13 +148,12 @@ func (m *manager) Sync(ctx context.Context, manifest Manifest) error {
 		}
 	}
 
-	log.FromContext(ctx).Info("Writing images.yaml")
-	b, err := yaml.Marshal(manifest)
-	if err != nil {
-		return fmt.Errorf("failed to add images.yaml manifest: failed to format YAML: %w", err)
+	if err := m.syncManifest(ctx, manifest); err != nil {
+		return fmt.Errorf("failed to sync images.yaml: %w", err)
 	}
-	if err := os.WriteFile(filepath.Join(m.indexDir, "images.yaml"), b, 0644); err != nil {
-		return fmt.Errorf("failed to add images.yaml manifest: failed to write file: %w", err)
+
+	if err := m.syncHashes(ctx, index); err != nil {
+		return fmt.Errorf("")
 	}
 
 	return nil

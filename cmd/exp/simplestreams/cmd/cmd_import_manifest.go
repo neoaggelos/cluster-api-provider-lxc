@@ -11,7 +11,7 @@ import (
 	"github.com/lxc/cluster-api-provider-incus/internal/exp/simplestreams/sync"
 )
 
-func newSyncCmd() *cobra.Command {
+func newImportManifestCmd() *cobra.Command {
 	var flags struct {
 		rootDir    string
 		stagingDir string
@@ -20,9 +20,8 @@ func newSyncCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "sync",
-		Short:   "Sync images from an upstream source into a simplestreams index",
-		GroupID: "operations",
+		Use:   "manifest",
+		Short: "Import images from a manifest",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := os.ReadFile(flags.manifest)
@@ -40,7 +39,7 @@ func newSyncCmd() *cobra.Command {
 				return fmt.Errorf("failed to initialize manager: %w", err)
 			}
 
-			if err := mgr.Sync(cmd.Context(), manifest); err != nil {
+			if err := mgr.Import(cmd.Context(), manifest); err != nil {
 				return fmt.Errorf("failed to sync images: %w", err)
 			}
 			return nil

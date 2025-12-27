@@ -12,6 +12,7 @@ func newImportCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(newImportImageCmd())
+	cmd.AddCommand(newImportManifestCmd())
 	cmd.AddCommand(newImportReleaseCmd())
 
 	return cmd

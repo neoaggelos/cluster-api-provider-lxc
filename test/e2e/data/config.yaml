@@ -4,7 +4,7 @@
 managementClusterName: capn-e2e
 
 images:
-# NOTE(neoaggelos): Ensure https://images.capn.open-cloud.xyz/streams/v1/index.json has kubeadm image for DefaultNodeImageVersion.
+# NOTE(neoaggelos): Ensure https://images.linuxcontainers.org/capn/streams/v1/index.json has kubeadm image for DefaultNodeImageVersion.
 # https://github.com/kubernetes-sigs/cluster-api/blob/v1.10.9/test/framework/bootstrap/kind_provider.go#L40
 - name: registry.k8s.io/cluster-api/cluster-api-controller:v1.10.9
   loadBehavior: tryLoad

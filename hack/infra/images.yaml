@@ -51,7 +51,7 @@ images:
   kubeadm-v1.34.0-container-arm64:
     type: container
     alias: [kubeadm/v1.34.0, kubeadm/v1.34.0/ubuntu]
-    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.34.0-container-ubuntu-arm64.tar.gz
     checksum: sha256:e2a8798e70f067e5c03996bd18ec81f7a41d6eaabb2e9bb6063a0e0e7637402c
   kubeadm-v1.34.0-virtual-machine-amd64:
     type: virtual-machine
@@ -66,7 +66,7 @@ images:
   kubeadm-v1.35.0-container-arm64:
     type: container
     alias: [kubeadm/v1.35.0, kubeadm/v1.35.0/ubuntu]
-    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.33.5-container-ubuntu-arm64.tar.gz
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.35.0-container-ubuntu-arm64.tar.gz
     checksum: sha256:e19b3bedafc18100a2833da3eda2a1a4aaa64eaf5415310f602e931ae92bd418
   kubeadm-v1.35.0-virtual-machine-amd64:
     type: virtual-machine

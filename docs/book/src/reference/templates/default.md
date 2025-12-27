@@ -99,8 +99,8 @@ Note that Incus and Canonical LXD use incompatible image servers. To help mitiga
 - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
 - `debian:VERSION` => `debian/VERSION/cloud` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
 - `images:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org](https://images.linuxcontainers.org)
-- `capi:IMAGE` => `IMAGE` from [https://images.capn.open-cloud.xyz](https://images.capn.open-cloud.xyz) ([default simplestreams server](../default-simplestreams-server.md))
-- `capi-stg:IMAGE` => `IMAGE` from [https://images-stg.capn.open-cloud.xyz](https://images-stg.capn.open-cloud.xyz) (staging simplestreams server)
+- `capi:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org/capn/](https://images.linuxcontainers.org/capn/) ([default simplestreams server](../default-simplestreams-server.md))
+- `capi-stg:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org/capn/staging/](https://images.linuxcontainers.org/capn/staging/) ([default simplestreams server](../default-simplestreams-server.md))
 
 {{#/tab }}
 {{#tab Canonical LXD }}
@@ -108,8 +108,8 @@ Note that Incus and Canonical LXD use incompatible image servers. To help mitiga
 - `ubuntu:VERSION` => `VERSION` from [https://cloud-images.ubuntu.com/releases](https://cloud-images.ubuntu.com/releases)
 - `debian:VERSION` => `debian/VERSION/cloud` from [https://images.lxd.canonical.com](https://images.lxd.canonical.com)
 - `images:IMAGE` => `IMAGE` from [https://images.lxd.canonical.com](https://images.lxd.canonical.com)
-- `capi:IMAGE` => `IMAGE` from [https://images.capn.open-cloud.xyz](https://images.capn.open-cloud.xyz) ([default simplestreams server](../default-simplestreams-server.md))
-- `capi-stg:IMAGE` => `IMAGE` from [https://images-stg.capn.open-cloud.xyz](https://images-stg.capn.open-cloud.xyz) (staging simplestreams server)
+- `capi:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org/capn/](https://images.linuxcontainers.org/capn/) ([default simplestreams server](../default-simplestreams-server.md))
+- `capi-stg:IMAGE` => `IMAGE` from [https://images.linuxcontainers.org/capn/staging/](https://images.linuxcontainers.org/capn/staging/) ([default simplestreams server](../default-simplestreams-server.md))
 
 {{#/tab }}
 {{#/tabs }}

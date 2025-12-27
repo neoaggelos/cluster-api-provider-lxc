@@ -4,10 +4,10 @@ import "time"
 
 const (
 	// DefaultSimplestreamsServer is the default simplestreams server for fetching images.
-	DefaultSimplestreamsServer = "https://images.capn.open-cloud.xyz"
+	DefaultSimplestreamsServer = "https://images.linuxcontainers.org/capn/"
 
 	// DefaultStagingSimplestreamsServer is the default staging simplestreams server for fetching images.
-	DefaultStagingSimplestreamsServer = "https://images-stg.capn.open-cloud.xyz"
+	DefaultStagingSimplestreamsServer = "https://images-stg.capn.open-cloud.xyz/capn/staging/"
 
 	// DefaultIncusSimplestreamsServer is the default simplestreams server for Incus.
 	DefaultIncusSimplestreamsServer = "https://images.linuxcontainers.org"

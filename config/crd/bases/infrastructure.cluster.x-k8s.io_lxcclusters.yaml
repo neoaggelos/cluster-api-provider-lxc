@@ -169,16 +169,16 @@ spec:
                                     - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
                                     - `debian:VERSION` => `debian/VERSION/cloud` from https://images.linuxcontainers.org
                                     - `images:IMAGE` => `IMAGE` from https://images.linuxcontainers.org
-                                    - `capi:IMAGE` => `IMAGE` from https://images.capn.open-cloud.xyz
-                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz
+                                    - `capi:IMAGE` => `IMAGE` from https://images.linuxcontainers.org/capn/
+                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz/capn/staging/
 
                                   For LXD:
 
                                     - `ubuntu:VERSION` => `VERSION` from https://cloud-images.ubuntu.com/releases
                                     - `debian:VERSION` => `debian/VERSION/cloud` from https://images.lxd.canonical.com
                                     - `images:IMAGE` => `IMAGE` from https://images.lxd.canonical.com
-                                    - `capi:IMAGE` => `IMAGE` from https://images.capn.open-cloud.xyz
-                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz
+                                    - `capi:IMAGE` => `IMAGE` from https://images.linuxcontainers.org/capn/
+                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz/capn/staging/
 
                                   Any instances of `VERSION` in the image name will be replaced with the machine version.
                                   For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"
@@ -267,16 +267,16 @@ spec:
                                     - `ubuntu:VERSION` => `ubuntu/VERSION/cloud` from https://images.linuxcontainers.org
                                     - `debian:VERSION` => `debian/VERSION/cloud` from https://images.linuxcontainers.org
                                     - `images:IMAGE` => `IMAGE` from https://images.linuxcontainers.org
-                                    - `capi:IMAGE` => `IMAGE` from https://images.capn.open-cloud.xyz
-                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz
+                                    - `capi:IMAGE` => `IMAGE` from https://images.linuxcontainers.org/capn/
+                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz/capn/staging/
 
                                   For LXD:
 
                                     - `ubuntu:VERSION` => `VERSION` from https://cloud-images.ubuntu.com/releases
                                     - `debian:VERSION` => `debian/VERSION/cloud` from https://images.lxd.canonical.com
                                     - `images:IMAGE` => `IMAGE` from https://images.lxd.canonical.com
-                                    - `capi:IMAGE` => `IMAGE` from https://images.capn.open-cloud.xyz
-                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz
+                                    - `capi:IMAGE` => `IMAGE` from https://images.linuxcontainers.org/capn/
+                                    - `capi-stg:IMAGE` => `IMAGE` from https://images-stg.capn.open-cloud.xyz/capn/staging/
 
                                   Any instances of `VERSION` in the image name will be replaced with the machine version.
                                   For example, to use debian based kubeadm images, you can set image name to "capi:kubeadm/VERSION/debian"

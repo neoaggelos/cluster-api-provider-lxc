@@ -59,7 +59,7 @@ func DefaultImage(image string) ImageFamily {
 }
 
 func CapnImage(image string) Image {
-	return Image{ // "capi:IMAGE" -> "IMAGE" from "https://images.capn.open-cloud.xyz"
+	return Image{ // "capi:IMAGE" -> "IMAGE" from "https://images.linuxcontainers.org/capn/"
 		Protocol: Simplestreams,
 		Server:   DefaultSimplestreamsServer,
 		Alias:    image,
@@ -67,7 +67,7 @@ func CapnImage(image string) Image {
 }
 
 func CapnStagingImage(image string) Image {
-	return Image{ // "capi-stg:IMAGE" -> "IMAGE" from "https://images-stg.capn.open-cloud.xyz"
+	return Image{ // "capi-stg:IMAGE" -> "IMAGE" from "https://images-stg.capn.open-cloud.xyz/capn/staging/"
 		Protocol: Simplestreams,
 		Server:   DefaultStagingSimplestreamsServer,
 		Alias:    image,

@@ -73,12 +73,16 @@ func (m *manager) syncImage(ctx context.Context, index *index.Index, imageID str
 		return fmt.Errorf("failed to download image: failed to fetch: %w", err)
 	}
 
-	if image.Checksum != "" {
-		// TODO: validate checksum
-		log.FromContext(ctx).Info("Ignoring checksum check", "checksum", image.Checksum)
+	if expectHash, ok := strings.CutPrefix(image.Checksum, "sha256:"); ok {
+		log.FromContext(ctx).Info("Validating checksum", "sha256", expectHash)
+		if hash, err := calculateFileSha256(filepath.Join(m.stagingDir, imageID)); err != nil {
+			return fmt.Errorf("failed to download image: failed to check sha256: %w", err)
+		} else if hash != expectHash {
+			return fmt.Errorf("failed to download image: hash mismatch for %q (expected %q, but got %q)", imageID, expectHash, hash)
+		}
 	}
 
-	log.FromContext(ctx).Info("Syncing image")
+	log.FromContext(ctx).Info("Importing image")
 	if err := index.ImportImage(ctx, image.Type, filepath.Join(m.stagingDir, imageID), image.Alias, true, true); err != nil {
 		return fmt.Errorf("failed to import image: %w", err)
 	}
@@ -134,8 +138,8 @@ func (m *manager) syncHashes(ctx context.Context, index *index.Index) error {
 	return nil
 }
 
-// Sync
-func (m *manager) Sync(ctx context.Context, manifest Manifest) error {
+// Import all images declared in manifest.
+func (m *manager) Import(ctx context.Context, manifest Manifest) error {
 	index, err := index.GetOrCreateIndex(m.indexDir)
 	if err != nil {
 		return fmt.Errorf("failed to open index at %q: %w", m.indexDir, err)

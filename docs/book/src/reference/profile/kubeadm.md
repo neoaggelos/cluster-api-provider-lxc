@@ -50,7 +50,7 @@ When using unprivileged kind containers, the following profile is applied:
 
 ```yaml
 # incus profile create kind-unprivileged
-# curl https://capn.linuxcontainers.org/static/v0.1/kind-unprivileged.yaml | lxc profile edit kind-unprivileged
+# curl https://capn.linuxcontainers.org/static/v0.1/unprivileged-kind.yaml | lxc profile edit kind-unprivileged
 
-{{#include ../../static/v0.1/kind.yaml }}
+{{#include ../../static/v0.1/unprivileged-kind.yaml }}
 ```

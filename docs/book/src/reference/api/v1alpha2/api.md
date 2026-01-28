@@ -121,6 +121,25 @@ LXCMachineTemplate objects.</p>
 <a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
 </td>
 </tr>
+<tr>
+<td>
+<code>cloudProviderNodePatch</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Patch nodes in the workload cluster to set <code>.spec.providerID</code>. This is
+usually the responsibility of a cloud controller manager, but this does
+not currently exist for Incus.</p>
+<p>The default cluster templates do not need this flag. Instead, they are
+passing an extra kubelet argument <code>provider-id: {{ v1.local_hostname }}</code>,
+which is templated by cloud-init when node is brought up.</p>
+<p>However, this might not be easily doable when using other ControlPlane
+and Bootstrap providers, e.g. Talos.</p>
+</td>
+</tr>
 </table>
 </td>
 </tr>
@@ -326,6 +345,25 @@ profile manually and set the <code>.spec.template.spec.profiles</code> field of 
 LXCMachineTemplate objects.</p>
 <p>For more details on the default kubeadm profile that is applied, see
 <a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<code>cloudProviderNodePatch</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Patch nodes in the workload cluster to set <code>.spec.providerID</code>. This is
+usually the responsibility of a cloud controller manager, but this does
+not currently exist for Incus.</p>
+<p>The default cluster templates do not need this flag. Instead, they are
+passing an extra kubelet argument <code>provider-id: {{ v1.local_hostname }}</code>,
+which is templated by cloud-init when node is brought up.</p>
+<p>However, this might not be easily doable when using other ControlPlane
+and Bootstrap providers, e.g. Talos.</p>
 </td>
 </tr>
 </tbody>
@@ -560,6 +598,25 @@ profile manually and set the <code>.spec.template.spec.profiles</code> field of 
 LXCMachineTemplate objects.</p>
 <p>For more details on the default kubeadm profile that is applied, see
 <a href="https://capn.linuxcontainers.org/reference/profile/kubeadm.html">https://capn.linuxcontainers.org/reference/profile/kubeadm.html</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<code>cloudProviderNodePatch</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Patch nodes in the workload cluster to set <code>.spec.providerID</code>. This is
+usually the responsibility of a cloud controller manager, but this does
+not currently exist for Incus.</p>
+<p>The default cluster templates do not need this flag. Instead, they are
+passing an extra kubelet argument <code>provider-id: {{ v1.local_hostname }}</code>,
+which is templated by cloud-init when node is brought up.</p>
+<p>However, this might not be easily doable when using other ControlPlane
+and Bootstrap providers, e.g. Talos.</p>
 </td>
 </tr>
 </table>

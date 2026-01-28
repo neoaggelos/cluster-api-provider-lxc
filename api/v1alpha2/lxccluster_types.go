@@ -63,6 +63,20 @@ type LXCClusterSpec struct {
 	// +optional
 	SkipDefaultKubeadmProfile bool `json:"skipDefaultKubeadmProfile"`
 
+	// Patch nodes in the workload cluster to set `.spec.providerID`. This is
+	// usually the responsibility of a cloud controller manager, but this does
+	// not currently exist for Incus.
+	//
+	// The default cluster templates do not need this flag. Instead, they are
+	// passing an extra kubelet argument `provider-id: {{ v1.local_hostname }}`,
+	// which is templated by cloud-init when node is brought up.
+	//
+	// However, this might not be easily doable when using other ControlPlane
+	// and Bootstrap providers, e.g. Talos.
+	//
+	// +optional
+	CloudProviderNodePatch bool `json:"cloudProviderNodePatch"`
+
 	// TODO(neoaggelos): enable failure domains
 	// FailureDomains clusterv1.FailureDomains `json:"failureDomains,omitempty"`
 }

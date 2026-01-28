@@ -36,6 +36,7 @@ import (
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog/v2"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/controllers/remote"
 	"sigs.k8s.io/cluster-api/util/flags"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -67,6 +68,8 @@ var (
 	syncPeriod                  time.Duration
 	restConfigQPS               float32
 	restConfigBurst             int
+	clusterCacheClientQPS       float32
+	clusterCacheClientBurst     int
 	webhookPort                 int
 	webhookCertDir              string
 	webhookCertName             string
@@ -75,7 +78,8 @@ var (
 	managerOptions              = flags.ManagerOptions{}
 
 	// CAPN specific flags.
-	concurrency int
+	concurrency             int
+	clusterCacheConcurrency int
 )
 
 func init() {
@@ -126,6 +130,9 @@ func InitFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&concurrency, "concurrency", 10,
 		"The number of docker machines to process simultaneously")
 
+	fs.IntVar(&clusterCacheConcurrency, "clustercache-concurrency", 100,
+		"Number of clusters to process simultaneously")
+
 	fs.DurationVar(&syncPeriod, "sync-period", 10*time.Minute,
 		"The minimum interval at which watched resources are reconciled (e.g. 15m)")
 
@@ -135,6 +142,14 @@ func InitFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&restConfigBurst, "kube-api-burst", 30,
 		"Maximum number of queries that should be allowed in one burst from the controller client to"+
 			" the Kubernetes API server.")
+
+	fs.Float32Var(&clusterCacheClientQPS, "clustercache-client-qps", 20,
+		"Maximum queries per second from the cluster cache clients to the Kubernetes API server of"+
+			" workload clusters.")
+
+	fs.IntVar(&clusterCacheClientBurst, "clustercache-client-burst", 30,
+		"Maximum number of queries that should be allowed in one burst from the cluster cache clients"+
+			" to the Kubernetes API server of workload clusters.")
 
 	fs.IntVar(&webhookPort, "webhook-port", 9443,
 		"Webhook Server port")
@@ -275,6 +290,41 @@ func setupChecks(mgr ctrl.Manager) {
 }
 
 func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
+	secretCachingClient, err := client.New(mgr.GetConfig(), client.Options{
+		HTTPClient: mgr.GetHTTPClient(),
+		Cache: &client.CacheOptions{
+			Reader: mgr.GetCache(),
+		},
+	})
+	if err != nil {
+		setupLog.Error(err, "Unable to create secret caching client")
+		os.Exit(1)
+	}
+
+	clusterCache, err := clustercache.SetupWithManager(ctx, mgr, clustercache.Options{
+		SecretClient: secretCachingClient,
+		Cache:        clustercache.CacheOptions{},
+		Client: clustercache.ClientOptions{
+			QPS:       clusterCacheClientQPS,
+			Burst:     clusterCacheClientBurst,
+			UserAgent: remote.DefaultClusterAPIUserAgent(controllerName),
+			Cache: clustercache.ClientCacheOptions{
+				DisableFor: []client.Object{
+					// Don't cache ConfigMaps & Secrets.
+					&corev1.ConfigMap{},
+					&corev1.Secret{},
+				},
+			},
+		},
+		WatchFilterValue: watchFilterValue,
+	}, ctrl_controller.Options{
+		MaxConcurrentReconciles: clusterCacheConcurrency,
+	})
+	if err != nil {
+		setupLog.Error(err, "Unable to create ClusterCache")
+		os.Exit(1)
+	}
+
 	if err := (&lxccluster.LXCClusterReconciler{
 		Client:           mgr.GetClient(),
 		WatchFilterValue: watchFilterValue,
@@ -286,6 +336,7 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 	if err := (&lxcmachine.LXCMachineReconciler{
 		Client:           mgr.GetClient(),
 		WatchFilterValue: watchFilterValue,
+		ClusterCache:     clusterCache,
 	}).SetupWithManager(ctx, mgr, ctrl_controller.Options{
 		MaxConcurrentReconciles: concurrency,
 	}); err != nil {

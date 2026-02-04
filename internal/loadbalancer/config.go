@@ -31,6 +31,7 @@ type configData struct {
 	BackendControlPlanePort  string
 	BackendServers           map[string]backendServer
 	IPv6                     bool
+	EnableHealthzCheck       bool
 }
 
 // backendServer defines a loadbalancer backend.
@@ -78,7 +79,9 @@ frontend control-plane
   default_backend kube-apiservers
 
 backend kube-apiservers
+  {{ if .EnableHealthzCheck -}}
   option httpchk GET /healthz
+  {{- end }}
   {{range $server, $backend := .BackendServers}}
   server {{ $server }} {{ JoinHostPort $backend.Address $.BackendControlPlanePort }} weight {{ $backend.Weight }} check check-ssl verify none
   {{- end}}

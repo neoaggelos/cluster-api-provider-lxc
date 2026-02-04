@@ -152,6 +152,13 @@ type LXCLoadBalancerInstance struct {
 	// +optional
 	InstanceSpec LXCLoadBalancerMachineSpec `json:"instanceSpec,omitempty"`
 
+	// DisableHealthzCheck allows disabling the HAProxy /healthz check on kube-apiserver endpoints.
+	//
+	// This is useful in scenarios where anonymous-auth=true is set on the kube-apiserver, in which case the haproxy check will always fail.
+	//
+	// +optional
+	DisableHealthzCheck bool `json:"disableHealthzCheck,omitempty"`
+
 	// CustomHAProxyConfigTemplate allows you to replace the default HAProxy config file content.
 	// Please use it with caution, as there are no checks to ensure the validity of the configuration.
 	// +optional

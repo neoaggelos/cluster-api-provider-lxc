@@ -6,6 +6,9 @@ import (
 	"strings"
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
@@ -41,12 +44,51 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 
 			log.FromContext(ctx).Error(err, "Failed to check instance state")
 			return ctrl.Result{}, err
-		} else {
-			lxcMachine.Status.Ready = true
-			conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
-			r.setLXCMachineAddresses(lxcMachine, lxc.ParseHostAddresses(state))
-			return ctrl.Result{}, nil
 		}
+
+		lxcMachine.Status.Ready = true
+		conditions.MarkTrue(lxcMachine, infrav1.InstanceProvisionedCondition)
+		r.setLXCMachineAddresses(lxcMachine, lxc.ParseHostAddresses(state))
+
+		// Handle cloud provider node patch
+		if lxcCluster.Spec.CloudProviderNodePatch && !lxcMachine.Status.CloudProviderNodePatchConfigured {
+			// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
+			// to contact to get the ProviderID for the Node hosted on this machine, so return early.
+			// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
+			// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
+			// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
+			// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
+			if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
+				log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
+				return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
+			}
+
+			remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
+			if err != nil {
+				return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
+			}
+
+			remoteNode := &corev1.Node{}
+			if err := remoteClient.Get(ctx, types.NamespacedName{Name: lxcMachine.GetInstanceName()}, remoteNode); err != nil {
+				// NOTE(neoaggelos): we assume the node will appear with a name that matches the lxcMachine instance name.
+				// This might not be true in case of a non-Ubuntu OS (e.g. hostname vs fqdn), or in case a custom node name is set.
+				//
+				// However: this is what capd does, and the situations described above should be infrequent to not worry about right now.
+				if apierrors.IsNotFound(err) {
+					log.FromContext(ctx).Info("Waiting for node to appear in workload cluster")
+					return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
+				}
+				return ctrl.Result{}, fmt.Errorf("failed to retrieve node with name %q from workload cluster: %w", lxcMachine.GetInstanceName(), err)
+			}
+
+			if err := cloudprovider.PatchNode(ctx, lxcMachine, remoteClient, remoteNode); err != nil {
+				return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
+			}
+
+			lxcMachine.Status.CloudProviderNodePatchConfigured = true
+		}
+
+		return ctrl.Result{}, nil
 	}
 
 	dataSecretName := machine.Spec.Bootstrap.DataSecretName
@@ -99,30 +141,8 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		lxcMachine.Status.LoadBalancerConfigured = true
 	}
 
-	if lxcCluster.Spec.CloudProviderNodePatch {
-		// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
-		// to contact to get the ProviderID for the Node hosted on this machine, so return early.
-		// NOTE: We are using RequeueAfter with a short interval in order to make test execution time more stable.
-		// NOTE: If the Cluster doesn't use a control plane, the ControlPlaneInitialized condition is only
-		// set to true after a control plane machine has a node ref. If we would requeue here in this case, the
-		// Machine will never get a node ref as ProviderID is required to set the node ref, so we would get a deadlock.
-		if cluster.Spec.ControlPlaneRef != nil && !conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition) {
-			log.FromContext(ctx).Info("Waiting for initialized ControlPlane")
-			return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
-		}
-
-		remoteClient, err := r.ClusterCache.GetClient(ctx, client.ObjectKeyFromObject(cluster))
-		if err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to generate workload cluster client: %w", err)
-		}
-
-		if err := cloudprovider.PatchNode(ctx, remoteClient, lxcMachine); err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to apply cloud-provider node patch: %w", err)
-		}
-	}
-
 	lxcMachine.Spec.ProviderID = ptr.To(lxcMachine.GetExpectedProviderID())
 	lxcMachine.Status.Ready = true
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 }

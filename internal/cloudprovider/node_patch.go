@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -26,20 +25,11 @@ func matchesCloudProviderTaint(taint corev1.Taint) bool {
 
 // PatchNode implements the responsibilities of the external cloud-provider for node objects in the workload cluster.
 // It is required because there is no external cloud-provider integration between Kubernetes and Incus.
-func PatchNode(ctx context.Context, remoteClient client.Client, lxcMachine *infrav1.LXCMachine) error {
+func PatchNode(ctx context.Context, lxcMachine *infrav1.LXCMachine, remoteClient client.Client, remoteNode *corev1.Node) error {
 	expectedProviderID := lxcMachine.GetExpectedProviderID()
 	expectedRemoteNodeName := lxcMachine.GetInstanceName()
 
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("providerID", expectedProviderID, "nodeName", expectedRemoteNodeName))
-
-	remoteNode := &corev1.Node{}
-	if err := remoteClient.Get(ctx, types.NamespacedName{Name: lxcMachine.GetInstanceName()}, remoteNode); err != nil {
-		// NOTE(neoaggelos): we assume the node will appear with a name that matches the lxcMachine instance name.
-		// This might not be true in case of a non-Ubuntu OS (e.g. hostname vs fqdn), or in case a custom node name is set.
-		//
-		// However: this is what capd does, and the situations described above should be infrequent to not worry about right now.
-		return fmt.Errorf("failed to retrieve node with name %q from workload cluster: %w", lxcMachine.GetInstanceName(), err)
-	}
 
 	patchHelper, err := patch.NewHelper(remoteNode, remoteClient)
 	if err != nil {

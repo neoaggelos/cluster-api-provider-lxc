@@ -27,7 +27,7 @@ func TestPatchNode(t *testing.T) {
 
 		remoteClient := fake.NewFakeClient(remoteNode)
 		g := NewWithT(t)
-		g.Expect(cloudprovider.PatchNode(context.TODO(), remoteClient, lxcMachine)).NotTo(HaveOccurred())
+		g.Expect(cloudprovider.PatchNode(context.TODO(), lxcMachine, remoteClient, remoteNode)).NotTo(HaveOccurred())
 
 		node := &corev1.Node{}
 		g.Expect(remoteClient.Get(context.TODO(), client.ObjectKeyFromObject(remoteNode), node)).NotTo(HaveOccurred())
@@ -65,7 +65,7 @@ func TestPatchNode(t *testing.T) {
 
 		remoteClient := fake.NewFakeClient(remoteNode)
 		g := NewWithT(t)
-		g.Expect(cloudprovider.PatchNode(context.TODO(), remoteClient, lxcMachine)).NotTo(HaveOccurred())
+		g.Expect(cloudprovider.PatchNode(context.TODO(), lxcMachine, remoteClient, remoteNode)).NotTo(HaveOccurred())
 
 		node := &corev1.Node{}
 		g.Expect(remoteClient.Get(context.TODO(), client.ObjectKeyFromObject(remoteNode), node)).NotTo(HaveOccurred())

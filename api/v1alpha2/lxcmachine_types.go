@@ -217,6 +217,13 @@ type LXCMachineStatus struct {
 	// +optional
 	LoadBalancerConfigured bool `json:"loadBalancerConfigured,omitempty"`
 
+	// CloudProviderNodePatchConfigured will be set to true once for each node, after the cloud provider node patch is applied.
+	//
+	// Note that this field is only set when LXCCluster.spec.cloudProviderNodePatch is true.
+	//
+	// +optional
+	CloudProviderNodePatchConfigured bool `json:"cloudProviderNodePatchConfigured,omitempty"`
+
 	// Addresses is the list of addresses of the LXC machine.
 	//
 	// +optional

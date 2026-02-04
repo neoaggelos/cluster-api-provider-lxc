@@ -217,6 +217,12 @@ spec:
                   - type
                   type: object
                 type: array
+              cloudProviderNodePatchConfigured:
+                description: |-
+                  CloudProviderNodePatchConfigured will be set to true once for each node, after the cloud provider node patch is applied.
+
+                  Note that this field is only set when LXCCluster.spec.cloudProviderNodePatch is true.
+                type: boolean
               conditions:
                 description: Conditions defines current service state of the LXCMachine.
                 items:

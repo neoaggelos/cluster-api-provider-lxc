@@ -25,6 +25,7 @@ type managerOCI struct {
 	name string
 	spec infrav1.LXCLoadBalancerMachineSpec
 
+	enableHealthzCheck          bool
 	customHAProxyConfigTemplate string
 }
 
@@ -83,6 +84,7 @@ func (l *managerOCI) Reconfigure(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to build load balancer configuration: %w", err)
 	}
+	config.EnableHealthzCheck = l.enableHealthzCheck
 
 	haproxyCfgTemplate := DefaultHaproxyTemplate
 	if l.customHAProxyConfigTemplate != "" {

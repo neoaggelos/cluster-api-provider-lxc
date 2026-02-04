@@ -24,6 +24,7 @@ type managerLXC struct {
 	name string
 	spec infrav1.LXCLoadBalancerMachineSpec
 
+	enableHealthzCheck          bool
 	customHAProxyConfigTemplate string
 }
 
@@ -78,6 +79,7 @@ func (l *managerLXC) Reconfigure(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to build load balancer configuration: %w", err)
 	}
+	config.EnableHealthzCheck = l.enableHealthzCheck
 
 	haproxyTemplate := DefaultHaproxyTemplate
 	if l.customHAProxyConfigTemplate != "" {

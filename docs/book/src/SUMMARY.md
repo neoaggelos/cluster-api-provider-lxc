@@ -22,6 +22,7 @@
   - [Kube VIP](./reference/templates/kube-vip.md)
   - [OVN Load Balancer](./reference/templates/ovn.md)
   - [Ubuntu](./reference/templates/ubuntu.md)
+  - [Talos](./reference/templates/talos.md)
 
 ---
 

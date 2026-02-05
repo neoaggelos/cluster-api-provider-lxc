@@ -730,6 +730,19 @@ LXCLoadBalancerMachineSpec
 </tr>
 <tr>
 <td>
+<code>disableHealthzCheck</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>DisableHealthzCheck allows disabling the HAProxy /healthz check on kube-apiserver endpoints.</p>
+<p>This is useful in scenarios where anonymous-auth=true is set on the kube-apiserver, in which case the haproxy check will always fail.</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>customHAProxyConfigTemplate</code><br/>
 <em>
 string
@@ -1407,6 +1420,19 @@ bool
 <td>
 <em>(Optional)</em>
 <p>LoadBalancerConfigured will be set to true once for each control plane node, after the load balancer instance is reconfigured.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>cloudProviderNodePatchConfigured</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>CloudProviderNodePatchConfigured will be set to true once for each node, after the cloud provider node patch is applied.</p>
+<p>Note that this field is only set when LXCCluster.spec.cloudProviderNodePatch is true.</p>
 </td>
 </tr>
 <tr>

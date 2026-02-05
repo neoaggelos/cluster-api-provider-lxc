@@ -1,0 +1,122 @@
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ${POD_CIDR:=[10.244.0.0/16]}
+    services:
+      cidrBlocks: ${SERVICE_CIDR:=[10.96.0.0/12]}
+    serviceDomain: cluster.local
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1alpha3
+    kind: TalosControlPlane
+    name: ${CLUSTER_NAME}-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    kind: LXCCluster
+    name: ${CLUSTER_NAME}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1alpha3
+kind: TalosControlPlane
+metadata:
+  name: ${CLUSTER_NAME}-control-plane
+spec:
+  replicas: ${CONTROL_PLANE_MACHINE_COUNT}
+  version: ${KUBERNETES_VERSION}
+  infrastructureTemplate:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    kind: LXCMachineTemplate
+    name: ${CLUSTER_NAME}-control-plane
+  controlPlaneConfig:
+    controlplane:
+      generateType: controlplane
+      talosVersion: ${TALOS_VERSION}
+      hostname:
+        source: InfrastructureName
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  clusterName: ${CLUSTER_NAME}
+  replicas: ${WORKER_MACHINE_COUNT}
+  selector:
+    matchLabels:
+  template:
+    spec:
+      version: ${KUBERNETES_VERSION}
+      clusterName: ${CLUSTER_NAME}
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1alpha3
+          kind: TalosConfigTemplate
+          name: ${CLUSTER_NAME}-md-0
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+        kind: LXCMachineTemplate
+        name: ${CLUSTER_NAME}-md-0
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1alpha3
+kind: TalosConfigTemplate
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  template:
+    spec:
+      generateType: worker
+      talosVersion: ${TALOS_VERSION}
+      hostname:
+        source: InfrastructureName
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCCluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  secretRef:
+    name: ${LXC_SECRET_NAME}
+  cloudProviderNodePatch: true
+  loadBalancer:
+    ${LXC_LOAD_BALANCER_TYPE:=lxc}:
+      instanceSpec:
+        flavor: ${LOAD_BALANCER_MACHINE_FLAVOR:=""}
+        profiles: ${LOAD_BALANCER_MACHINE_PROFILES:=[default]}
+      disableHealthzCheck: true
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCMachineTemplate
+metadata:
+  name: ${CLUSTER_NAME}-control-plane
+spec:
+  template:
+    spec:
+      instanceType: virtual-machine
+      config:
+        security.secureboot: "${TALOS_IMAGE_SECURE_BOOT:=false}"
+      devices:
+      - cloud-init,type=disk,source=cloud-init:config
+      image:
+        name: ${TALOS_IMAGE_NAME}
+      flavor: ${CONTROL_PLANE_MACHINE_FLAVOR}
+      profiles: ${CONTROL_PLANE_MACHINE_PROFILES:=[default]}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+kind: LXCMachineTemplate
+metadata:
+  name: ${CLUSTER_NAME}-md-0
+spec:
+  template:
+    spec:
+      instanceType: virtual-machine
+      config:
+        security.secureboot: "${TALOS_IMAGE_SECURE_BOOT:=false}"
+      devices:
+      - cloud-init,type=disk,source=cloud-init:config
+      image:
+        name: ${TALOS_IMAGE_NAME}
+      flavor: ${WORKER_MACHINE_FLAVOR}
+      profiles: ${WORKER_MACHINE_PROFILES:=[default]}

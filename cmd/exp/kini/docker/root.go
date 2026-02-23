@@ -55,7 +55,8 @@ func NewCmd() *cobra.Command {
 				_ = logFlags.Set("v", verbosity)
 			}
 
-			log.V(1).Info("docker command invocation", "command", strings.Join(os.Args, " "))
+			wd, _ := os.Getwd()
+			log.V(1).Info("docker command invocation", "command", strings.Join(os.Args, " "), "cwd", wd)
 
 			return nil
 		},

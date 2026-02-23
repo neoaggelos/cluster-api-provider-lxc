@@ -34,6 +34,13 @@
 
 ---
 
+- [Kini](./kini/introduction.md)
+  - [Quick Start](./kini/quick-start.md)
+  - [Why Build Kini?](./kini/explanation/reasoning.md)
+  - [Compatibility Notes](./kini/explanation/compatibility.md)
+
+---
+
 - [Developer Guide](./howto/developer-guide.md)
 
 ---

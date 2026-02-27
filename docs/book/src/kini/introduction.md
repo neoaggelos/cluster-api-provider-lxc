@@ -19,9 +19,9 @@ kini kind create cluster
 
 The stated mission of `kini` project is to:
 - Enable launching development Kubernetes clusters running in Incus containers, through the same well-known `kind` CLI commands.
-- Support both Incus and Canonical LXD
-- Minimize UX differences between platforms, and allowing 90% of the use cases to just work
-- Primary driving use case is to enable development of CAPN provider, and simplify end-to-end testing scenarios
+- Support both Incus and Canonical LXD.
+- Minimize UX differences between platforms, and allowing 90% of the use cases to just work.
+- Primary driving use case is to enable development of CAPN provider, and simplify end-to-end testing scenarios.
 
 ## Next Steps
 

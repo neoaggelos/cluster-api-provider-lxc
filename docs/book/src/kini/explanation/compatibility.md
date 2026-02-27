@@ -47,21 +47,21 @@ This is controlled using the `KINI_MODE` environment variable, which accepts the
 
 If not set, `kini` will use the `oci` mode if the platform supports OCI containers (Incus v6.11 or newer). Otherwise, it will fall back to `lxc` mode.
 
-The full support table is:
+The full support matrix is:
 
 | Server          | `OCI`   | `LXC`   |
 | --------------- | ------- | ------- |
 | `Incus`         | **YES** | **YES** |
 | `Canonical LXD` | **NO**  | **YES** |
 
-Because of the difference between LXC and OCI containers, please be aware of the following differences:
+Because of the difference between LXC and OCI containers, please be aware of the following:
 
 | Description   | `KINI_MODE=oci`                                                          | `KINI_MODE=lxc`                                                                                       |
 | ------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | Haproxy LB    | Uses the `docker.io/kindest/haproxy` image. Overrides the default config | Only supports single-node kind clusters                                                               |
 | Kind images   | The well-known `docker.io/kindest/node` images are used                  | Uses the [pre-built kubeadm images](../../reference/default-simplestreams-server.md#provided-images). |
 | CNI           | The default `kindnetd` CNI is used                                       | Seeds /kind/manifests/default-cni.yaml with the `kube-flannel` CNI                                    |
-| Local Storage | The default `local-path-provisioner` is used                             | Seeds /kind/manifests/default-storage.yaml with `local-path-provisioner`                              |
+| Local Storage | The default `local-path-provisioner` is used                             | Seeds /kind/manifests/default-storage.yaml with the default kind `local-path-provisioner`             |
 | Containerd    | `KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER` is always set to `overlayfs`  | Uses the containerd configuration of the pre-built kubeadm images                                     |
 | Static files  | `/kind/*` files come from the kindest/node image                         | Seeds `/kind/product_name`, `/kind/product_uuid` and `/kind/version.txt` files manually               |
 | Networking    | Does not create a `kind` network, uses the configured one                | Does not create a `kind` network, uses the one already configured                                     |

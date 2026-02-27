@@ -10,4 +10,4 @@ However, the most common configuration for single node `Docker` and `Incus` conf
 
 In this mode, the Docker containers (`kind-control-plane`) and the CAPN machines are in different networks, and the default iptables rules do not allow them to communicate with each other.
 
-Motivated by the fact that recent Incus versions have added support for OCI containers, `kini` implements a shim layer between `kind` and the Docker daemon. As such, instead of creating a Docker container, it will instead launch an Incus container, using the same storage and networking as other machines.
+Motivated by the fact that recent Incus versions have added support for OCI containers, `kini` implements a shim layer between `kind` and the Docker daemon. As such, rather than creating a Docker container, it will instead launch an Incus container, using the same storage and networking as other machines.

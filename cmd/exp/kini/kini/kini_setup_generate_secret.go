@@ -32,9 +32,9 @@ func newKiniSetupGenerateSecretCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:           "generate-secret NAME",
+		Use:           "generate-secret [NAME]",
 		Short:         "Generate a Kubernetes secret with CAPN credentials from local configuration",
-		Args:          cobra.ExactArgs(1),
+		Args:          cobra.MaximumNArgs(1),
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -43,7 +43,12 @@ func newKiniSetupGenerateSecretCmd() *cobra.Command {
 				return fmt.Errorf("failed to read local configuration: %w", err)
 			}
 
-			if err := serializeRuntimeObject(os.Stdout, corev1.SchemeGroupVersion, opts.ToSecret(args[0], flags.namespace)); err != nil {
+			secretName := "lxc-secret"
+			if len(args) == 1 {
+				secretName = args[0]
+			}
+
+			if err := serializeRuntimeObject(os.Stdout, corev1.SchemeGroupVersion, opts.ToSecret(secretName, flags.namespace)); err != nil {
 				return fmt.Errorf("failed to encode secret: %w", err)
 			}
 			return nil

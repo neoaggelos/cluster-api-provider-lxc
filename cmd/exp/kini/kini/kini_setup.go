@@ -20,9 +20,10 @@ func newKiniSetupCmd() *cobra.Command {
 	})
 	cmd.PersistentFlags().AddGoFlagSet(klogFlags)
 
-	cmd.AddCommand(newKiniSetupRemotesCmd())
 	cmd.AddCommand(newKiniSetupActivateEnvironmentCmd())
 	cmd.AddCommand(newKiniSetupGenerateSecretCmd())
+	cmd.AddCommand(newKiniSetupRemotesCmd())
+	cmd.AddCommand(newKiniSetupValidateConfigCmd())
 
 	return cmd
 }

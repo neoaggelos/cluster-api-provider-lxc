@@ -6,13 +6,13 @@
 set -xeu
 
 KUBERNETES_VERSION="${KUBERNETES_VERSION:-$1}"            # https://dl.k8s.io/release/stable.txt or https://dl.k8s.io/release/stable-1.32.txt
-CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.9.0}"      # https://github.com/containernetworking/plugins
+CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.9.1}"      # https://github.com/containernetworking/plugins
 CRICTL_VERSION="${CRICTL_VERSION:-v1.35.0}"               # https://github.com/kubernetes-sigs/cri-tools
-CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.2.1}"        # https://github.com/containerd/containerd
-RUNC_VERSION="${RUNC_VERSION:-v1.3.4}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.2.1/script/setup/runc-version
+CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.2.2}"        # https://github.com/containerd/containerd
+RUNC_VERSION="${RUNC_VERSION:-v1.3.4}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.2.2/script/setup/runc-version
 
 KUBELET_SERVICE='
-# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service
+# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.21.0/cmd/krel/templates/latest/kubelet/kubelet.service
 
 [Unit]
 Description=kubelet: The Kubernetes Node Agent
@@ -31,7 +31,7 @@ WantedBy=multi-user.target
 '
 
 KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG='
-# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf
+# Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.21.0/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf
 
 # Note: This dropin only works with kubeadm and kubelet v1.11+
 [Service]

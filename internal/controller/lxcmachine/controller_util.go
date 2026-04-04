@@ -15,7 +15,7 @@ import (
 )
 
 func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine *infrav1.LXCMachine) error {
-	infraConditions := []clusterv1.ConditionType{
+	infraConditions := []clusterv1.ConditionType{ // nolint:prealloc
 		infrav1.InstanceProvisionedCondition,
 	}
 	hasInfraConditionError := false

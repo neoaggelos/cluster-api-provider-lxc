@@ -12,7 +12,7 @@ import (
 )
 
 func patchLXCCluster(ctx context.Context, patchHelper *patch.Helper, lxcCluster *infrav1.LXCCluster) error {
-	infraConditions := []clusterv1.ConditionType{
+	infraConditions := []clusterv1.ConditionType{ //nolint:prealloc
 		infrav1.LoadBalancerAvailableCondition,
 	}
 	hasInfraConditionError := false

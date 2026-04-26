@@ -20,10 +20,9 @@ import (
 	"context"
 	"testing"
 
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
@@ -50,10 +49,10 @@ func newCluster(name string, lxcName string) cluster {
 				Name: name,
 			},
 			Spec: clusterv1.ClusterSpec{
-				InfrastructureRef: &corev1.ObjectReference{
-					APIVersion: infrav1.GroupVersion.String(),
-					Kind:       "LXCCluster",
-					Name:       lxcName,
+				InfrastructureRef: clusterv1.ContractVersionedObjectReference{
+					APIGroup: infrav1.GroupVersion.Group,
+					Kind:     "LXCMachine",
+					Name:     lxcName,
 				},
 			},
 		},
@@ -82,10 +81,10 @@ func newMachine(clusterName, name, lxcName string) machine {
 				},
 			},
 			Spec: clusterv1.MachineSpec{
-				InfrastructureRef: corev1.ObjectReference{
-					APIVersion: infrav1.GroupVersion.String(),
-					Kind:       "LXCMachine",
-					Name:       lxcName,
+				InfrastructureRef: clusterv1.ContractVersionedObjectReference{
+					APIGroup: infrav1.GroupVersion.Group,
+					Kind:     "LXCMachine",
+					Name:     lxcName,
 				},
 			},
 		},

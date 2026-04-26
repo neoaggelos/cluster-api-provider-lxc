@@ -21,8 +21,9 @@ import (
 	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/paused"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/paused"
 )
 
 const (
@@ -232,7 +233,7 @@ type LXCMachineStatus struct {
 	// Conditions defines current service state of the LXCMachine.
 	//
 	// +optional
-	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
+	Conditions clusterv1beta1.Conditions `json:"conditions,omitempty"`
 
 	// V1Beta2 groups all status fields that will be added in LXCMachine's status with the v1beta2 version.
 	//
@@ -271,12 +272,12 @@ type LXCMachine struct {
 }
 
 // GetConditions returns the set of conditions for this object.
-func (c *LXCMachine) GetConditions() clusterv1.Conditions {
+func (c *LXCMachine) GetConditions() clusterv1beta1.Conditions {
 	return c.Status.Conditions
 }
 
 // SetConditions sets the conditions on this object.
-func (c *LXCMachine) SetConditions(conditions clusterv1.Conditions) {
+func (c *LXCMachine) SetConditions(conditions clusterv1beta1.Conditions) {
 	c.Status.Conditions = conditions
 }
 

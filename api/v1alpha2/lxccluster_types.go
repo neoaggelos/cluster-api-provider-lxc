@@ -23,8 +23,9 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/paused"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/paused"
 )
 
 const (
@@ -254,7 +255,7 @@ type LXCClusterStatus struct {
 	// Conditions defines current service state of the LXCCluster.
 	//
 	// +optional
-	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
+	Conditions clusterv1beta1.Conditions `json:"conditions,omitempty"`
 
 	// V1Beta2 groups all status fields that will be added in LXCCluster's status with the v1beta2 version.
 	//
@@ -292,12 +293,12 @@ type LXCCluster struct {
 }
 
 // GetConditions returns the set of conditions for this object.
-func (c *LXCCluster) GetConditions() clusterv1.Conditions {
+func (c *LXCCluster) GetConditions() clusterv1beta1.Conditions {
 	return c.Status.Conditions
 }
 
 // SetConditions sets the conditions on this object.
-func (c *LXCCluster) SetConditions(conditions clusterv1.Conditions) {
+func (c *LXCCluster) SetConditions(conditions clusterv1beta1.Conditions) {
 	c.Status.Conditions = conditions
 }
 

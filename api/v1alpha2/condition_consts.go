@@ -1,6 +1,6 @@
 package v1alpha2
 
-import clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+import clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
 
 // Conditions and condition Reasons for the LXCCluster object.
 
@@ -10,7 +10,7 @@ const (
 	// NOTE: When the load balancer provisioning starts the process completes almost immediately and within
 	// the same reconciliation, so the user will always see a transition from no condition to available without
 	// having evidence that the operation is started/is in progress.
-	LoadBalancerAvailableCondition clusterv1.ConditionType = "LoadBalancerAvailable"
+	LoadBalancerAvailableCondition clusterv1beta1.ConditionType = "LoadBalancerAvailable"
 
 	// LoadBalancerProvisioningFailedReason (Severity=Warning) documents a LXCCluster controller detecting
 	// an error while provisioning the container that provides the cluster load balancer; those kind of
@@ -32,7 +32,7 @@ const (
 	// NOTE: When the instance provisioning starts the process completes almost immediately and within
 	// the same reconciliation, so the user will always see a transition from Wait to Provisioned without
 	// having evidence that the operation is started/is in progress.
-	InstanceProvisionedCondition clusterv1.ConditionType = "InstanceProvisioned"
+	InstanceProvisionedCondition clusterv1beta1.ConditionType = "InstanceProvisioned"
 
 	// WaitingForClusterInfrastructureReason (Severity=Info) documents a LXCMachine waiting for the cluster
 	// infrastructure to be ready before starting to create the instance that provides the LXCMachine

@@ -25,13 +25,13 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/klog/v2"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/util"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/paused"
 	"sigs.k8s.io/cluster-api/util/finalizers"
 	utillog "sigs.k8s.io/cluster-api/util/log"
-	"sigs.k8s.io/cluster-api/util/patch"
-	"sigs.k8s.io/cluster-api/util/paused"
 	"sigs.k8s.io/cluster-api/util/predicates"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -114,7 +114,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	if cluster.Spec.InfrastructureRef == nil {
+	if !cluster.Spec.InfrastructureRef.IsDefined() {
 		log.Info("Cluster infrastructureRef is not available yet")
 		return ctrl.Result{}, nil
 	}
@@ -206,7 +206,7 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 			&clusterv1.Cluster{},
 			handler.EnqueueRequestsFromMapFunc(clusterToLXCMachines),
 			builder.WithPredicates(
-				predicates.ClusterPausedTransitionsOrInfrastructureReady(mgr.GetScheme(), predicateLog),
+				predicates.ClusterPausedTransitionsOrInfrastructureProvisioned(mgr.GetScheme(), predicateLog),
 			),
 		).
 		WatchesRawSource(r.ClusterCache.GetClusterSource("lxcmachine", clusterToLXCMachines)).

@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/conditions"
-	"sigs.k8s.io/cluster-api/util/patch"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/conditions"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -28,7 +29,7 @@ func (r *LXCClusterReconciler) reconcileDelete(ctx context.Context, cluster *clu
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, clusterv1.DeletingReason, clusterv1.ConditionSeverityInfo, "")
+	conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, clusterv1.DeletingReason, clusterv1beta1.ConditionSeverityInfo, "")
 	if err := patchLXCCluster(ctx, patchHelper, lxcCluster); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to patch LXCCluster: %w", err)
 	}

@@ -3,8 +3,9 @@ package lxccluster
 import (
 	"context"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/conditions"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/conditions"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
@@ -20,10 +21,10 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		log.FromContext(ctx).Error(err, "Failed to provision load balancer")
 		if utils.IsTerminalError(err) {
-			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "The cluster load balancer could not be provisioned. The error was: %s", err)
+			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1beta1.ConditionSeverityError, "The cluster load balancer could not be provisioned. The error was: %s", err)
 			return nil
 		}
-		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
+		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1beta1.ConditionSeverityWarning, "%s", err)
 		return err
 	}
 

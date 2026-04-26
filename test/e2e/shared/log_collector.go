@@ -12,8 +12,7 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/types"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	expv1 "sigs.k8s.io/cluster-api/exp/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 
@@ -34,9 +33,9 @@ func (o IncusLogCollector) CollectMachineLog(ctx context.Context, managementClus
 		return fmt.Errorf("couldn't create directory %q for logs: %s", outputPath, err)
 	}
 
-	lxcMachineName := types.NamespacedName{Name: m.Spec.InfrastructureRef.Name, Namespace: m.Spec.InfrastructureRef.Namespace}
+	lxcMachineName := types.NamespacedName{Name: m.Spec.InfrastructureRef.Name, Namespace: m.Namespace}
 	lxcMachine := &infrav1.LXCMachine{}
-	if err := managementClusterClient.Get(ctx, types.NamespacedName{Name: m.Spec.InfrastructureRef.Name, Namespace: m.Spec.InfrastructureRef.Namespace}, lxcMachine); err != nil {
+	if err := managementClusterClient.Get(ctx, types.NamespacedName{Name: m.Spec.InfrastructureRef.Name, Namespace: m.Namespace}, lxcMachine); err != nil {
 		return fmt.Errorf("failed to get LXCMachine %q for Machine: %w", lxcMachineName, err)
 	}
 
@@ -126,7 +125,7 @@ func (o IncusLogCollector) CollectMachineLog(ctx context.Context, managementClus
 }
 
 // CollectMachinePoolLog is not yet implemented for the LXC provider.
-func (o IncusLogCollector) CollectMachinePoolLog(_ context.Context, _ client.Client, _ *expv1.MachinePool, _ string) error {
+func (o IncusLogCollector) CollectMachinePoolLog(_ context.Context, _ client.Client, _ *clusterv1.MachinePool, _ string) error {
 	return fmt.Errorf("not implemented")
 }
 
@@ -139,7 +138,7 @@ func (o IncusLogCollector) CollectInfrastructureLogs(ctx context.Context, manage
 		return fmt.Errorf("couldn't create directory %q for logs: %s", outputPath, err)
 	}
 
-	lxcClusterName := types.NamespacedName{Name: cluster.Spec.InfrastructureRef.Name, Namespace: cluster.Spec.InfrastructureRef.Namespace}
+	lxcClusterName := types.NamespacedName{Name: cluster.Spec.InfrastructureRef.Name, Namespace: cluster.Namespace}
 
 	lxcCluster := &infrav1.LXCCluster{}
 	if err := managementClusterClient.Get(ctx, lxcClusterName, lxcCluster); err != nil {

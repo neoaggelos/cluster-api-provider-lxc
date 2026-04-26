@@ -6,22 +6,23 @@ import (
 	"slices"
 
 	corev1 "k8s.io/api/core/v1"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-	"sigs.k8s.io/cluster-api/util/conditions"
-	"sigs.k8s.io/cluster-api/util/patch"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/conditions"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 )
 
 func patchLXCMachine(ctx context.Context, patchHelper *patch.Helper, lxcMachine *infrav1.LXCMachine) error {
-	infraConditions := []clusterv1.ConditionType{ // nolint:prealloc
+	infraConditions := []clusterv1beta1.ConditionType{ //nolint:prealloc
 		infrav1.InstanceProvisionedCondition,
 	}
 	hasInfraConditionError := false
 	for _, condition := range lxcMachine.GetConditions() {
 		// slices.Contains is fast enough as we only have < 5 conditions
-		if slices.Contains(infraConditions, condition.Type) && condition.Severity == clusterv1.ConditionSeverityError {
+		if slices.Contains(infraConditions, condition.Type) && condition.Severity == clusterv1beta1.ConditionSeverityError {
 			hasInfraConditionError = true
 			break
 		}

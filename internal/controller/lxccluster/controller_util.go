@@ -4,9 +4,9 @@ import (
 	"context"
 	"slices"
 
-	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
-	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/conditions"
-	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"
+	clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"    // nolint:staticcheck
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/conditions" //nolint: staticcheck
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"      //nolint: staticcheck
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 )

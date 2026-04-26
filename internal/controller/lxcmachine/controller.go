@@ -28,7 +28,7 @@ import (
 	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/util"
-	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch"
+	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/patch" //nolint: staticcheck
 	"sigs.k8s.io/cluster-api/util/deprecated/v1beta1/paused"
 	"sigs.k8s.io/cluster-api/util/finalizers"
 	utillog "sigs.k8s.io/cluster-api/util/log"

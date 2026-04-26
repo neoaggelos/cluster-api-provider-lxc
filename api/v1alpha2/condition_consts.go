@@ -1,6 +1,6 @@
 package v1alpha2
 
-import clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1"
+import clusterv1beta1 "sigs.k8s.io/cluster-api/api/core/v1beta1" // nolint:staticcheck
 
 // Conditions and condition Reasons for the LXCCluster object.
 

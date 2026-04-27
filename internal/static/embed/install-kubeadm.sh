@@ -58,7 +58,7 @@ version = 3
   enable_unprivileged_ports = true
   enable_unprivileged_icmp = true
   device_ownership_from_security_context = false
-  sandbox_image = "registry.k8s.io/pause:3.10"
+  sandbox_image = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.runtime".cni]
   bin_dirs = ["/opt/cni/bin"]
@@ -75,7 +75,7 @@ version = 3
   disable_snapshot_annotations = true
 
 [plugins."io.containerd.cri.v1.images".pinned_images]
-  sandbox = "registry.k8s.io/pause:3.10"
+  sandbox = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.images".registry]
   config_path = "/etc/containerd/certs.d"
@@ -93,6 +93,7 @@ version = 3
   enable_unprivileged_ports = true
   enable_unprivileged_icmp = true
   device_ownership_from_security_context = false
+  sandbox_image = "registry.k8s.io/pause:3.10.2"
 
   ## unprivileged
   disable_apparmor = true
@@ -114,21 +115,10 @@ version = 3
   disable_snapshot_annotations = true
 
 [plugins."io.containerd.cri.v1.images".pinned_images]
-  sandbox = "registry.k8s.io/pause:3.10"
+  sandbox = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.images".registry]
   config_path = "/etc/containerd/certs.d"
-'
-
-CONTAINERD_SERVICE_UNPRIVILEGED_MODE_DROPIN_CONFIG='
-[Service]
-ExecStartPre=bash -xe -c "\
- mkdir -p /etc/containerd && cd /etc/containerd && \
- if stat -c %%u/%%g /proc | grep -q 0/0; then \
-  [ -f config.default.toml ] && ln -sf config.default.toml config.toml; \
- else \
-  [ -f config.unprivileged.toml ] && ln -sf config.unprivileged.toml config.toml; \
-fi"
 '
 
 CONTAINERD_SERVICE='
@@ -162,12 +152,31 @@ OOMScoreAdjust=-999
 WantedBy=multi-user.target
 '
 
-CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE='#!/bin/sh -xeu
+KUBELET_SERVICE_LOCAL_STORAGE_CAPACITY_ISOLATION_DROPIN_CONFIG='
+# [v1.36+] When /var/lib/kubelet is on zfs and /dev/zfs is not available, try to ensure --local-storage-capacity-isolation=false kubelet flag is used
+# Otherwise, kubelet will fail to start with:
+#   kubelet.go:1821] "Failed to start ContainerManager" err="failed to get rootfs info: cannot find filesystem info for device \"zfs/containers/c1-md-0-wzh7h-qfkzt-z9bfr\""
+[Service]
+ExecStartPre=bash -xe -c "\
+ mkdir -p /etc/sysconfig && \
+ if df /var/lib/kubelet | grep zfs && [ ! -f /dev/zfs ] && ! cat /etc/sysconfig/kubelet | grep -- --local-storage-capacity-isolation=false; then \
+  if cat /etc/sysconfig/kubelet | grep KUBELET_EXTRA_ARGS=; then \
+   sed \"s,KUBELET_EXTRA_ARGS=,KUBELET_EXTRA_ARGS=--local-storage-capacity-isolation=false ,\" -i /etc/sysconfig/kubelet ; \
+  else \
+   echo KUBELET_EXTRA_ARGS=--local-storage-capacity-isolation=false | tee -a /etc/sysconfig/kubelet ; \
+  fi; \
+ fi"
+'
 
-set -xeu
-
-ln -sf config.unprivileged.toml /etc/containerd/config.toml
-systemctl restart containerd
+CONTAINERD_SERVICE_UNPRIVILEGED_MODE_DROPIN_CONFIG='
+[Service]
+ExecStartPre=bash -xe -c "\
+ mkdir -p /etc/containerd && cd /etc/containerd && \
+ if stat -c %%u/%%g /proc | grep -q 0/0; then \
+  [ -f config.default.toml ] && ln -sf config.default.toml config.toml; \
+ else \
+  [ -f config.unprivileged.toml ] && ln -sf config.unprivileged.toml config.toml; \
+ fi"
 '
 
 # infer ARCH
@@ -216,10 +225,6 @@ fi
 systemctl enable containerd.service
 systemctl start containerd.service
 
-# containerd unprivileged mode
-echo "${CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE}" | tee /opt/containerd-configure-unprivileged-mode.sh
-chmod +x /opt/containerd-configure-unprivileged-mode.sh
-
 # cni plugins
 mkdir -p /opt/cni/bin
 curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-${ARCH}-${CNI_PLUGINS_VERSION}.tgz" | tar -C /opt/cni/bin -xz
@@ -239,6 +244,7 @@ mkdir -p /usr/lib/systemd/system/kubelet.service.d
 if ! systemctl list-unit-files kubelet.service &>/dev/null; then
   echo "${KUBELET_SERVICE}" | tee /usr/lib/systemd/system/kubelet.service
   echo "${KUBELET_SERVICE_KUBEADM_DROPIN_CONFIG}" | tee /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+  echo "${KUBELET_SERVICE_LOCAL_STORAGE_CAPACITY_ISOLATION_DROPIN_CONFIG}" | tee /usr/lib/systemd/system/kubelet.service.d/15-local-storage-capacity-isolation.conf
 fi
 systemctl enable kubelet.service
 

@@ -19,7 +19,7 @@ var (
 	defaultPullExtraImages = []string{
 		// images for default flannel CNI
 		// NOTE(neoaggelos): keep up to date with flannel CNI manifest in ./templates/cluster-template.yaml
-		"ghcr.io/flannel-io/flannel-cni-plugin:v1.7.1-flannel1",
-		"ghcr.io/flannel-io/flannel:v0.27.3",
+		"ghcr.io/flannel-io/flannel-cni-plugin:v1.9.1-flannel1",
+		"ghcr.io/flannel-io/flannel:v0.28.4",
 	}
 )

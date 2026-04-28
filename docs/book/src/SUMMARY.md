@@ -38,6 +38,7 @@
   - [Quick Start](./kini/quick-start.md)
   - [Why Build Kini?](./kini/explanation/reasoning.md)
   - [Compatibility Notes](./kini/explanation/compatibility.md)
+  - [Configuration](./kini/reference/configuration.md)
 
 ---
 

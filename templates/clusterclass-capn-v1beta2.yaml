@@ -1,53 +1,54 @@
-apiVersion: cluster.x-k8s.io/v1beta1
+apiVersion: cluster.x-k8s.io/v1beta2
 kind: ClusterClass
 metadata:
-  name: capn-default
+  name: capn-v1beta2
 spec:
   controlPlane:
-    ref:
-      apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    templateRef:
+      apiVersion: controlplane.cluster.x-k8s.io/v1beta2
       kind: KubeadmControlPlaneTemplate
-      name: capn-default-control-plane
+      name: capn-v1beta2-control-plane
     machineInfrastructure:
-      ref:
+      templateRef:
         kind: LXCMachineTemplate
         apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
-        name: capn-default-control-plane
-    machineHealthCheck:
-      unhealthyConditions:
+        name: capn-v1beta2-control-plane
+    healthCheck:
+      checks:
+        unhealthyNodeConditions:
         - type: Ready
           status: Unknown
-          timeout: 300s
+          timeoutSeconds: 300
         - type: Ready
           status: "False"
-          timeout: 300s
+          timeoutSeconds: 300
   infrastructure:
-    ref:
+    templateRef:
       apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
       kind: LXCClusterTemplate
-      name: capn-default-lxc-cluster
+      name: capn-v1beta2-lxc-cluster
   workers:
     machineDeployments:
     - class: default-worker
-      template:
-        bootstrap:
-          ref:
-            apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
-            kind: KubeadmConfigTemplate
-            name: capn-default-default-worker
-        infrastructure:
-          ref:
-            apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
-            kind: LXCMachineTemplate
-            name: capn-default-default-worker
-      machineHealthCheck:
-        unhealthyConditions:
+      bootstrap:
+        templateRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
+          kind: KubeadmConfigTemplate
+          name: capn-v1beta2-default-worker
+      infrastructure:
+        templateRef:
+          apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+          kind: LXCMachineTemplate
+          name: capn-v1beta2-default-worker
+      healthCheck:
+        checks:
+          unhealthyNodeConditions:
           - type: Ready
             status: Unknown
-            timeout: 300s
+            timeoutSeconds: 300
           - type: Ready
             status: "False"
-            timeout: 300s
+            timeoutSeconds: 300
   variables:
   - name: secretRef
     required: true
@@ -306,7 +307,7 @@ spec:
     enabledIf: "{{ .instance.installKubeadm }}"
     definitions:
     - selector:
-        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta2
         kind: KubeadmControlPlaneTemplate
         matchResources:
           controlPlane: true
@@ -320,7 +321,7 @@ spec:
     enabledIf: "{{ .instance.installKubeadm }}"
     definitions:
     - selector:
-        apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+        apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
         kind: KubeadmConfigTemplate
         matchResources:
           machineDeploymentClass:
@@ -336,7 +337,7 @@ spec:
     enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine") }}'
     definitions:
     - selector:
-        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta2
         kind: KubeadmControlPlaneTemplate
         matchResources:
           controlPlane: true
@@ -357,7 +358,7 @@ spec:
     enabledIf: '{{ and (not .privileged) (ne .instance.type "virtual-machine") }}'
     definitions:
     - selector:
-        apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+        apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
         kind: KubeadmConfigTemplate
         matchResources:
           machineDeploymentClass:
@@ -380,7 +381,7 @@ spec:
     enabledIf: "{{ not (empty .etcdImageTag) }}"
     definitions:
     - selector:
-        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta2
         kind: KubeadmControlPlaneTemplate
         matchResources:
           controlPlane: true
@@ -396,7 +397,7 @@ spec:
     enabledIf: "{{ not (empty .coreDNSImageTag) }}"
     definitions:
     - selector:
-        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta2
         kind: KubeadmControlPlaneTemplate
         matchResources:
           controlPlane: true
@@ -408,9 +409,9 @@ spec:
             imageTag: {{ .coreDNSImageTag }}
 ---
 kind: KubeadmControlPlaneTemplate
-apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
 metadata:
-  name: capn-default-control-plane
+  name: capn-v1beta2-control-plane
 spec:
   template:
     spec:
@@ -418,17 +419,23 @@ spec:
         initConfiguration:
           nodeRegistration:
             kubeletExtraArgs:
-              eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
-              fail-swap-on: "false"
-              provider-id: "lxc:///{{ v1.local_hostname }}"
+            - name: eviction-hard
+              value: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+            - name: fail-swap-on
+              value: "false"
+            - name: provider-id
+              value: "lxc:///{{ v1.local_hostname }}"
           patches:
             directory: /etc/kubernetes/patches
         joinConfiguration:
           nodeRegistration:
             kubeletExtraArgs:
-              eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
-              fail-swap-on: "false"
-              provider-id: "lxc:///{{ v1.local_hostname }}"
+            - name: eviction-hard
+              value: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+            - name: fail-swap-on
+              value: "false"
+            - name: provider-id
+              value: "lxc:///{{ v1.local_hostname }}"
           patches:
             directory: /etc/kubernetes/patches
         preKubeadmCommands:
@@ -463,7 +470,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCClusterTemplate
 metadata:
-  name: capn-default-lxc-cluster
+  name: capn-v1beta2-lxc-cluster
 spec:
   template:
     spec:
@@ -473,7 +480,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: capn-default-control-plane
+  name: capn-v1beta2-control-plane
 spec:
   template:
     spec:
@@ -484,7 +491,7 @@ spec:
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
 kind: LXCMachineTemplate
 metadata:
-  name: capn-default-default-worker
+  name: capn-v1beta2-default-worker
 spec:
   template:
     spec:
@@ -492,19 +499,22 @@ spec:
       flavor: ""
       profiles: [default]
 ---
-apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
 kind: KubeadmConfigTemplate
 metadata:
-  name: capn-default-default-worker
+  name: capn-v1beta2-default-worker
 spec:
   template:
     spec:
       joinConfiguration:
         nodeRegistration:
           kubeletExtraArgs:
-            eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
-            fail-swap-on: "false"
-            provider-id: "lxc:///{{ v1.local_hostname }}"
+          - name: eviction-hard
+            value: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+          - name: fail-swap-on
+            value: "false"
+          - name: provider-id
+            value: "lxc:///{{ v1.local_hostname }}"
         patches:
           directory: /etc/kubernetes/patches
       files:

@@ -1,4 +1,4 @@
-apiVersion: cluster.x-k8s.io/v1beta1
+apiVersion: cluster.x-k8s.io/v1beta2
 kind: Cluster
 metadata:
   name: ${CLUSTER_NAME}
@@ -12,7 +12,8 @@ spec:
       cidrBlocks: ${SERVICE_CIDR:=[10.96.0.0/12]}
     serviceDomain: cluster.local
   topology:
-    class: capn-default
+    classRef:
+      name: capn-v1beta2
     version: ${KUBERNETES_VERSION}
     controlPlane:
       replicas: ${CONTROL_PLANE_MACHINE_COUNT:=1}
@@ -41,6 +42,7 @@ spec:
         devices: ${CONTROL_PLANE_MACHINE_DEVICES:=[]}
         image: ${LXC_IMAGE_NAME:=""}
         installKubeadm: ${INSTALL_KUBEADM:=false}
+        target: ${CONTROL_PLANE_MACHINE_TARGET:=""}
 
     workers:
       machineDeployments:
@@ -62,7 +64,7 @@ spec:
               image: ${LXC_IMAGE_NAME:=""}
               installKubeadm: ${INSTALL_KUBEADM:=false}
 ---
-apiVersion: addons.cluster.x-k8s.io/v1beta1
+apiVersion: addons.cluster.x-k8s.io/v1beta2
 kind: ClusterResourceSet
 metadata:
   name: ${CLUSTER_NAME}-kube-flannel

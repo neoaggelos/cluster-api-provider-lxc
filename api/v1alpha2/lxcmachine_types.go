@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/util/paused"
 )
 
@@ -39,7 +39,7 @@ type LXCMachineSpec struct {
 	// ProviderID is the container name in ProviderID format (lxc:///<containername>).
 	//
 	// +optional
-	ProviderID *string `json:"providerID,omitempty"`
+	ProviderID string `json:"providerID,omitempty"`
 
 	// InstanceType is `container` or `virtual-machine`. Empty defaults to `container`.
 	//
@@ -207,10 +207,13 @@ func (s *LXCMachineImageSource) IsZero() bool {
 
 // LXCMachineStatus defines the observed state of LXCMachine.
 type LXCMachineStatus struct {
-	// Ready denotes that the LXC machine is ready.
+	// Initialization provides observations of the LXCMachine initialization process.
+	// NOTE: Fields in this struct are part of the Cluster API contract and are used to orchestrate initial LXCMachine provisioning.
+	// The value of those fields is never updated after provisioning is completed.
+	// Use conditions to monitor the operational state of the LXCMachine.
 	//
 	// +optional
-	Ready bool `json:"ready,omitempty"`
+	Initialization LXCMachineInitializationStatus `json:"initialization,omitempty,omitzero"`
 
 	// LoadBalancerConfigured will be set to true once for each control plane node, after the load balancer instance is reconfigured.
 	//
@@ -229,20 +232,6 @@ type LXCMachineStatus struct {
 	// +optional
 	Addresses []clusterv1.MachineAddress `json:"addresses"`
 
-	// Conditions defines current service state of the LXCMachine.
-	//
-	// +optional
-	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
-
-	// V1Beta2 groups all status fields that will be added in LXCMachine's status with the v1beta2 version.
-	//
-	// +optional
-	V1Beta2 *LXCMachineV1Beta2Status `json:"v1beta2,omitempty"`
-}
-
-// LXCMachineV1Beta2Status groups all the fields that will be added or modified in LXCMachine with the V1Beta2 version.
-// See https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md for more context.
-type LXCMachineV1Beta2Status struct {
 	// conditions represents the observations of a LXCMachine's current state.
 	// Known condition types are Ready, InstanceProvisioned, Deleting, Paused.
 	// +optional
@@ -252,12 +241,21 @@ type LXCMachineV1Beta2Status struct {
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
+// LXCMachineInitializationStatus defines the initialization state of LXCMachine.
+type LXCMachineInitializationStatus struct {
+	// provisioned is true when the infrastructure provider reports that the Machine's infrastructure is fully provisioned.
+	// NOTE: this field is part of the Cluster API contract, and it is used to orchestrate initial Machine provisioning.
+	//
+	// +optional
+	Provisioned *bool `json:"provisioned"`
+}
+
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".metadata.labels['cluster\\.x-k8s\\.io/cluster-name']",description="Cluster"
 // +kubebuilder:printcolumn:name="Machine",type="string",JSONPath=".metadata.ownerReferences[?(@.kind==\"Machine\")].name",description="Machine object which owns this LXCMachine"
 // +kubebuilder:printcolumn:name="ProviderID",type="string",JSONPath=".spec.providerID",description="Provider ID"
-// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="Machine ready status"
+// +kubebuilder:printcolumn:name="Provisioned",type="string",JSONPath=".status.initialization.provisioned",description="Machine is provisioned"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="Time duration since creation of LXCMachine"
 // +kubebuilder:resource:categories=cluster-api
 
@@ -271,29 +269,13 @@ type LXCMachine struct {
 }
 
 // GetConditions returns the set of conditions for this object.
-func (c *LXCMachine) GetConditions() clusterv1.Conditions {
+func (c *LXCMachine) GetConditions() []metav1.Condition {
 	return c.Status.Conditions
 }
 
 // SetConditions sets the conditions on this object.
-func (c *LXCMachine) SetConditions(conditions clusterv1.Conditions) {
+func (c *LXCMachine) SetConditions(conditions []metav1.Condition) {
 	c.Status.Conditions = conditions
-}
-
-// GetV1Beta2Conditions returns the set of conditions for this object.
-func (c *LXCMachine) GetV1Beta2Conditions() []metav1.Condition {
-	if c.Status.V1Beta2 == nil {
-		return nil
-	}
-	return c.Status.V1Beta2.Conditions
-}
-
-// SetV1Beta2Conditions sets conditions for an API object.
-func (c *LXCMachine) SetV1Beta2Conditions(conditions []metav1.Condition) {
-	if c.Status.V1Beta2 == nil {
-		c.Status.V1Beta2 = &LXCMachineV1Beta2Status{}
-	}
-	c.Status.V1Beta2.Conditions = conditions
 }
 
 func (c *LXCMachine) GetInstanceName() string {

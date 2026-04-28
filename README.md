@@ -88,7 +88,7 @@ Rough steps for version v0.10.0:
 
 ### $Future
 
-- [x] [Migrate to for ClusterAPI v1beta2 contract](https://github.com/lxc/cluster-api-provider-incus/pull/133).
+- [x] [Migrate to for ClusterAPI v1beta2 contract](https://github.com/lxc/cluster-api-provider-incus/pull/208).
 - [ ] Add to default list of providers supported by ClusterAPI.
 - [ ] Improve API validations and possibly API conformance tests.
 - [x] Add CI to build kubeadm images for the default simplestreams server. Pushing will remain manual for now.

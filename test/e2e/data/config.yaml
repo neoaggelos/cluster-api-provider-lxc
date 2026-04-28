@@ -175,6 +175,8 @@ intervals:
 
   # [ClusterUpgrade, ClusterClassRollout, MDRollout] wait for versions to be upgraded
   default/wait-machine-upgrade: ["10m", "10s"]
+  default/wait-control-plane-upgrade: ["15m", "10s"]
+  default/wait-machine-deployment-upgrade: ["10m", "10s"]
 
   # [ClusterUpgrade] wait for nodes to become Ready
   default/wait-nodes-ready: ["2m", "10s"]

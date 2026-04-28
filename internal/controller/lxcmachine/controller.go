@@ -42,6 +42,7 @@ import (
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
+	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
 // LXCMachineReconciler reconciles a LXCMachine object
@@ -84,6 +85,11 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	// Specifically, it will add KubeadmControlPlane, MachineSet and MachineDeployment.
 	ctx, log, err := utillog.AddOwners(ctx, r.Client, lxcMachine)
 	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// NOTE(neoaggelos): when migrating from v1beta1, empty reasons are not allowed
+	if mustRequeue, err := utils.EnsureConditionReasons(ctx, r.Client, lxcMachine); err != nil || mustRequeue {
 		return ctrl.Result{}, err
 	}
 

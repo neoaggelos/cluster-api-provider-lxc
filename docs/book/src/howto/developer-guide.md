@@ -135,7 +135,7 @@ clusterctl generate cluster c1 --from ./templates/cluster-template.yaml > c1.yam
 Deploy the cluster with:
 
 ```bash
-kubectl apply -f ./templates/clusterclass-capn-default.yaml
+kubectl apply -f ./templates/clusterclass-capn-v1beta2.yaml
 kubectl apply -f c1.yaml
 ```
 

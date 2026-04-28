@@ -31,14 +31,40 @@ See [Quick Start](https://capn.linuxcontainers.org/tutorial/quick-start.html) to
 - Supports virtual machines or LXC containers for the cluster machines. Automatically manages the [profile](https://capn.linuxcontainers.org/reference/profile/kubeadm.html) for Kubernetes to work in LXC containers.
 - Can be used for local development similar to CAPD for quickly iterating on custom bootstrap and control-plane providers, e.g. K3s, Canonical Kubernetes, etc.
 
+## ClusterAPI Support
+
+ClusterAPI v1.11 (August 2025) introduced a new `v1beta2` API contract. `cluster-api-provider-incus` supports it starting from version `v0.9.0`.
+
+| cluster-api version | contract  | CAPN version | CAPN API   | Incus | Canonical LXD |
+| ------------------- | --------- | ------------ | ---------- | ----- | ------------- |
+| `v1.13.x` or older  | `v1beta1` | `v0.8.x`     | `v1alpha2` | 6.0+  | 5.21+         |
+| `v1.11.x` or newer  | `v1beta2` | `v0.9.x`     | `v1alpha2` | 6.0+  | 5.21+         |
+
+Support commitments for CAPN versions are:
+- `v0.8.x` series will not receive any further updates, bug and/or security fixes.
+- Development and new features are added to the latest version of `cluster-api-provider-incus` only, and will not be backported to older versions.
+
+### Upgrade notes for v0.8.0/v1beta1 -> v0.9.0/v1beta2
+
+* After updating to `v0.9.0`, the `v1alpha2` CRDs are updated to follow the v1beta2 API contract.
+* All status fields will initially be empty, as previous fields have been moved. After `cluster-api-provider-incus` controller starts, it will reconcile all LXCMachine and LXCCluster resources to set status.initialization fields and conditions.
+* All ClusterAPI controllers must be restarted after upgrading to `v0.9.0`, to ensure they are not using cached v1beta1 CRDs
+
 ## Project Roadmap
 
-### v0.9.0
+### v0.10.0
 
-Rough steps for version v0.9.0:
+Rough steps for version v0.10.0:
 
 - [ ] Use `kini` for quick start guide.
 - [ ] Load balancer IPAM (CAPN automatically claims/releases load balancer IP addresses from the network).
+- [ ] Improve generated API reference documentation.
+- [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
+- [ ] Write documentation with common troubleshooting steps.
+- [ ] Write documentation with common cluster deployment scenarios.
+
+### v0.9.0
+
 - [x] Add `kini` command line tool, re-using building blocks from [kind](https://kind.sigs.k8s.io).
 - [x] Use `kini` for e2e tests.
 - [x] Build images for v1.34.0, based on Ubuntu 24.04 and Debian 13.
@@ -59,14 +85,10 @@ Rough steps for version v0.9.0:
 - [x] Add self-hosted e2e test.
 - [x] Implement `kind` instance types (using OCI containers with the kindest/node images from the kind project).
 - [x] Gather initial user feedback.
-- [ ] Improve generated API reference documentation.
-- [ ] Add cluster-templates for 3rd party providers, e.g. [Canonical Kubernetes](https://github.com/canonical/cluster-api-k8s).
-- [ ] Write documentation with common troubleshooting steps.
-- [ ] Write documentation with common cluster deployment scenarios.
 
 ### $Future
 
-- [ ] [Migrate to for ClusterAPI v1beta2 contract](https://github.com/lxc/cluster-api-provider-incus/pull/133).
+- [x] [Migrate to for ClusterAPI v1beta2 contract](https://github.com/lxc/cluster-api-provider-incus/pull/133).
 - [ ] Add to default list of providers supported by ClusterAPI.
 - [ ] Improve API validations and possibly API conformance tests.
 - [x] Add CI to build kubeadm images for the default simplestreams server. Pushing will remain manual for now.

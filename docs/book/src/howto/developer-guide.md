@@ -167,6 +167,7 @@ make test-e2e E2E_GINKGO_PARALLEL=2
 
 # run specific tests
 make test-e2e E2E_GINKGO_FOCUS='QuickStart OCI'
+make test-e2e E2E_GINKGO_FOCUS='QuickStart Default Unprivileged' E2E_ARGS='-skip-cleanup' E2E_GINKGO_PARALLEL=1
 ```
 
 Unless specified, the e2e tests will use the default `local-https` remote from the client configuration.

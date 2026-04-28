@@ -186,3 +186,7 @@ intervals:
 
   # [QuickStart Kind] wait for kind cni manifests
   default/wait-kind-cni: ["1m", "5s"]
+
+  # # TODO: check how these affect e2e test time
+  # default/wait-resource-versions-become-stable: ["2m", "15s"]
+  # default/wait-resource-versions-remain-stable: ["2m", "5s"]

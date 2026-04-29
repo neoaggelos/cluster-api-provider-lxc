@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"maps"
 	"runtime"
+	"slices"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -66,9 +68,9 @@ func newKubeadmCmd() *cobra.Command {
 				flags.baseImage = "debian:13"
 			case "ubuntu":
 				flags.baseImage = "ubuntu:24.04"
-			case "debian:12", "debian:13", "ubuntu:22.04", "ubuntu:24.04":
-			default:
-				return fmt.Errorf("invalid value for --base-image argument %q, must be one of [ubuntu:22.04, ubuntu:24.04, debian:12, debian:13]", flags.baseImage)
+			}
+			if _, ok := wellKnownBaseImages[flags.baseImage]; !ok {
+				return fmt.Errorf("invalid value for --base-image argument %q, must be one of %v", flags.baseImage, slices.Collect(maps.Keys(wellKnownBaseImages)))
 			}
 
 			if flags.imageAlias == "" {
@@ -153,7 +155,7 @@ func newKubeadmCmd() *cobra.Command {
 		"Override remote to use from configuration file")
 
 	cmd.Flags().StringVar(&flags.baseImage, "base-image", defaultBaseImage,
-		"Base image for launching builder instance (one of ubuntu:22.04|ubuntu:24.04|debian:12|debian:13)")
+		fmt.Sprintf("Base image for launching builder instance (%v)", slices.Collect(maps.Keys(wellKnownBaseImages))))
 
 	cmd.Flags().StringVar(&flags.instanceName, "instance-name", defaultInstanceName,
 		"Name for the builder instance")

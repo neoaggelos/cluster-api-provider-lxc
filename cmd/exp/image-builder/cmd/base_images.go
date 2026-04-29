@@ -22,6 +22,11 @@ var wellKnownBaseImages = map[string]baseImageInfo{
 		releaseName: "noble",
 		variantName: "ubuntu",
 	},
+	"ubuntu:26.04": {
+		fullName:    "ubuntu resolute",
+		releaseName: "resolute",
+		variantName: "ubuntu",
+	},
 	"debian:12": {
 		fullName:    "debian bookworm",
 		releaseName: "bookworm",

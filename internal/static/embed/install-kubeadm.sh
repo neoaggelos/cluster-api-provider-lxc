@@ -250,3 +250,4 @@ systemctl enable kubelet.service
 
 # pull images
 kubeadm config images pull --kubernetes-version "${KUBERNETES_VERSION}"
+crictl pull "registry.k8s.io/pause:3.10.2"

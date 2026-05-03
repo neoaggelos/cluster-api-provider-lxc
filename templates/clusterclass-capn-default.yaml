@@ -100,12 +100,15 @@ spec:
           kube-vip:
             type: object
             description: Deploy kube-vip on the control plane nodes
-            required: [host]
             properties:
               host:
                 type: string
                 description: The address to use with kube-vip
                 example: 10.100.42.1
+              networkName:
+                type: string
+                description: Name of network with 'user.capn.vip.ranges' to allocate address for kube-vip
+                example: testbr0
               interface:
                 type: string
                 description: Bind the VIP address on a specific interface
@@ -117,11 +120,13 @@ spec:
           ovn:
             type: object
             description: Create an OVN network load balancer
-            required: [host, networkName]
+            required: [networkName]
             properties:
               networkName:
                 type: string
-                description: Name of the OVN network where the load balancer will be created
+                description: |
+                  OVN network where the load balancer will be created. If 'user.capn.vip.ranges' is
+                  defined, an address will from that ranges will be allocated.
                 example: ovn0
               host:
                 type: string
@@ -246,18 +251,23 @@ spec:
             loadBalancer:
               ovn:
                 networkName: {{ .loadBalancer.ovn.networkName | quote }}
+            {{ if hasKey .loadBalancer.ovn "host" }}
             controlPlaneEndpoint:
               host: {{ .loadBalancer.ovn.host | quote }}
               port: 6443
             {{ end }}
+            {{ end }}
             {{ if hasKey .loadBalancer "kube-vip" }}
             loadBalancer:
               kubeVIP:
+                networkName: {{ index .loadBalancer "kube-vip" "networkName" | default "" | quote }}
                 interface: {{ index .loadBalancer "kube-vip" "interface" | default "" | quote }}
                 image: {{ index .loadBalancer "kube-vip" "image" | default "" | quote }}
+            {{ if hasKey (index .loadBalancer "kube-vip") "host" }}
             controlPlaneEndpoint:
               host: {{ index .loadBalancer "kube-vip" "host" | quote }}
               port: 6443
+            {{ end }}
             {{ end }}
   - name: controlPlaneInstanceSpec
     description: LXCMachineTemplate configuration for ControlPlane

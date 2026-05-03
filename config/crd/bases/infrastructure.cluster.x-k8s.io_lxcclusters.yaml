@@ -98,6 +98,13 @@ spec:
                       External will not create a load balancer. It must be used alongside something like kube-vip, otherwise the cluster will fail to provision.
 
                       When using the "external" mode, the load balancer address must be set in `.spec.controlPlaneEndpoint.host` on the LXCCluster object.
+                    properties:
+                      networkName:
+                        description: |-
+                          If networkName has 'user.capn.vip.ranges' defined, the controller can automatically claim and use a VIP from that range.
+
+                          See https://capn.linuxcontainers.org/TODO for details.
+                        type: string
                     type: object
                   kubeVIP:
                     description: |-
@@ -129,6 +136,12 @@ spec:
                           ManifestPath is the path on the host where the kube-vip static pod manifest will be created. If not set, this is /etc/kubernetes/manifests/kube-vip.yaml
 
                           ManifestPath is useful when not using the kubeadm bootstrap provider.
+                        type: string
+                      networkName:
+                        description: |-
+                          If networkName has 'user.capn.vip.ranges' defined, the controller can automatically claim and use a VIP from that range.
+
+                          See https://capn.linuxcontainers.org/TODO for details.
                         type: string
                     type: object
                   lxc:
@@ -350,8 +363,10 @@ spec:
                       Requires server extensions: `network_load_balancer`, `network_load_balancer_health_checks`
                     properties:
                       networkName:
-                        description: NetworkName is the name of the network to create
-                          the load balancer.
+                        description: |-
+                          NetworkName is the name of the network to create the load balancer.
+
+                          If 'user.capn.vip.ranges' is defined on the network, the controller can automatically claim and use a VIP from that range. Note that this must be an IP range from the parent network.
                         type: string
                     type: object
                 type: object

@@ -167,13 +167,30 @@ type LXCLoadBalancerInstance struct {
 
 type LXCLoadBalancerOVN struct {
 	// NetworkName is the name of the network to create the load balancer.
+	//
+	// If 'user.capn.vip.ranges' is defined on the network, the controller can automatically claim and use a VIP from that range. Note that this must be an IP range from the parent network.
+	//
+	// +optional
 	NetworkName string `json:"networkName,omitempty"`
 }
 
 type LXCLoadBalancerExternal struct {
+	// If networkName has 'user.capn.vip.ranges' defined, the controller can automatically claim and use a VIP from that range.
+	//
+	// See https://capn.linuxcontainers.org/TODO for details.
+	//
+	// +optional
+	NetworkName string `json:"networkName,omitempty"`
 }
 
 type LXCLoadBalancerKubeVIP struct {
+	// If networkName has 'user.capn.vip.ranges' defined, the controller can automatically claim and use a VIP from that range.
+	//
+	// See https://capn.linuxcontainers.org/TODO for details.
+	//
+	// +optional
+	NetworkName string `json:"networkName,omitempty"`
+
 	// Image is the kube-vip image to use. If not set, this is ghcr.io/kube-vip/kube-vip:v0.6.4
 	//
 	// +optional

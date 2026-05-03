@@ -18,7 +18,7 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("KubeVIP", Ordered, func() {
+	Context("KubeVIP", func() {
 		BeforeEach(func(ctx context.Context) {
 			if v := e2eCtx.E2EConfig.GetVariableOrEmpty(shared.KubeVIPAddress); v != "" {
 				shared.Logf("Using kube-vip address %q (from environment variable KUBE_VIP_ADDRESS)", v)
@@ -34,9 +34,9 @@ var _ = Describe("QuickStart", func() {
 			networks, err := lxcClient.GetNetworks()
 			Expect(err).ToNot(HaveOccurred())
 
-			// find network with the annotations below
-			// -- user.capn.e2e.kube-vip-address = "<ip address>"
+			// find network with annotations
 			for _, network := range networks {
+				// -- user.capn.e2e.kube-vip-address = "<ip address>"
 				if v, ok := network.Config["user.capn.e2e.kube-vip-address"]; ok {
 					shared.Logf("Using kube-vip address %q (from network %q)", v, network.Name)
 					e2eCtx.OverrideVariables(map[string]string{
@@ -46,9 +46,26 @@ var _ = Describe("QuickStart", func() {
 					})
 					return
 				}
+
+				// -- user.capn.e2e.kube-vip = "true"
+				// -- user.capn.vip.ranges = "<range>"
+				if network.Config["user.capn.e2e.kube-vip"] == "true" {
+					if _, ok := network.Config["user.capn.vip.ranges"]; !ok {
+						shared.Logf("Not using network %q, no user.capn.vip.ranges defined", network.Name)
+						continue
+					}
+
+					shared.Logf("Will allocate kube-vip address (from network %q)", network.Name)
+					e2eCtx.OverrideVariables(map[string]string{
+						"LOAD_BALANCER":                 fmt.Sprintf("kube-vip: {networkName: '%s'}", network.Name),
+						"CONTROL_PLANE_MACHINE_DEVICES": fmt.Sprintf("['eth0,type=nic,network=%s']", network.Name),
+						"WORKER_MACHINE_DEVICES":        fmt.Sprintf("['eth0,type=nic,network=%s']", network.Name),
+					})
+					return
+				}
 			}
 
-			Skip("Did not find any network with configuration 'user.capn.e2e.kube-vip-address', and KUBE_VIP_ADDRESS is not set")
+			Skip("KUBE_VIP_ADDRESS is not set, and did not find any network with configuration 'user.capn.e2e.kube-vip-address' or 'user.capn.e2e.kube-vip=true'")
 		})
 
 		Context("Privileged", Label("PRBlocking"), func() {

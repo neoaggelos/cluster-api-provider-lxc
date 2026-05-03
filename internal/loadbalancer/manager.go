@@ -59,8 +59,8 @@ func ManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluste
 			clusterName:      cluster.Name,
 			clusterNamespace: cluster.Namespace,
 
-			networkName:   lxcCluster.Spec.LoadBalancer.OVN.NetworkName,
-			listenAddress: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			address:     lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			networkName: lxcCluster.Spec.LoadBalancer.OVN.NetworkName,
 		}
 	case lxcCluster.Spec.LoadBalancer.External != nil:
 		return &managerExternal{
@@ -68,7 +68,8 @@ func ManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluste
 			clusterName:      cluster.Name,
 			clusterNamespace: cluster.Namespace,
 
-			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			address:     lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			networkName: lxcCluster.Spec.LoadBalancer.External.NetworkName,
 		}
 	case lxcCluster.Spec.LoadBalancer.KubeVIP != nil:
 		return &managerKubeVIP{
@@ -76,7 +77,8 @@ func ManagerForCluster(cluster *clusterv1.Cluster, lxcCluster *infrav1.LXCCluste
 			clusterName:      cluster.Name,
 			clusterNamespace: cluster.Namespace,
 
-			address: lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			address:     lxcCluster.Spec.ControlPlaneEndpoint.Host,
+			networkName: lxcCluster.Spec.LoadBalancer.KubeVIP.NetworkName,
 
 			interfaceName:  lxcCluster.Spec.LoadBalancer.KubeVIP.Interface,
 			image:          lxcCluster.Spec.LoadBalancer.KubeVIP.Image,

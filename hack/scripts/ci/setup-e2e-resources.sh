@@ -18,13 +18,13 @@ LXC_NETWORK_IPV6="none"
 LXC_NETWORK_IPV4="10.200.1.1/24"
 LXC_NETWORK_IPV4_DHCP="10.200.1.10-10.200.1.100"
 LXC_NETWORK_IPV4_OVN="10.200.1.101-10.200.1.150"
-LXC_NETWORK_IPV4_KUBE_VIP="10.200.1.151"
+LXC_NETWORK_IPV4_VIP_RANGES="10.200.1.151-10.200.1.160"
 
 # local OVN network (192.168.200.0/24)
 LXC_OVN_NETWORK_NAME="testovn0"
 LXC_OVN_NETWORK_IPV6="none"
 LXC_OVN_NETWORK_IPV4="192.168.200.1/24"
-LXC_OVN_NETWORK_IPV4_LB="10.200.1.201"
+LXC_OVN_NETWORK_IPV4_VIP_RANGES="10.200.1.161-10.200.1.170"
 
 ########################################################################
 
@@ -39,23 +39,25 @@ fi
 
 ########################################################################
 
-# configure default network. the user.capn.e2e.kube-vip-address annotation is used by "QuickStart KubeVIP"
+# configure default network. the user.capn.vip.ranges annotation is used by "QuickStart KubeVIP"
 if ! "${CLI}" network show "${LXC_NETWORK_NAME}" 2> /dev/null; then
   "${CLI}" network create "${LXC_NETWORK_NAME}" --type=bridge \
     ipv4.address="${LXC_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_NETWORK_IPV6}" ipv6.nat=true \
     ipv4.dhcp.ranges="${LXC_NETWORK_IPV4_DHCP}" \
     ipv4.ovn.ranges="${LXC_NETWORK_IPV4_OVN}" \
-    user.capn.e2e.kube-vip-address="${LXC_NETWORK_IPV4_KUBE_VIP}"
+    user.capn.vip.ranges="${LXC_NETWORK_IPV4_VIP_RANGES}" \
+    user.capn.e2e.kube-vip=true
 fi
 
-# configure ovn network. the user.capn.e2e.ovn-lb-address annotation is used by "QuickStart OVN"
+# configure ovn network. the user.capn.vip.ranges annotation is used by "QuickStart OVN"
 if ! "${CLI}" network show "${LXC_OVN_NETWORK_NAME}" 2> /dev/null; then
   "${CLI}" network create "${LXC_OVN_NETWORK_NAME}" --type=ovn \
     network="${LXC_NETWORK_NAME}" \
     ipv4.address="${LXC_OVN_NETWORK_IPV4}" ipv4.nat=true \
     ipv6.address="${LXC_OVN_NETWORK_IPV6}" ipv6.nat=true \
-    user.capn.e2e.ovn-lb-address="${LXC_OVN_NETWORK_IPV4_LB}" \
+    user.capn.vip.ranges="${LXC_OVN_NETWORK_IPV4_VIP_RANGES}" \
+    user.capn.e2e.ovn=true \
   || echo "Failed to create OVN network, will skip OVN tests"
 fi
 

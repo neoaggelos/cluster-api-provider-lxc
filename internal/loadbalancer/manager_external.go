@@ -7,7 +7,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
-	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
 // managerExternal is a no-op Manager when using an external LoadBalancer mechanism for the cluster (e.g. kube-vip).
@@ -17,29 +16,28 @@ type managerExternal struct {
 	clusterName      string
 	clusterNamespace string
 
-	address string
+	address     string
+	networkName string
 }
 
 // Create implements Manager.
 func (l *managerExternal) Create(ctx context.Context) ([]string, error) {
-	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
-
-	// TODO: extend to support automatically finding an available VIP from an address range (so that we don't have to statically assign kube-vips).
-	_ = l.clusterName
-	_ = l.clusterNamespace
-	_ = l.lxcClient
-
-	if l.address == "" {
-		return nil, utils.TerminalError(fmt.Errorf("using external load balancer but no address is configured"))
+	var err error
+	if l.address, err = maybeAllocateAddressFromNetwork(ctx, l.address, l.networkName, l.lxcClient, l.clusterName, l.clusterNamespace); err != nil {
+		return nil, fmt.Errorf("failed to allocate load balancer address: %w", err)
 	}
 
-	log.FromContext(ctx).V(1).Info("Using external load balancer")
+	log.FromContext(ctx).V(1).WithValues("address", l.address).Info("Using external load balancer")
 	return []string{l.address}, nil
 }
 
 // Delete implements Manager.
 func (l *managerExternal) Delete(ctx context.Context) error {
 	ctx = log.IntoContext(ctx, log.FromContext(ctx).WithValues("address", l.address))
+
+	if err := maybeReleaseAddressFromNetwork(ctx, l.networkName, l.lxcClient, l.clusterName, l.clusterNamespace); err != nil {
+		return fmt.Errorf("failed to release load balancer address: %w", err)
+	}
 
 	log.FromContext(ctx).V(1).Info("Using external load balancer, nothing to delete")
 	return nil

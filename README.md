@@ -35,14 +35,15 @@ See [Quick Start](https://capn.linuxcontainers.org/tutorial/quick-start.html) to
 
 ClusterAPI v1.11 (August 2025) introduced a new `v1beta2` API contract. `cluster-api-provider-incus` supports it starting from version `v0.9.0`.
 
-| cluster-api version | contract  | CAPN version | CAPN API   | Incus | Canonical LXD |
-| ------------------- | --------- | ------------ | ---------- | ----- | ------------- |
-| `v1.13.x` or older  | `v1beta1` | `v0.8.x`     | `v1alpha2` | 6.0+  | 5.21+         |
-| `v1.11.x` or newer  | `v1beta2` | `v0.9.x`     | `v1alpha2` | 6.0+  | 5.21+         |
+| cluster-api version | contract  | CAPN version | CAPN API   | Incus       | Canonical LXD |
+| ------------------- | --------- | ------------ | ---------- | ----------- | ------------- |
+| `v1.13.x` or older  | `v1beta1` | `v0.8.x`     | `v1alpha2` | 6.0+, 7.0+  | 5.21+         |
+| `v1.11.x` or newer  | `v1beta2` | `v0.9.x`     | `v1alpha2` | 6.0+, < 7.0 | 5.21+         |
 
 Support commitments for CAPN versions are:
 - `v0.8.x` series will not receive any further updates, bug and/or security fixes.
 - Development and new features are added to the latest version of `cluster-api-provider-incus` only, and will not be backported to older versions.
+- `v0.8.x` is marked as supporting only up to Incus<7.0.0, because of the [removal of cgroupv1 support in Incus v7.0.0](https://github.com/lxc/incus/releases/tag/v7.0.0).
 
 ### Upgrade notes for v0.8.0/v1beta1 -> v0.9.0/v1beta2
 

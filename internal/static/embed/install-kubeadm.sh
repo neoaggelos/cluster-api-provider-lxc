@@ -7,9 +7,9 @@ set -xeu
 
 KUBERNETES_VERSION="${KUBERNETES_VERSION:-$1}"            # https://dl.k8s.io/release/stable.txt or https://dl.k8s.io/release/stable-1.32.txt
 CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.9.1}"      # https://github.com/containernetworking/plugins
-CRICTL_VERSION="${CRICTL_VERSION:-v1.35.0}"               # https://github.com/kubernetes-sigs/cri-tools
-CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.2.2}"        # https://github.com/containerd/containerd
-RUNC_VERSION="${RUNC_VERSION:-v1.3.4}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.2.2/script/setup/runc-version
+CRICTL_VERSION="${CRICTL_VERSION:-v1.36.0}"               # https://github.com/kubernetes-sigs/cri-tools
+CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.3.0}"        # https://github.com/containerd/containerd
+RUNC_VERSION="${RUNC_VERSION:-v1.4.2}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.3.0/script/setup/runc-version
 
 KUBELET_SERVICE='
 # Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.21.0/cmd/krel/templates/latest/kubelet/kubelet.service
@@ -58,7 +58,7 @@ version = 3
   enable_unprivileged_ports = true
   enable_unprivileged_icmp = true
   device_ownership_from_security_context = false
-  sandbox_image = "registry.k8s.io/pause:3.10"
+  sandbox_image = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.runtime".cni]
   bin_dirs = ["/opt/cni/bin"]
@@ -75,7 +75,7 @@ version = 3
   disable_snapshot_annotations = true
 
 [plugins."io.containerd.cri.v1.images".pinned_images]
-  sandbox = "registry.k8s.io/pause:3.10"
+  sandbox = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.images".registry]
   config_path = "/etc/containerd/certs.d"
@@ -93,6 +93,7 @@ version = 3
   enable_unprivileged_ports = true
   enable_unprivileged_icmp = true
   device_ownership_from_security_context = false
+  sandbox_image = "registry.k8s.io/pause:3.10.2"
 
   ## unprivileged
   disable_apparmor = true
@@ -114,21 +115,10 @@ version = 3
   disable_snapshot_annotations = true
 
 [plugins."io.containerd.cri.v1.images".pinned_images]
-  sandbox = "registry.k8s.io/pause:3.10"
+  sandbox = "registry.k8s.io/pause:3.10.2"
 
 [plugins."io.containerd.cri.v1.images".registry]
   config_path = "/etc/containerd/certs.d"
-'
-
-CONTAINERD_SERVICE_UNPRIVILEGED_MODE_DROPIN_CONFIG='
-[Service]
-ExecStartPre=bash -xe -c "\
- mkdir -p /etc/containerd && cd /etc/containerd && \
- if stat -c %%u/%%g /proc | grep -q 0/0; then \
-  [ -f config.default.toml ] && ln -sf config.default.toml config.toml; \
- else \
-  [ -f config.unprivileged.toml ] && ln -sf config.unprivileged.toml config.toml; \
-fi"
 '
 
 CONTAINERD_SERVICE='
@@ -162,12 +152,15 @@ OOMScoreAdjust=-999
 WantedBy=multi-user.target
 '
 
-CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE='#!/bin/sh -xeu
-
-set -xeu
-
-ln -sf config.unprivileged.toml /etc/containerd/config.toml
-systemctl restart containerd
+CONTAINERD_SERVICE_UNPRIVILEGED_MODE_DROPIN_CONFIG='
+[Service]
+ExecStartPre=bash -xe -c "\
+ mkdir -p /etc/containerd && cd /etc/containerd && \
+ if stat -c %%u/%%g /proc | grep -q 0/0; then \
+  [ -f config.default.toml ] && ln -sf config.default.toml config.toml; \
+ else \
+  [ -f config.unprivileged.toml ] && ln -sf config.unprivileged.toml config.toml; \
+fi"
 '
 
 # infer ARCH
@@ -216,10 +209,6 @@ fi
 systemctl enable containerd.service
 systemctl start containerd.service
 
-# containerd unprivileged mode
-echo "${CONTAINERD_CONFIGURE_UNPRIVILEGED_MODE}" | tee /opt/containerd-configure-unprivileged-mode.sh
-chmod +x /opt/containerd-configure-unprivileged-mode.sh
-
 # cni plugins
 mkdir -p /opt/cni/bin
 curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-${ARCH}-${CNI_PLUGINS_VERSION}.tgz" | tar -C /opt/cni/bin -xz
@@ -244,3 +233,4 @@ systemctl enable kubelet.service
 
 # pull images
 kubeadm config images pull --kubernetes-version "${KUBERNETES_VERSION}"
+crictl pull "registry.k8s.io/pause:3.10.2"

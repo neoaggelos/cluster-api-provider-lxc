@@ -1,7 +1,5 @@
 package v1alpha2
 
-import clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
-
 // Conditions and condition Reasons for the LXCCluster object.
 
 const (
@@ -10,7 +8,11 @@ const (
 	// NOTE: When the load balancer provisioning starts the process completes almost immediately and within
 	// the same reconciliation, so the user will always see a transition from no condition to available without
 	// having evidence that the operation is started/is in progress.
-	LoadBalancerAvailableCondition clusterv1.ConditionType = "LoadBalancerAvailable"
+	LoadBalancerAvailableCondition = "LoadBalancerAvailable"
+
+	// LoadBalancerProvisionedReason documents a LXCCluster controller detecting that the cluster load
+	// balancer has been provisioned successfully.
+	LoadBalancerProvisionedReason = "LoadBalancerProvisioned"
 
 	// LoadBalancerProvisioningFailedReason (Severity=Warning) documents a LXCCluster controller detecting
 	// an error while provisioning the container that provides the cluster load balancer; those kind of
@@ -32,12 +34,10 @@ const (
 	// NOTE: When the instance provisioning starts the process completes almost immediately and within
 	// the same reconciliation, so the user will always see a transition from Wait to Provisioned without
 	// having evidence that the operation is started/is in progress.
-	InstanceProvisionedCondition clusterv1.ConditionType = "InstanceProvisioned"
+	InstanceProvisionedCondition = "InstanceProvisioned"
 
-	// WaitingForClusterInfrastructureReason (Severity=Info) documents a LXCMachine waiting for the cluster
-	// infrastructure to be ready before starting to create the instance that provides the LXCMachine
-	// infrastructure.
-	WaitingForClusterInfrastructureReason = "WaitingForClusterInfrastructure"
+	// InstanceProvisionedReason documents a LXCMachine for which the instance has been provisioned.
+	InstanceProvisionedReason = "InstanceProvisioned"
 
 	// WaitingForBootstrapDataReason (Severity=Info) documents a LXCMachine waiting for the bootstrap
 	// script to be ready before starting to create the instance that provides the LXCMachine infrastructure.

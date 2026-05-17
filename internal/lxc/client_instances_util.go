@@ -49,6 +49,7 @@ func (c *Client) waitForInstanceAddress(ctx context.Context, name string) ([]str
 		if state, _, err := c.GetInstanceState(name); err != nil {
 			return nil, fmt.Errorf("failed to GetInstanceState: %w", err)
 		} else if addrs := ParseHostAddresses(state); len(addrs) > 0 {
+			log.FromContext(ctx).V(4).Info("Got instance address", "addresses", addrs)
 			return addrs, nil
 		}
 

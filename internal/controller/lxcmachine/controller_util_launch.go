@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/lxc/incus/v6/shared/api"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/util"
-	"sigs.k8s.io/cluster-api/util/conditions"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/instances"
 	"github.com/lxc/cluster-api-provider-incus/internal/loadbalancer"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
+	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
@@ -38,10 +38,7 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 		return nil, utils.TerminalError(fmt.Errorf("invalid .spec.devices on LXCMachine: %w", err))
 	}
 
-	var machineVersion string
-	if v := machine.Spec.Version; v != nil {
-		machineVersion = *v
-	}
+	machineVersion := machine.Spec.Version
 
 	imageSpec := lxcMachine.Spec.Image.DeepCopy()
 	if strings.Contains(imageSpec.Name, "VERSION") {
@@ -101,7 +98,7 @@ func launchInstance(ctx context.Context, cluster *clusterv1.Cluster, lxcCluster 
 
 	// apply instance templates from load balancer manager
 	if util.IsControlPlaneMachine(machine) {
-		if files, err := loadbalancer.ManagerForCluster(cluster, lxcCluster, lxcClient).ControlPlaneInstanceTemplates(conditions.IsTrue(cluster, clusterv1.ControlPlaneInitializedCondition)); err != nil {
+		if files, err := loadbalancer.ManagerForCluster(cluster, lxcCluster, lxcClient).ControlPlaneInstanceTemplates(ptr.Deref(cluster.Status.Initialization.ControlPlaneInitialized, false)); err != nil {
 			return nil, fmt.Errorf("failed to generate load balancer configuration files: %w", err)
 		} else {
 			launchOpts = launchOpts.WithInstanceTemplates(files)

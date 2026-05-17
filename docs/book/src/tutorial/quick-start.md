@@ -27,7 +27,7 @@ chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
 # clusterctl
-curl -L {{#releaselink repo:"https://github.com/kubernetes-sigs/cluster-api" gomodule:"sigs.k8s.io/cluster-api" asset:"clusterctl-linux-amd64" version:"1.10.x" }} -o clusterctl
+curl -L {{#releaselink repo:"https://github.com/kubernetes-sigs/cluster-api" gomodule:"sigs.k8s.io/cluster-api" asset:"clusterctl-linux-amd64" version:"1.13.x" }} -o clusterctl
 chmod +x ./clusterctl
 sudo mv ./clusterctl /usr/local/bin/clusterctl
 
@@ -265,12 +265,12 @@ kubectl apply -f cluster.yaml
 The output should look similar to this:
 
 ```bash
-clusterclass.cluster.x-k8s.io/capn-default created
-kubeadmcontrolplanetemplate.controlplane.cluster.x-k8s.io/capn-default-control-plane created
-lxcclustertemplate.infrastructure.cluster.x-k8s.io/capn-default-lxc-cluster created
-lxcmachinetemplate.infrastructure.cluster.x-k8s.io/capn-default-control-plane created
-lxcmachinetemplate.infrastructure.cluster.x-k8s.io/capn-default-default-worker created
-kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/capn-default-default-worker created
+clusterclass.cluster.x-k8s.io/capn-v1beta2 created
+kubeadmcontrolplanetemplate.controlplane.cluster.x-k8s.io/capn-v1beta2-control-plane created
+lxcclustertemplate.infrastructure.cluster.x-k8s.io/capn-v1beta2-lxc-cluster created
+lxcmachinetemplate.infrastructure.cluster.x-k8s.io/capn-v1beta2-control-plane created
+lxcmachinetemplate.infrastructure.cluster.x-k8s.io/capn-v1beta2-default-worker created
+kubeadmconfigtemplate.bootstrap.cluster.x-k8s.io/capn-v1beta2-default-worker created
 cluster.cluster.x-k8s.io/c1 created
 ```
 
@@ -299,7 +299,7 @@ Cluster/c1                                     False  Info      Bootstrapping @ 
 
 # kubectl get cluster,lxccluster,machine,lxcmachine
 NAME                          CLUSTERCLASS   PHASE         AGE   VERSION
-cluster.cluster.x-k8s.io/c1   capn-default   Provisioned   22s   v1.34.0
+cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   22s   v1.34.0
 
 NAME                                                  CLUSTER   LOAD BALANCER   READY   AGE
 lxccluster.infrastructure.cluster.x-k8s.io/c1-vtf7d   c1        10.130.1.162    true    22s
@@ -328,7 +328,7 @@ Cluster/c1                                     True                     23s
 
 # kubectl get cluster,lxccluster,machine,lxcmachine
 NAME                          CLUSTERCLASS   PHASE         AGE   VERSION
-cluster.cluster.x-k8s.io/c1   capn-default   Provisioned   59s   v1.34.0
+cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   59s   v1.34.0
 
 NAME                                                  CLUSTER   LOAD BALANCER   READY   AGE
 lxccluster.infrastructure.cluster.x-k8s.io/c1-vtf7d   c1        10.130.1.162    true    59s

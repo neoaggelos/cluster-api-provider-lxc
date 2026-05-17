@@ -25,7 +25,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/klog/v2"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/controllers/clustercache"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/finalizers"
@@ -42,6 +42,7 @@ import (
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
+	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
 // LXCMachineReconciler reconciles a LXCMachine object
@@ -87,6 +88,11 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
+	// NOTE(neoaggelos): when migrating from v1beta1, empty reasons are not allowed
+	if mustRequeue, err := utils.EnsureConditionReasons(ctx, r.Client, lxcMachine); err != nil || mustRequeue {
+		return ctrl.Result{}, err
+	}
+
 	// Fetch the Machine.
 	machine, err := util.GetOwnerMachine(ctx, r.Client, lxcMachine.ObjectMeta)
 	if err != nil {
@@ -114,7 +120,7 @@ func (r *LXCMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	if cluster.Spec.InfrastructureRef == nil {
+	if !cluster.Spec.InfrastructureRef.IsDefined() {
 		log.Info("Cluster infrastructureRef is not available yet")
 		return ctrl.Result{}, nil
 	}
@@ -184,7 +190,7 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 		return fmt.Errorf("required field ClusterCache must not be nil")
 	}
 
-	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxcmachine")
+	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxcmachine").V(5)
 	clusterToLXCMachines, err := util.ClusterToTypedObjectsMapper(mgr.GetClient(), &infrav1.LXCMachineList{}, mgr.GetScheme())
 	if err != nil {
 		return err
@@ -206,7 +212,7 @@ func (r *LXCMachineReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 			&clusterv1.Cluster{},
 			handler.EnqueueRequestsFromMapFunc(clusterToLXCMachines),
 			builder.WithPredicates(
-				predicates.ClusterPausedTransitionsOrInfrastructureReady(mgr.GetScheme(), predicateLog),
+				predicates.ClusterPausedTransitionsOrInfrastructureProvisioned(mgr.GetScheme(), predicateLog),
 			),
 		).
 		WatchesRawSource(r.ClusterCache.GetClusterSource("lxcmachine", clusterToLXCMachines)).

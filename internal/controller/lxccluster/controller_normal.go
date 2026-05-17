@@ -2,14 +2,17 @@ package lxccluster
 
 import (
 	"context"
+	"fmt"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/loadbalancer"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
+	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
@@ -20,10 +23,10 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	if err != nil {
 		log.FromContext(ctx).Error(err, "Failed to provision load balancer")
 		if utils.IsTerminalError(err) {
-			conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningAbortedReason, clusterv1.ConditionSeverityError, "The cluster load balancer could not be provisioned. The error was: %s", err)
+			conditions.Set(lxcCluster, metav1.Condition{Type: infrav1.LoadBalancerAvailableCondition, Status: metav1.ConditionFalse, Reason: infrav1.LoadBalancerProvisioningAbortedReason, Message: fmt.Sprintf("Fatal error provisioning the cluster load balancer: %v", err)})
 			return nil
 		}
-		conditions.MarkFalse(lxcCluster, infrav1.LoadBalancerAvailableCondition, infrav1.LoadBalancerProvisioningFailedReason, clusterv1.ConditionSeverityWarning, "%s", err)
+		conditions.Set(lxcCluster, metav1.Condition{Type: infrav1.LoadBalancerAvailableCondition, Status: metav1.ConditionFalse, Reason: infrav1.LoadBalancerProvisioningFailedReason, Message: err.Error()})
 		return err
 	}
 
@@ -37,8 +40,8 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	}
 
 	// Mark the lxcCluster ready
-	lxcCluster.Status.Ready = true
-	conditions.MarkTrue(lxcCluster, infrav1.LoadBalancerAvailableCondition)
+	lxcCluster.Status.Initialization.Provisioned = ptr.To(true)
+	conditions.Set(lxcCluster, metav1.Condition{Type: infrav1.LoadBalancerAvailableCondition, Status: metav1.ConditionTrue, Reason: infrav1.LoadBalancerProvisionedReason})
 
 	return nil
 }

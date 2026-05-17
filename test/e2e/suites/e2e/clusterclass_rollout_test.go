@@ -2,6 +2,7 @@
 
 package e2e
 
+/*
 import (
 	"context"
 
@@ -13,6 +14,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 )
 
+// NOTE(neoaggelos): starting from ClusterAPI v1.13, requires the existence of custom taints
+// TODO(neoaggelos): use kustomize to dynamically generate clusterclasses and templates, then re-enable
 var _ = Describe("ClusterClassRollout", func() {
 	e2e.ClusterClassRolloutSpec(context.TODO(), func() e2e.ClusterClassRolloutSpecInput {
 		return e2e.ClusterClassRolloutSpecInput{
@@ -28,3 +31,5 @@ var _ = Describe("ClusterClassRollout", func() {
 		}
 	})
 })
+
+*/

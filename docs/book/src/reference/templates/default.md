@@ -1,6 +1,6 @@
 # Default cluster template
 
-The default cluster-template uses the [`capn-default` cluster class](#cluster-class).
+The default cluster-template uses the [`capn-v1beta2` cluster class](#cluster-class-definition).
 
 All load balancer types are supported through configuration options. Further, it allows deploying the default kube-flannel CNI on the cluster.
 
@@ -165,5 +165,5 @@ When infrastructure is a cluster, specify target cluster member or cluster group
 ## Cluster Class Definition
 
 ```yaml
-{{#include ../../../../../templates/clusterclass-capn-default.yaml }}
+{{#include ../../../../../templates/clusterclass-capn-v1beta2.yaml }}
 ```

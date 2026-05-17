@@ -23,7 +23,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/klog/v2"
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/finalizers"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -37,6 +37,7 @@ import (
 
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
+	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
 // LXCClusterReconciler reconciles a LXCCluster object
@@ -86,6 +87,14 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, fmt.Errorf("failed to create incus client: %w", err)
 	}
 
+	log = log.WithValues("Cluster", klog.KObj(cluster))
+	ctx = ctrl.LoggerInto(ctx, log)
+
+	// NOTE(neoaggelos): when migrating from v1beta1, empty reasons are not allowed
+	if mustRequeue, err := utils.EnsureConditionReasons(ctx, r.Client, lxcCluster); err != nil || mustRequeue {
+		return ctrl.Result{}, err
+	}
+
 	// Add finalizer first if not set to avoid the race condition between init and delete.
 	if finalizerAdded, err := finalizers.EnsureFinalizer(ctx, r.Client, lxcCluster, infrav1.ClusterFinalizer); err != nil || finalizerAdded {
 		return ctrl.Result{}, err
@@ -94,9 +103,6 @@ func (r *LXCClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	if isPaused, conditionChanged, err := paused.EnsurePausedCondition(ctx, r.Client, cluster, lxcCluster); err != nil || isPaused || conditionChanged {
 		return ctrl.Result{}, err
 	}
-
-	log = log.WithValues("Cluster", klog.KObj(cluster))
-	ctx = ctrl.LoggerInto(ctx, log)
 
 	// Initialize the patch helper
 	patchHelper, err := patch.NewHelper(lxcCluster, r.Client)
@@ -128,7 +134,7 @@ func (r *LXCClusterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 		return fmt.Errorf("required field Client must not be nil")
 	}
 
-	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxccluster")
+	predicateLog := ctrl.LoggerFrom(ctx).WithValues("controller", "lxccluster").V(5)
 
 	if err := ctrl.NewControllerManagedBy(mgr).
 		For(&infrav1.LXCCluster{}).

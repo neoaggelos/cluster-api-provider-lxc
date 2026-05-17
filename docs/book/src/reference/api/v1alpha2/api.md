@@ -56,9 +56,7 @@ LXCClusterSpec
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
-</a>
+sigs.k8s.io/cluster-api/api/core/v1beta2.APIEndpoint
 </em>
 </td>
 <td>
@@ -153,6 +151,38 @@ LXCClusterStatus
 </em>
 </td>
 <td>
+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterInitializationStatus">LXCClusterInitializationStatus
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterStatus">LXCClusterStatus</a>)
+</p>
+<p>
+<p>LXCClusterInitializationStatus defines the initialization state of LXCCluster.</p>
+</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>provisioned</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>provisioned is true when the infrastructure provider reports that the Cluster&rsquo;s infrastructure is fully provisioned.
+NOTE: this field is part of the Cluster API contract, and it is used to orchestrate initial Cluster provisioning.</p>
 </td>
 </tr>
 </tbody>
@@ -282,9 +312,7 @@ LXCLoadBalancerExternal
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
-</a>
+sigs.k8s.io/cluster-api/api/core/v1beta2.APIEndpoint
 </em>
 </td>
 <td>
@@ -387,42 +415,34 @@ and Bootstrap providers, e.g. Talos.</p>
 <tbody>
 <tr>
 <td>
-<code>ready</code><br/>
+<code>initialization,omitempty,omitzero</code><br/>
 <em>
-bool
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterInitializationStatus">
+LXCClusterInitializationStatus
+</a>
 </em>
 </td>
 <td>
 <em>(Optional)</em>
-<p>Ready denotes that the LXC cluster (infrastructure) is ready.</p>
+<p>Initialization provides observations of the LXCCluster initialization process.
+NOTE: Fields in this struct are part of the Cluster API contract and are used to orchestrate initial LXCCluster provisioning.
+The value of those fields is never updated after provisioning is completed.
+Use conditions to monitor the operational state of the LXCCluster.</p>
 </td>
 </tr>
 <tr>
 <td>
 <code>conditions</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.Conditions
+<a href="https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Condition">
+[]Kubernetes meta/v1.Condition
 </a>
 </em>
 </td>
 <td>
 <em>(Optional)</em>
-<p>Conditions defines current service state of the LXCCluster.</p>
-</td>
-</tr>
-<tr>
-<td>
-<code>v1beta2</code><br/>
-<em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterV1Beta2Status">
-LXCClusterV1Beta2Status
-</a>
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>V1Beta2 groups all status fields that will be added in LXCCluster&rsquo;s status with the v1beta2 version.</p>
+<p>Conditions represents the observations of a LXCCluster&rsquo;s current state.
+Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.</p>
 </td>
 </tr>
 </tbody>
@@ -505,9 +525,7 @@ LXCClusterTemplateResource
 <td>
 <code>metadata</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.ObjectMeta
-</a>
+sigs.k8s.io/cluster-api/api/core/v1beta2.ObjectMeta
 </em>
 </td>
 <td>
@@ -535,9 +553,7 @@ LXCClusterSpec
 <td>
 <code>controlPlaneEndpoint</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint
-</a>
+sigs.k8s.io/cluster-api/api/core/v1beta2.APIEndpoint
 </em>
 </td>
 <td>
@@ -651,41 +667,6 @@ LXCClusterTemplateResource
 </em>
 </td>
 <td>
-</td>
-</tr>
-</tbody>
-</table>
-<h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterV1Beta2Status">LXCClusterV1Beta2Status
-</h3>
-<p>
-(<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCClusterStatus">LXCClusterStatus</a>)
-</p>
-<p>
-<p>LXCClusterV1Beta2Status groups all the fields that will be added or modified in LXCCluster with the V1Beta2 version.
-See <a href="https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md">https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md</a> for more context.</p>
-</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<code>conditions</code><br/>
-<em>
-<a href="https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Condition">
-[]Kubernetes meta/v1.Condition
-</a>
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>conditions represents the observations of a LXCCluster&rsquo;s current state.
-Known condition types are Ready, LoadBalancerAvailable, Deleting, Paused.</p>
 </td>
 </tr>
 </tbody>
@@ -1224,6 +1205,38 @@ string
 </tr>
 </tbody>
 </table>
+<h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineInitializationStatus">LXCMachineInitializationStatus
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineStatus">LXCMachineStatus</a>)
+</p>
+<p>
+<p>LXCMachineInitializationStatus defines the initialization state of LXCMachine.</p>
+</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>provisioned</code><br/>
+<em>
+bool
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>provisioned is true when the infrastructure provider reports that the Machine&rsquo;s infrastructure is fully provisioned.
+NOTE: this field is part of the Cluster API contract, and it is used to orchestrate initial Machine provisioning.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineSpec">LXCMachineSpec
 </h3>
 <p>
@@ -1400,14 +1413,19 @@ development purposes).</p>
 <tbody>
 <tr>
 <td>
-<code>ready</code><br/>
+<code>initialization,omitempty,omitzero</code><br/>
 <em>
-bool
+<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineInitializationStatus">
+LXCMachineInitializationStatus
+</a>
 </em>
 </td>
 <td>
 <em>(Optional)</em>
-<p>Ready denotes that the LXC machine is ready.</p>
+<p>Initialization provides observations of the LXCMachine initialization process.
+NOTE: Fields in this struct are part of the Cluster API contract and are used to orchestrate initial LXCMachine provisioning.
+The value of those fields is never updated after provisioning is completed.
+Use conditions to monitor the operational state of the LXCMachine.</p>
 </td>
 </tr>
 <tr>
@@ -1439,9 +1457,7 @@ bool
 <td>
 <code>addresses</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-[]sigs.k8s.io/cluster-api/api/v1beta1.MachineAddress
-</a>
+[]sigs.k8s.io/cluster-api/api/core/v1beta2.MachineAddress
 </em>
 </td>
 <td>
@@ -1453,28 +1469,15 @@ bool
 <td>
 <code>conditions</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.Conditions
+<a href="https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Condition">
+[]Kubernetes meta/v1.Condition
 </a>
 </em>
 </td>
 <td>
 <em>(Optional)</em>
-<p>Conditions defines current service state of the LXCMachine.</p>
-</td>
-</tr>
-<tr>
-<td>
-<code>v1beta2</code><br/>
-<em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineV1Beta2Status">
-LXCMachineV1Beta2Status
-</a>
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>V1Beta2 groups all status fields that will be added in LXCMachine&rsquo;s status with the v1beta2 version.</p>
+<p>conditions represents the observations of a LXCMachine&rsquo;s current state.
+Known condition types are Ready, InstanceProvisioned, Deleting, Paused.</p>
 </td>
 </tr>
 </tbody>
@@ -1557,9 +1560,7 @@ LXCMachineTemplateResource
 <td>
 <code>metadata</code><br/>
 <em>
-<a href="https://doc.crds.dev/github.com/kubernetes-sigs/cluster-api@v1.10.9">
-sigs.k8s.io/cluster-api/api/v1beta1.ObjectMeta
-</a>
+sigs.k8s.io/cluster-api/api/core/v1beta2.ObjectMeta
 </em>
 </td>
 <td>
@@ -1753,41 +1754,6 @@ LXCMachineTemplateResource
 </em>
 </td>
 <td>
-</td>
-</tr>
-</tbody>
-</table>
-<h3 id="infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineV1Beta2Status">LXCMachineV1Beta2Status
-</h3>
-<p>
-(<em>Appears on:</em>
-<a href="#infrastructure.cluster.x-k8s.io/v1alpha2.LXCMachineStatus">LXCMachineStatus</a>)
-</p>
-<p>
-<p>LXCMachineV1Beta2Status groups all the fields that will be added or modified in LXCMachine with the V1Beta2 version.
-See <a href="https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md">https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20240916-improve-status-in-CAPI-resources.md</a> for more context.</p>
-</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<code>conditions</code><br/>
-<em>
-<a href="https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Condition">
-[]Kubernetes meta/v1.Condition
-</a>
-</em>
-</td>
-<td>
-<em>(Optional)</em>
-<p>conditions represents the observations of a LXCMachine&rsquo;s current state.
-Known condition types are Ready, InstanceProvisioned, Deleting, Paused.</p>
 </td>
 </tr>
 </tbody>

@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/conditions"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -25,7 +26,7 @@ func (r *LXCMachineReconciler) reconcileDelete(ctx context.Context, cluster *clu
 	if err != nil {
 		return err
 	}
-	conditions.MarkFalse(lxcMachine, infrav1.InstanceProvisionedCondition, clusterv1.DeletingReason, clusterv1.ConditionSeverityInfo, "")
+	conditions.Set(lxcMachine, metav1.Condition{Type: infrav1.InstanceProvisionedCondition, Status: metav1.ConditionFalse, Reason: clusterv1.DeletingReason})
 	if err := patchLXCMachine(ctx, patchHelper, lxcMachine); err != nil {
 		return fmt.Errorf("failed to patch LXCMachine: %w", err)
 	}

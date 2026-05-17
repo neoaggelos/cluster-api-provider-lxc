@@ -39,6 +39,6 @@ func ensureLXCSystemImages(e2eCtx *E2EContext) {
 		Expect(err).ToNot(HaveOccurred(), "Image %s not recognized", imageName)
 		Expect(parsed).To(BeTrue(), "Image prefix not recognized")
 
-		Expect(lxcClient.PullImage(context.TODO(), image)).ToNot(HaveOccurred(), "Failed to pull image %s", imageName)
+		Expect(lxcClient.PullImage(context.TODO(), image)).To(Succeed(), "Failed to pull image %s", imageName)
 	}
 }

@@ -9,6 +9,9 @@ const (
 	// DefaultStagingSimplestreamsServer is the default staging simplestreams server for fetching images.
 	DefaultStagingSimplestreamsServer = "https://images-stg.capn.open-cloud.xyz/capn/staging/"
 
+	// DefaultDevelopmentSimplestreamsServer is the default development simplestreams server for fetching images.
+	DefaultDevelopmentSimplestreamsServer = "https://images-stg.capn.open-cloud.xyz/capn/testing/"
+
 	// DefaultIncusSimplestreamsServer is the default simplestreams server for Incus.
 	DefaultIncusSimplestreamsServer = "https://images.linuxcontainers.org"
 

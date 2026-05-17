@@ -75,6 +75,7 @@ var _ = Describe("QuickStart", func() {
 				"CONTROL_PLANE_MACHINE_TYPE": "kind",
 				"WORKER_MACHINE_TYPE":        "kind",
 				"DEPLOY_KUBE_FLANNEL":        "false", // we use kindnet instead
+				"KUBERNETES_VERSION":         e2eCtx.E2EConfig.MustGetVariable(shared.KubernetesVersionKind),
 			})
 		})
 

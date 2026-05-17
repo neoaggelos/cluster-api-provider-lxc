@@ -14,6 +14,7 @@ var (
 		"images":   DefaultImage,
 		"capi":     func(in string) ImageFamily { return CapnImage(in) },
 		"capi-stg": func(in string) ImageFamily { return CapnStagingImage(in) },
+		"capi-dev": func(in string) ImageFamily { return CapnDevelopmentImage(in) },
 		"kind":     func(in string) ImageFamily { return KindestNodeImage(in) },
 	}
 )

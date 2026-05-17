@@ -44,6 +44,7 @@ func TestParseImage(t *testing.T) {
 		{server: "incus", image: "images:almalinux/9/cloud", expectParse: true, expectImageSource: simplestreamsImage("https://images.linuxcontainers.org", "almalinux/9/cloud")},
 		{server: "incus", image: "capi:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images.linuxcontainers.org/capn/", "kubeadm/v1.33.0")},
 		{server: "incus", image: "capi-stg:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images-stg.capn.open-cloud.xyz/capn/staging/", "kubeadm/v1.33.0")},
+		{server: "incus", image: "capi-dev:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images-stg.capn.open-cloud.xyz/capn/testing/", "kubeadm/v1.33.0")},
 		{server: "incus", image: "kind:v1.33.0", expectParse: true, expectImageSource: ociImage("https://docker.io", "kindest/node:v1.33.0")},
 		// verify lxd prefixes
 		{server: "lxd", image: "image-name"},
@@ -53,6 +54,7 @@ func TestParseImage(t *testing.T) {
 		{server: "lxd", image: "images:almalinux/9/cloud", expectParse: true, expectImageSource: simplestreamsImage("https://images.lxd.canonical.com", "almalinux/9/cloud")},
 		{server: "lxd", image: "capi:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images.linuxcontainers.org/capn/", "kubeadm/v1.33.0")},
 		{server: "lxd", image: "capi-stg:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images-stg.capn.open-cloud.xyz/capn/staging/", "kubeadm/v1.33.0")},
+		{server: "lxd", image: "capi-dev:kubeadm/v1.33.0", expectParse: true, expectImageSource: simplestreamsImage("https://images-stg.capn.open-cloud.xyz/capn/testing/", "kubeadm/v1.33.0")},
 		{server: "lxd", image: "kind:v1.33.0", expectParse: true, expectImageSource: ociImage("https://docker.io", "kindest/node:v1.33.0")},
 		// verify prefixes for unknown
 		{server: "unknown", image: "image-name"},

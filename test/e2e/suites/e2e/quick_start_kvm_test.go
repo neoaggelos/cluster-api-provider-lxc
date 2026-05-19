@@ -74,7 +74,11 @@ var _ = Describe("QuickStart", func() {
 					WorkerMachineCount:       ptr.To[int64](1),
 					ClusterName:              ptr.To(fmt.Sprintf("capn-kvm-unprivileged-%s", util.RandomString(4))),
 
-					ClusterctlVariables: map[string]string{"PRIVILEGED": "false"},
+					ClusterctlVariables: map[string]string{
+						"PRIVILEGED": "false",
+						// "CONTROL_PLANE_MACHINE_DEVICES": "root,type=disk,pool=default",
+						// "WORKER_MACHINE_DEVICES":        "root,type=disk,pool=default",
+					},
 				}
 			})
 		})

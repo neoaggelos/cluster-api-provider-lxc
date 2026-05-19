@@ -43,8 +43,8 @@ func (e2eCtx *E2EContext) UnprivilegedContainersClusterVariables() map[string]st
 	for _, pool := range pools {
 		if pool.Status == api.StoragePoolStatusCreated && pool.Driver == "dir" {
 			Logf("Use storage pool %q (dir) for unprivileged instances", pool)
-			d["CONTROL_PLANE_MACHINE_DEVICES"] = fmt.Sprintf("['root,type=disk,path=/,pool=%s']", pool)
-			d["WORKER_MACHINE_DEVICES"] = fmt.Sprintf("['root,type=disk,path=/,pool=%s']", pool)
+			d["CONTROL_PLANE_MACHINE_DEVICES"] = fmt.Sprintf("['root,type=disk,path=/,pool=%s']", pool.Name)
+			d["WORKER_MACHINE_DEVICES"] = fmt.Sprintf("['root,type=disk,path=/,pool=%s']", pool.Name)
 			break
 		}
 	}

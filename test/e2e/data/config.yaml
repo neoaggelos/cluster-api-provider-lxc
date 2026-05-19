@@ -127,7 +127,7 @@ variables:
   KUBERNETES_VERSION: v1.36.1
   KUBERNETES_VERSION_UPGRADE_FROM: v1.35.5
   KUBERNETES_VERSION_UPGRADE_TO: v1.36.1
-  KUBERNETES_VERSION_KIND: v1.35.0 # override version for Kind e2e tests
+  KUBERNETES_VERSION_KIND: v1.34.0 # override version for Kind e2e tests
 
   CNI: ../../data/cni/kube-flannel.yaml
 

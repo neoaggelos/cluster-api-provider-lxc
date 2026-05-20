@@ -19,7 +19,7 @@ import (
 )
 
 var _ = Describe("QuickStart", func() {
-	Context("OVN" /*Label("PRBlocking"),*/, func() {
+	Context("OVN", Label("PRBlocking"), func() {
 		BeforeEach(func(ctx context.Context) {
 			lxcClient, err := lxc.New(ctx, e2eCtx.Settings.LXCClientOptions)
 			Expect(err).ToNot(HaveOccurred())

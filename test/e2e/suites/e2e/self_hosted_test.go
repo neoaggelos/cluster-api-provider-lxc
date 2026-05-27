@@ -15,7 +15,6 @@ import (
 	"sigs.k8s.io/cluster-api/test/framework"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
-	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -75,12 +74,12 @@ var _ = Describe("SelfHosted", func() {
 			BootstrapClusterProxy:  e2eCtx.Environment.BootstrapClusterProxy,
 			ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 			SkipCleanup:            e2eCtx.Settings.SkipCleanup,
-			InfrastructureProvider: ptr.To("incus:v0.88.99"),
+			InfrastructureProvider: new("incus:v0.88.99"),
 
 			Flavor:                   shared.FlavorDefault,
 			SkipUpgrade:              true,
-			ControlPlaneMachineCount: ptr.To[int64](1),
-			WorkerMachineCount:       ptr.To[int64](1),
+			ControlPlaneMachineCount: new(int64(1)),
+			WorkerMachineCount:       new(int64(1)),
 
 			// We hijack PostNamespaceCreated to allow pre-loading images into the workload cluster
 			// This is required for the CAPN provider e2e image, which is not published

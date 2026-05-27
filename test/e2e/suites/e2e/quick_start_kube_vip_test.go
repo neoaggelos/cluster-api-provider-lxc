@@ -10,7 +10,6 @@ import (
 	"sigs.k8s.io/cluster-api/util"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
-	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -60,12 +59,12 @@ var _ = Describe("QuickStart", func() {
 					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-					InfrastructureProvider: ptr.To("incus:v0.88.99"),
+					InfrastructureProvider: new("incus:v0.88.99"),
 
-					Flavor:                   ptr.To(shared.FlavorDefault),
-					ControlPlaneMachineCount: ptr.To[int64](3),
-					WorkerMachineCount:       ptr.To[int64](1),
-					ClusterName:              ptr.To(fmt.Sprintf("capn-kube-vip-%s", util.RandomString(4))),
+					Flavor:                   new(shared.FlavorDefault),
+					ControlPlaneMachineCount: new(int64(3)),
+					WorkerMachineCount:       new(int64(1)),
+					ClusterName:              new(fmt.Sprintf("capn-kube-vip-%s", util.RandomString(4))),
 				}
 			})
 		})
@@ -79,12 +78,12 @@ var _ = Describe("QuickStart", func() {
 					ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 					SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 					PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-					InfrastructureProvider: ptr.To("incus:v0.88.99"),
+					InfrastructureProvider: new("incus:v0.88.99"),
 
-					Flavor:                   ptr.To(shared.FlavorDefault),
-					ControlPlaneMachineCount: ptr.To[int64](3),
-					WorkerMachineCount:       ptr.To[int64](1),
-					ClusterName:              ptr.To(fmt.Sprintf("capn-kube-vip-unprivileged-%s", util.RandomString(4))),
+					Flavor:                   new(shared.FlavorDefault),
+					ControlPlaneMachineCount: new(int64(3)),
+					WorkerMachineCount:       new(int64(1)),
+					ClusterName:              new(fmt.Sprintf("capn-kube-vip-unprivileged-%s", util.RandomString(4))),
 
 					ClusterctlVariables: e2eCtx.UnprivilegedContainersClusterVariables(),
 				}

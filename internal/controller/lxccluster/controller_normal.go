@@ -12,7 +12,6 @@ import (
 	infrav1 "github.com/lxc/cluster-api-provider-incus/api/v1alpha2"
 	"github.com/lxc/cluster-api-provider-incus/internal/loadbalancer"
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
-	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )
 
@@ -40,7 +39,7 @@ func (r *LXCClusterReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	}
 
 	// Mark the lxcCluster ready
-	lxcCluster.Status.Initialization.Provisioned = ptr.To(true)
+	lxcCluster.Status.Initialization.Provisioned = new(true)
 	conditions.Set(lxcCluster, metav1.Condition{Type: infrav1.LoadBalancerAvailableCondition, Status: metav1.ConditionTrue, Reason: infrav1.LoadBalancerProvisionedReason})
 
 	return nil

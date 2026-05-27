@@ -7,7 +7,6 @@ import (
 
 	"sigs.k8s.io/cluster-api/test/e2e"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -23,11 +22,11 @@ var _ = Describe("ClusterUpgrade", func() {
 				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				InfrastructureProvider: ptr.To("incus:v0.88.99"),
+				InfrastructureProvider: new("incus:v0.88.99"),
 
-				Flavor:                   ptr.To(shared.FlavorDefault),
-				ControlPlaneMachineCount: ptr.To[int64](1),
-				WorkerMachineCount:       ptr.To[int64](1),
+				Flavor:                   new(shared.FlavorDefault),
+				ControlPlaneMachineCount: new(int64(1)),
+				WorkerMachineCount:       new(int64(1)),
 
 				SkipConformanceTests: true,
 			}
@@ -42,11 +41,11 @@ var _ = Describe("ClusterUpgrade", func() {
 				ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 				SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 				PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-				InfrastructureProvider: ptr.To("incus:v0.88.99"),
+				InfrastructureProvider: new("incus:v0.88.99"),
 
-				Flavor:                   ptr.To(shared.FlavorDefault),
-				ControlPlaneMachineCount: ptr.To[int64](3),
-				WorkerMachineCount:       ptr.To[int64](2),
+				Flavor:                   new(shared.FlavorDefault),
+				ControlPlaneMachineCount: new(int64(3)),
+				WorkerMachineCount:       new(int64(2)),
 
 				SkipConformanceTests: true,
 			}

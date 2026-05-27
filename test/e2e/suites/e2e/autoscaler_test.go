@@ -7,7 +7,6 @@ import (
 
 	"sigs.k8s.io/cluster-api/test/e2e"
 
-	"github.com/lxc/cluster-api-provider-incus/internal/ptr"
 	"github.com/lxc/cluster-api-provider-incus/test/e2e/shared"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -23,9 +22,9 @@ var _ = Describe("Autoscaler", func() {
 			ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 			SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 			PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-			InfrastructureProvider: ptr.To("incus:v0.88.99"),
+			InfrastructureProvider: new("incus:v0.88.99"),
 
-			Flavor: ptr.To(shared.FlavorAutoscaler),
+			Flavor: new(shared.FlavorAutoscaler),
 
 			InfrastructureMachineTemplateKind: "lxcmachinetemplates",
 			AutoscalerVersion:                 "v1.31.1",

@@ -25,7 +25,7 @@ var _ = Describe("ClusterClassRollout", func() {
 			ArtifactFolder:         e2eCtx.Settings.ArtifactFolder,
 			SkipCleanup:            e2eCtx.Settings.SkipCleanup,
 			PostNamespaceCreated:   e2eCtx.DefaultPostNamespaceCreated(),
-			InfrastructureProvider: ptr.To("incus:v0.88.99"),
+			InfrastructureProvider: new("incus:v0.88.99"),
 
 			Flavor: shared.FlavorDefault,
 		}

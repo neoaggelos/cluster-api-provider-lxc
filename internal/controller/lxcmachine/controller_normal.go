@@ -46,7 +46,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 			return ctrl.Result{}, err
 		}
 
-		lxcMachine.Status.Initialization.Provisioned = ptr.To(true)
+		lxcMachine.Status.Initialization.Provisioned = new(true)
 		conditions.Set(lxcMachine, metav1.Condition{Type: infrav1.InstanceProvisionedCondition, Status: metav1.ConditionTrue, Reason: infrav1.InstanceProvisionedReason})
 		r.setLXCMachineAddresses(lxcMachine, lxc.ParseHostAddresses(state))
 
@@ -142,7 +142,7 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	}
 
 	lxcMachine.Spec.ProviderID = lxcMachine.GetExpectedProviderID()
-	lxcMachine.Status.Initialization.Provisioned = ptr.To(true)
+	lxcMachine.Status.Initialization.Provisioned = new(true)
 
 	return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 }

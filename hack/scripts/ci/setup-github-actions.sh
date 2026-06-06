@@ -65,5 +65,5 @@ if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
   # skopeo 1.23.0. Example error:
   # failed to wait for PullImage operation: Failed getting remote image info: Failed to run: skopeo --insecure-policy inspect docker://docker.io/kindest/node:v1.35.0 --no-tags: exit status 1 (time=\"2026-06-06T12:27:40Z\" level=fatal msg=\"Error parsing image name \\\"docker://docker.io/kindest/node:v1.35.0\\\": loading registries configuration: loading registries configuration \\\"/etc/containers/registries.conf\\\": registries.conf must be in v2 format but is in v1\")
   cat /etc/containers/registries.conf
-  rm /etc/containers/registries.conf
+  sudo rm /etc/containers/registries.conf
 fi

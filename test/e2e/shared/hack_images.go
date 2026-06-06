@@ -23,7 +23,7 @@ func defaultImages(e2eCtx *E2EContext, serverName string) []string {
 		fmt.Sprintf("capi:kubeadm/%s", e2eCtx.E2EConfig.MustGetVariable(KubernetesVersionUpgradeTo)),
 	}
 	if serverName == lxc.Incus {
-		images = append(images, fmt.Sprintf("kind:%s", e2eCtx.E2EConfig.MustGetVariable(KubernetesVersion)))
+		images = append(images, fmt.Sprintf("kind:%s", e2eCtx.E2EConfig.MustGetVariable(KubernetesVersionKind)))
 	}
 	return images
 }

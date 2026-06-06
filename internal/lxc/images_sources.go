@@ -74,6 +74,14 @@ func CapnStagingImage(image string) Image {
 	}
 }
 
+func CapnDevelopmentImage(image string) Image {
+	return Image{ // "capi-dev:IMAGE" -> "IMAGE" from "https://images-stg.capn.open-cloud.xyz/capn/testing/"
+		Protocol: Simplestreams,
+		Server:   DefaultDevelopmentSimplestreamsServer,
+		Alias:    image,
+	}
+}
+
 func KindestNodeImage(version string) Image {
 	return Image{ // "kind:VERSION" -> "kindest/node:VERSION" from "https://docker.io"
 		Protocol: OCI,

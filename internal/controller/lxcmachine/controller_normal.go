@@ -50,6 +50,21 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 		conditions.Set(lxcMachine, metav1.Condition{Type: infrav1.InstanceProvisionedCondition, Status: metav1.ConditionTrue, Reason: infrav1.InstanceProvisionedReason})
 		r.setLXCMachineAddresses(lxcMachine, lxc.ParseHostAddresses(state))
 
+		// Handle control plane load balancer configuration
+		if util.IsControlPlaneMachine(machine) && !lxcMachine.Status.LoadBalancerConfigured {
+			machinePhase := machine.Status.GetTypedPhase()
+			if cluster.Spec.ControlPlaneRef.IsDefined() && ptr.Deref(cluster.Status.Initialization.ControlPlaneInitialized, false) && machinePhase != clusterv1.MachinePhaseRunning {
+				log.FromContext(ctx).Info("ControlPlane is initialized, waiting for Machine to become Running before updating control plane load balancer", "phase", machinePhase)
+				return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+			}
+
+			log.FromContext(ctx).Info("Updating control plane load balancer")
+			if err := loadbalancer.ManagerForCluster(cluster, lxcCluster, lxcClient).Reconfigure(ctx); err != nil {
+				return ctrl.Result{}, fmt.Errorf("failed to update loadbalancer configuration: %w", err)
+			}
+			lxcMachine.Status.LoadBalancerConfigured = true
+		}
+
 		// Handle cloud provider node patch
 		if lxcCluster.Spec.CloudProviderNodePatch && !lxcMachine.Status.CloudProviderNodePatchConfigured {
 			// If the Cluster is using a control plane and the control plane is not yet initialized, there is no API server
@@ -130,16 +145,6 @@ func (r *LXCMachineReconciler) reconcileNormal(ctx context.Context, cluster *clu
 	}
 	r.setLXCMachineAddresses(lxcMachine, addresses)
 	conditions.Set(lxcMachine, metav1.Condition{Type: infrav1.InstanceProvisionedCondition, Status: metav1.ConditionTrue, Reason: infrav1.InstanceProvisionedReason})
-
-	// update load balancer
-	if util.IsControlPlaneMachine(machine) && !lxcMachine.Status.LoadBalancerConfigured {
-		log.FromContext(ctx).Info("Updating control plane load balancer")
-
-		if err := loadbalancer.ManagerForCluster(cluster, lxcCluster, lxcClient).Reconfigure(ctx); err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to update loadbalancer configuration: %w", err)
-		}
-		lxcMachine.Status.LoadBalancerConfigured = true
-	}
 
 	lxcMachine.Spec.ProviderID = lxcMachine.GetExpectedProviderID()
 	lxcMachine.Status.Initialization.Provisioned = new(true)

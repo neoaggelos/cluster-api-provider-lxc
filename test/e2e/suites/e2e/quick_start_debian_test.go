@@ -58,7 +58,7 @@ var _ = Describe("QuickStart", func() {
 					WorkerMachineCount:       new(int64(1)),
 					ClusterName:              new(fmt.Sprintf("capn-debian-unprivileged-%s", util.RandomString(4))),
 
-					ClusterctlVariables: map[string]string{"PRIVILEGED": "false"},
+					ClusterctlVariables: e2eCtx.UnprivilegedContainersClusterVariables(),
 				}
 			})
 		})

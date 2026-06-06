@@ -5,7 +5,7 @@ ConditionPathExists=!/hack/cloud-init.success
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -xe -c 'python3 /hack/cloud-init.py && touch /hack/cloud-init.success'
+ExecStart=/bin/bash -xe -c 'crictl ps -a && python3 /hack/cloud-init.py && touch /hack/cloud-init.success'
 Restart=on-failure
 RestartSec=5s
 StartLimitInterval=60

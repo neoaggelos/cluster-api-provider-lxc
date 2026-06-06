@@ -38,6 +38,8 @@ The following images are currently provided:
 | kubeadm/v1.33.5 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.33.5   | X     | X     |
 | kubeadm/v1.34.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.34.0   | X     | X     |
 | kubeadm/v1.35.0 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.35.0   | X     | X     |
+| kubeadm/v1.35.5 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.35.5   | X     | X     |
+| kubeadm/v1.36.1 | Ubuntu 24.04 | Kubeadm image for Kubernetes v1.36.1   | X     | X     |
 
 Note that the table above might be out of date. See [streams/v1/index.json] and [streams/v1/images.json] for the list of versions currently available.
 

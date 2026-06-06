@@ -60,4 +60,10 @@ if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
 
   # Print available space after cleanup
   df -h /
+
+  # NOTE(neoaggelos/2026-06-06): /etc/containers/registries.conf uses v1 config format, which breaks
+  # skopeo 1.23.0. Example error:
+  # failed to wait for PullImage operation: Failed getting remote image info: Failed to run: skopeo --insecure-policy inspect docker://docker.io/kindest/node:v1.35.0 --no-tags: exit status 1 (time=\"2026-06-06T12:27:40Z\" level=fatal msg=\"Error parsing image name \\\"docker://docker.io/kindest/node:v1.35.0\\\": loading registries configuration: loading registries configuration \\\"/etc/containers/registries.conf\\\": registries.conf must be in v2 format but is in v1\")
+  cat /etc/containers/registries.conf
+  sudo rm /etc/containers/registries.conf
 fi

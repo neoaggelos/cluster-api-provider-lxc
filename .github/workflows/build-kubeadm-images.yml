@@ -30,10 +30,10 @@ jobs:
     runs-on: ${{ matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
@@ -55,7 +55,7 @@ jobs:
             --output=kubeadm-${{ inputs.version }}-${{ matrix.type }}-${{ matrix.base }}-${{ matrix.arch }}.tar.gz
 
       - name: Release image
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Kubeadm images
           tag_name: kubeadm-images

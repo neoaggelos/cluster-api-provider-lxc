@@ -35,10 +35,10 @@ See [Quick Start](https://capn.linuxcontainers.org/tutorial/quick-start.html) to
 
 ClusterAPI v1.11 (August 2025) introduced a new `v1beta2` API contract. `cluster-api-provider-incus` supports it starting from version `v0.9.0`.
 
-| cluster-api version | contract  | CAPN version | CAPN API   | Incus       | Canonical LXD |
-| ------------------- | --------- | ------------ | ---------- | ----------- | ------------- |
-| `v1.13.x` or older  | `v1beta1` | `v0.8.x`     | `v1alpha2` | 6.0+, 7.0+  | 5.21+         |
-| `v1.11.x` or newer  | `v1beta2` | `v0.9.x`     | `v1alpha2` | 6.0+, < 7.0 | 5.21+         |
+| CAPN version | CAPN API   | cluster-api version  | contract  | Incus       | Canonical LXD |
+| ------------ | ---------- | -------------------- | --------- | ----------- | ------------- |
+| `v0.8.x`     | `v1alpha2` | `[old]` -> `v1.13.x` | `v1beta1` | 6.0+, < 7.0 | 5.21+         |
+| `v0.9.x`     | `v1alpha2` | `v1.11.x` -> `[new]` | `v1beta2` | 6.0+, 7.0+  | 5.21+         |
 
 Support commitments for CAPN versions are:
 - `v0.8.x` series will not receive any further updates, bug and/or security fixes.

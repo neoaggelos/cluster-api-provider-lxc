@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 )
 
 type ListInstanceFilter func(i api.InstanceFull) bool

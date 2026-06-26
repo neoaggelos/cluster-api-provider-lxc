@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lxc/incus/v6/shared/cliconfig"
+	"github.com/lxc/incus/v7/shared/cliconfig"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"
@@ -47,7 +47,7 @@ func (m *Manager) AddSimplestreamsRemoteIfNotExist(ctx context.Context, name str
 
 	log.V(1).Info("Adding remote to local configuration")
 	m.config.Remotes[name] = cliconfig.Remote{
-		Addr:     server,
+		Addrs:    []string{server},
 		Protocol: lxc.Simplestreams,
 		Public:   true,
 	}

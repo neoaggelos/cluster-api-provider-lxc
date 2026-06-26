@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"time"
 
-	incus "github.com/lxc/incus/v6/client"
-	"github.com/lxc/incus/v6/shared/api"
+	incus "github.com/lxc/incus/v7/client"
+	"github.com/lxc/incus/v7/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"

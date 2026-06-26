@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lxc/incus/v6/shared/util"
+	"github.com/lxc/incus/v7/shared/util"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/utils"
 )

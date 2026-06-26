@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lxc/incus/v6/shared/simplestreams"
+	"github.com/lxc/incus/v7/shared/simplestreams"
 )
 
 // Index manages a simplestreams index from a local directory

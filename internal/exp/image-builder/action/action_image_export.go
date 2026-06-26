@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	incus "github.com/lxc/incus/v6/client"
-	"github.com/lxc/incus/v6/shared/ioprogress"
+	incus "github.com/lxc/incus/v7/client"
+	"github.com/lxc/incus/v7/shared/ioprogress"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"

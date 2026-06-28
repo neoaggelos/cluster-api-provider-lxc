@@ -3,7 +3,7 @@ package lxc
 import (
 	"slices"
 
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 )
 
 // ParseHostAddresses returns the main IP addresses of the instance.

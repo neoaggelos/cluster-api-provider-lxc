@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	incus "github.com/lxc/incus/v6/client"
+	incus "github.com/lxc/incus/v7/client"
 )
 
 type instanceFileCreator interface {

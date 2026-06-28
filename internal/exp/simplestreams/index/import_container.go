@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lxc/incus/v6/shared/api"
-	"github.com/lxc/incus/v6/shared/simplestreams"
+	"github.com/lxc/incus/v7/shared/api"
+	"github.com/lxc/incus/v7/shared/simplestreams"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 )

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	incus "github.com/lxc/incus/v6/client"
-	"github.com/lxc/incus/v6/shared/api"
+	incus "github.com/lxc/incus/v7/client"
+	"github.com/lxc/incus/v7/shared/api"
 )
 
 // RunCommand on a specified instance, and allow retrieving the stdout and stderr. It returns an error if execution failed.

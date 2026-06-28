@@ -3,7 +3,7 @@ package static
 import (
 	_ "embed"
 
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 	"sigs.k8s.io/yaml"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"

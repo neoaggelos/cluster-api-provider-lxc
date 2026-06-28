@@ -3,7 +3,7 @@ package kini
 import (
 	"fmt"
 
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 	"github.com/spf13/cobra"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"

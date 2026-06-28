@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/lxc/cluster-api-provider-incus/internal/lxc"

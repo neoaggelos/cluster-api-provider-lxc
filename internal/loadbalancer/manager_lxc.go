@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	incus "github.com/lxc/incus/v6/client"
+	incus "github.com/lxc/incus/v7/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 

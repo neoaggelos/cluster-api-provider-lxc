@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	incus "github.com/lxc/incus/v6/client"
-	"github.com/lxc/incus/v6/shared/api"
-	"github.com/lxc/incus/v6/shared/tls"
+	incus "github.com/lxc/incus/v7/client"
+	"github.com/lxc/incus/v7/shared/api"
+	"github.com/lxc/incus/v7/shared/tls"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 

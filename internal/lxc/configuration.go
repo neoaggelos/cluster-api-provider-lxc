@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lxc/incus/v6/shared/cliconfig"
+	"github.com/lxc/incus/v7/shared/cliconfig"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -116,14 +116,20 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 			continue
 		}
 
-		if requireHTTPS && !strings.HasPrefix(remote.Addr, "https://") {
-			errs = append(errs, fmt.Errorf("failed to load credentials from %q: remote address %q must use HTTPS", configFile, remote.Addr))
+		if len(remote.Addrs) == 0 {
+			errs = append(errs, fmt.Errorf("failed to load credentials from %q: remote %q has no address", configFile, remoteName))
+			continue
+		}
+		remoteAddr := remote.Addrs[0]
+
+		if requireHTTPS && !strings.HasPrefix(remoteAddr, "https://") {
+			errs = append(errs, fmt.Errorf("failed to load credentials from %q: remote address %q must use HTTPS", configFile, remoteAddr))
 			continue
 		}
 
-		if strings.HasPrefix(remote.Addr, "unix://") || strings.HasPrefix(remote.Addr, "http://") {
+		if strings.HasPrefix(remoteAddr, "unix://") || strings.HasPrefix(remoteAddr, "http://") {
 			return Configuration{
-				ServerURL: remote.Addr,
+				ServerURL: remoteAddr,
 				Project:   remote.Project,
 			}, configFile, nil
 		}
@@ -152,7 +158,7 @@ func ConfigurationFromLocal(configFile string, forceRemoteName string, requireHT
 		}
 
 		return Configuration{
-			ServerURL: remote.Addr,
+			ServerURL: remoteAddr,
 			ServerCrt: string(serverCrt),
 			ClientCrt: string(clientCrt),
 			ClientKey: string(clientKey),

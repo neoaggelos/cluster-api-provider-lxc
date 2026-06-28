@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	incus "github.com/lxc/incus/v6/client"
+	incus "github.com/lxc/incus/v7/client"
 	"github.com/spf13/cobra"
 )
 

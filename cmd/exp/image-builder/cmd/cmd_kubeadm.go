@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/blang/semver/v4"
-	"github.com/lxc/incus/v6/shared/api"
+	"github.com/lxc/incus/v7/shared/api"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 

@@ -32,7 +32,7 @@ chmod +x ./clusterctl
 sudo mv ./clusterctl /usr/local/bin/clusterctl
 
 # kubectl
-curl -L --remote-name-all "https://dl.k8s.io/release/v1.36.1/bin/linux/amd64/kubectl" -o ./kubectl
+curl -L --remote-name-all "https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl" -o ./kubectl
 chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 ```
@@ -250,7 +250,7 @@ Then generate a cluster manifest for a cluster with 1 control plane and 1 worker
 ```bash
 # generate manifest in 'cluster.yaml'
 clusterctl generate cluster c1 -i incus \
-  --kubernetes-version v1.36.1 \
+  --kubernetes-version v1.37.0 \
   --control-plane-machine-count 1 \
   --worker-machine-count 1 \
   > cluster.yaml
@@ -299,14 +299,14 @@ Cluster/c1                                     False  Info      Bootstrapping @ 
 
 # kubectl get cluster,lxccluster,machine,lxcmachine
 NAME                          CLUSTERCLASS   PHASE         AGE   VERSION
-cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   22s   v1.36.1
+cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   22s   v1.37.0
 
 NAME                                                  CLUSTER   LOAD BALANCER   READY   AGE
 lxccluster.infrastructure.cluster.x-k8s.io/c1-vtf7d   c1        10.130.1.162    true    22s
 
 NAME                                                 CLUSTER   NODENAME   PROVIDERID   PHASE          AGE   VERSION
-machine.cluster.x-k8s.io/c1-6n84z-lxj6v              c1                                Provisioning   17s   v1.36.1
-machine.cluster.x-k8s.io/c1-md-0-v42br-vh2wd-7sn5p   c1                                Pending        6s    v1.36.1
+machine.cluster.x-k8s.io/c1-6n84z-lxj6v              c1                                Provisioning   17s   v1.37.0
+machine.cluster.x-k8s.io/c1-md-0-v42br-vh2wd-7sn5p   c1                                Pending        6s    v1.37.0
 
 NAME                                                                   CLUSTER   MACHINE                     PROVIDERID   READY   AGE
 lxcmachine.infrastructure.cluster.x-k8s.io/c1-6n84z-lxj6v              c1        c1-6n84z-lxj6v                                   17s
@@ -328,14 +328,14 @@ Cluster/c1                                     True                     23s
 
 # kubectl get cluster,lxccluster,machine,lxcmachine
 NAME                          CLUSTERCLASS   PHASE         AGE   VERSION
-cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   59s   v1.36.1
+cluster.cluster.x-k8s.io/c1   capn-v1beta2   Provisioned   59s   v1.37.0
 
 NAME                                                  CLUSTER   LOAD BALANCER   READY   AGE
 lxccluster.infrastructure.cluster.x-k8s.io/c1-vtf7d   c1        10.130.1.162    true    59s
 
 NAME                                                 CLUSTER   NODENAME                    PROVIDERID                         PHASE     AGE   VERSION
-machine.cluster.x-k8s.io/c1-6n84z-lxj6v              c1        c1-6n84z-lxj6v              lxc:///c1-6n84z-lxj6v              Running   54s   v1.36.1
-machine.cluster.x-k8s.io/c1-md-0-v42br-vh2wd-7sn5p   c1        c1-md-0-v42br-vh2wd-7sn5p   lxc:///c1-md-0-v42br-vh2wd-7sn5p   Running   43s   v1.36.1
+machine.cluster.x-k8s.io/c1-6n84z-lxj6v              c1        c1-6n84z-lxj6v              lxc:///c1-6n84z-lxj6v              Running   54s   v1.37.0
+machine.cluster.x-k8s.io/c1-md-0-v42br-vh2wd-7sn5p   c1        c1-md-0-v42br-vh2wd-7sn5p   lxc:///c1-md-0-v42br-vh2wd-7sn5p   Running   43s   v1.37.0
 
 NAME                                                                   CLUSTER   MACHINE                     PROVIDERID                         READY   AGE
 lxcmachine.infrastructure.cluster.x-k8s.io/c1-6n84z-lxj6v              c1        c1-6n84z-lxj6v              lxc:///c1-6n84z-lxj6v              true    54s
@@ -413,8 +413,8 @@ kube-system    pod/kube-proxy-zkwcc                         1/1     Running   0 
 kube-system    pod/kube-scheduler-c1-6n84z-lxj6v            1/1     Running   0          2m16s   10.130.1.97    c1-6n84z-lxj6v              <none>           <none>
 
 NAMESPACE   NAME                             STATUS   ROLES           AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
-            node/c1-6n84z-lxj6v              Ready    control-plane   2m18s   v1.36.1   10.130.1.97    <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
-            node/c1-md-0-v42br-vh2wd-7sn5p   Ready    <none>          112s    v1.36.1   10.130.1.195   <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
+            node/c1-6n84z-lxj6v              Ready    control-plane   2m18s   v1.37.0   10.130.1.97    <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
+            node/c1-md-0-v42br-vh2wd-7sn5p   Ready    <none>          112s    v1.37.0   10.130.1.195   <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
 ```
 
 ## Delete cluster

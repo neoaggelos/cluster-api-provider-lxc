@@ -102,3 +102,31 @@ images:
     type: virtual-machine
     alias: [kubeadm/v1.36.1, kubeadm/v1.36.1/ubuntu]
     source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.1-virtual-machine-ubuntu-amd64.tar.gz
+
+  # TODO: add checksums once the "Build Kubeadm Images" workflow has published the v1.36.4 artifacts
+  kubeadm-v1.36.4-container-amd64:
+    type: container
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-container-ubuntu-amd64.tar.gz
+  kubeadm-v1.36.4-container-arm64:
+    type: container
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-container-ubuntu-arm64.tar.gz
+  kubeadm-v1.36.4-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-virtual-machine-ubuntu-amd64.tar.gz
+
+  # TODO: add checksums once the "Build Kubeadm Images" workflow has published the v1.37.0 artifacts
+  kubeadm-v1.37.0-container-amd64:
+    type: container
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-container-ubuntu-amd64.tar.gz
+  kubeadm-v1.37.0-container-arm64:
+    type: container
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-container-ubuntu-arm64.tar.gz
+  kubeadm-v1.37.0-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-virtual-machine-ubuntu-amd64.tar.gz

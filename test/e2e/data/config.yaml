@@ -5,20 +5,20 @@ managementClusterName: capn-e2e
 
 images:
 # NOTE(neoaggelos): Ensure https://images.linuxcontainers.org/capn/streams/v1/index.json has kubeadm image for DefaultNodeImageVersion.
-# https://github.com/kubernetes-sigs/cluster-api/blob/v1.13.2/test/framework/bootstrap/kind_provider.go#L40
-- name: registry.k8s.io/cluster-api/cluster-api-controller:v1.13.2
+# https://github.com/kubernetes-sigs/cluster-api/blob/v1.14.1/test/framework/bootstrap/kind_provider.go#L40
+- name: registry.k8s.io/cluster-api/cluster-api-controller:v1.14.1
   loadBehavior: tryLoad
-- name: registry.k8s.io/cluster-api/kubeadm-bootstrap-controller:v1.13.2
+- name: registry.k8s.io/cluster-api/kubeadm-bootstrap-controller:v1.14.1
   loadBehavior: tryLoad
-- name: registry.k8s.io/cluster-api/kubeadm-control-plane-controller:v1.13.2
+- name: registry.k8s.io/cluster-api/kubeadm-control-plane-controller:v1.14.1
   loadBehavior: tryLoad
 # NOTE(neoaggelos): Keep cert-manager images in lock-step with ClusterAPI version
-# https://github.com/kubernetes-sigs/cluster-api/blob/v1.13.2/cmd/clusterctl/client/config/cert_manager_client.go#L32
-- name: quay.io/jetstack/cert-manager-cainjector:v1.20.2
+# https://github.com/kubernetes-sigs/cluster-api/blob/v1.14.1/cmd/clusterctl/client/config/cert_manager_client.go#L32
+- name: quay.io/jetstack/cert-manager-cainjector:v1.21.1
   loadBehavior: tryLoad
-- name: quay.io/jetstack/cert-manager-controller:v1.20.2
+- name: quay.io/jetstack/cert-manager-controller:v1.21.1
   loadBehavior: tryLoad
-- name: quay.io/jetstack/cert-manager-webhook:v1.20.2
+- name: quay.io/jetstack/cert-manager-webhook:v1.21.1
   loadBehavior: tryLoad
 # Use local dev images
 - name: ghcr.io/lxc/cluster-api-provider-incus:e2e
@@ -37,8 +37,8 @@ providers:
   #   replacements:
   #   - old: "imagePullPolicy: Always"
   #     new: "imagePullPolicy: IfNotPresent"
-  - name: v1.13.2
-    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.13.2/core-components.yaml"
+  - name: v1.14.1
+    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.14.1/core-components.yaml"
     type: url
     contract: v1beta2
     files:
@@ -58,8 +58,8 @@ providers:
   #   replacements:
   #   - old: "imagePullPolicy: Always"
   #     new: "imagePullPolicy: IfNotPresent"
-  - name: v1.13.2
-    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.13.2/bootstrap-components.yaml"
+  - name: v1.14.1
+    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.14.1/bootstrap-components.yaml"
     type: url
     contract: v1beta2
     files:
@@ -79,8 +79,8 @@ providers:
   #   replacements:
   #   - old: "imagePullPolicy: Always"
   #     new: "imagePullPolicy: IfNotPresent"
-  - name: v1.13.2
-    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.13.2/control-plane-components.yaml"
+  - name: v1.14.1
+    value: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.14.1/control-plane-components.yaml"
     type: url
     contract: v1beta2
     files:

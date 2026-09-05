@@ -102,3 +102,33 @@ images:
     type: virtual-machine
     alias: [kubeadm/v1.36.1, kubeadm/v1.36.1/ubuntu]
     source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.1-virtual-machine-ubuntu-amd64.tar.gz
+
+  kubeadm-v1.36.4-container-amd64:
+    type: container
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-container-ubuntu-amd64.tar.gz
+    checksum: sha256:c7ded2754899eef67354181e8d75cb885749d848a97cb56cb4dc03928a365efb
+  kubeadm-v1.36.4-container-arm64:
+    type: container
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-container-ubuntu-arm64.tar.gz
+    checksum: sha256:03ca981f44a5e6f0d99f86f59f75589c2aa360cca9441a822c0dc8c6aa1ea350
+  kubeadm-v1.36.4-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.36.4, kubeadm/v1.36.4/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.36.4-virtual-machine-ubuntu-amd64.tar.gz
+
+  kubeadm-v1.37.0-container-amd64:
+    type: container
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-container-ubuntu-amd64.tar.gz
+    checksum: sha256:86ea273eaf9adaf17ec316ff6262ce2e3d33ef0b421692be5ad956b2af764958
+  kubeadm-v1.37.0-container-arm64:
+    type: container
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-container-ubuntu-arm64.tar.gz
+    checksum: sha256:24548eb5021124e4044908dae40eb3a1413dfc5d1a33e1f6a5586e2192c219b8
+  kubeadm-v1.37.0-virtual-machine-amd64:
+    type: virtual-machine
+    alias: [kubeadm/v1.37.0, kubeadm/v1.37.0/ubuntu]
+    source: https://github.com/lxc/cluster-api-provider-incus/releases/download/kubeadm-images/kubeadm-v1.37.0-virtual-machine-ubuntu-amd64.tar.gz

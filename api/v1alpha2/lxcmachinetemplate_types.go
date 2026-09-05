@@ -46,10 +46,6 @@ type LXCMachineTemplateList struct {
 	Items           []LXCMachineTemplate `json:"items"`
 }
 
-func init() {
-	SchemeBuilder.Register(&LXCMachineTemplate{}, &LXCMachineTemplateList{})
-}
-
 // LXCMachineTemplateResource describes the data needed to create a LXCMachine from a template.
 type LXCMachineTemplateResource struct {
 	// Standard object's metadata.
@@ -58,4 +54,8 @@ type LXCMachineTemplateResource struct {
 	ObjectMeta clusterv1.ObjectMeta `json:"metadata,omitempty"`
 	// Spec is the specification of the desired behavior of the machine.
 	Spec LXCMachineSpec `json:"spec"`
+}
+
+func init() {
+	objectTypes = append(objectTypes, &LXCMachineTemplate{}, &LXCMachineTemplateList{})
 }

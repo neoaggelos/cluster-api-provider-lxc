@@ -46,10 +46,6 @@ type LXCClusterTemplateList struct {
 	Items           []LXCClusterTemplate `json:"items"`
 }
 
-func init() {
-	SchemeBuilder.Register(&LXCClusterTemplate{}, &LXCClusterTemplateList{})
-}
-
 // LXCClusterTemplateResource describes the data needed to create a LXCCluster from a template.
 type LXCClusterTemplateResource struct {
 	// Standard object's metadata.
@@ -57,4 +53,8 @@ type LXCClusterTemplateResource struct {
 	// +optional
 	ObjectMeta clusterv1.ObjectMeta `json:"metadata,omitempty"`
 	Spec       LXCClusterSpec       `json:"spec"`
+}
+
+func init() {
+	objectTypes = append(objectTypes, &LXCClusterTemplate{}, &LXCClusterTemplateList{})
 }

@@ -297,7 +297,7 @@ type LXCMachineList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&LXCMachine{}, &LXCMachineList{})
+	objectTypes = append(objectTypes, &LXCMachine{}, &LXCMachineList{})
 }
 
 var (

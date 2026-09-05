@@ -329,7 +329,7 @@ type LXCClusterList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&LXCCluster{}, &LXCClusterList{})
+	objectTypes = append(objectTypes, &LXCCluster{}, &LXCClusterList{})
 }
 
 var (

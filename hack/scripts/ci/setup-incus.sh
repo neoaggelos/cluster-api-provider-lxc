@@ -17,6 +17,20 @@ ip_address="$(ip -o route get to 1.1.1.1 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
 # Initialize Incus
 sudo incus admin init --auto --network-address "$ip_address"
 
+# NOTE(neoaggelos/2026-08-31): Incus local configuration directory has incorrect permissions
+#   $ ls -la /home/runner/.config/incus:
+#   total 16
+#   drwxr-x--- 3 root   root   4096 Aug 31 14:47 .
+#   drwxr-xr-x 5 runner runner 4096 Aug 31 14:47 ..
+#   -rw-r--r-- 1 root   root    301 Aug 31 14:47 config.yml
+#   drwxr-xr-x 2 root   root   4096 Aug 31 14:47 oidctokens
+#
+#   $ incus list
+#   : Failed to load configuration: Unable to read the configuration file: open /home/runner/.config/incus/config.yml: permission denied
+if [ "${GITHUB_ACTIONS:=}" == "true" ]; then
+  sudo chown runner:runner ~/.config/incus -R
+fi
+
 # Generate client certificate and key, trust certificate
 if ! incus remote switch local-https; then
   incus remote generate-certificate

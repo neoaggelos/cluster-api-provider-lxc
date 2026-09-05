@@ -7,9 +7,9 @@ set -xeu
 
 KUBERNETES_VERSION="${KUBERNETES_VERSION:-$1}"            # https://dl.k8s.io/release/stable.txt or https://dl.k8s.io/release/stable-1.32.txt
 CNI_PLUGINS_VERSION="${CNI_PLUGINS_VERSION:-v1.9.1}"      # https://github.com/containernetworking/plugins
-CRICTL_VERSION="${CRICTL_VERSION:-v1.36.0}"               # https://github.com/kubernetes-sigs/cri-tools
-CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.3.0}"        # https://github.com/containerd/containerd
-RUNC_VERSION="${RUNC_VERSION:-v1.4.2}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.3.0/script/setup/runc-version
+CRICTL_VERSION="${CRICTL_VERSION:-v1.37.0}"               # https://github.com/kubernetes-sigs/cri-tools
+CONTAINERD_VERSION="${CONTAINERD_VERSION:-v2.3.5}"        # https://github.com/containerd/containerd
+RUNC_VERSION="${RUNC_VERSION:-v1.4.2}"                    # https://github.com/opencontainers/runc, must match https://raw.githubusercontent.com/containerd/containerd/v2.3.5/script/setup/runc-version
 
 KUBELET_SERVICE='
 # Sourced from: https://raw.githubusercontent.com/kubernetes/release/v0.21.0/cmd/krel/templates/latest/kubelet/kubelet.service

@@ -413,8 +413,8 @@ kube-system    pod/kube-proxy-zkwcc                         1/1     Running   0 
 kube-system    pod/kube-scheduler-c1-6n84z-lxj6v            1/1     Running   0          2m16s   10.130.1.97    c1-6n84z-lxj6v              <none>           <none>
 
 NAMESPACE   NAME                             STATUS   ROLES           AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
-            node/c1-6n84z-lxj6v              Ready    control-plane   2m18s   v1.37.0   10.130.1.97    <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
-            node/c1-md-0-v42br-vh2wd-7sn5p   Ready    <none>          112s    v1.37.0   10.130.1.195   <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.0
+            node/c1-6n84z-lxj6v              Ready    control-plane   2m18s   v1.37.0   10.130.1.97    <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.5
+            node/c1-md-0-v42br-vh2wd-7sn5p   Ready    <none>          112s    v1.37.0   10.130.1.195   <none>        Ubuntu 24.04.3 LTS   6.8.0-83-generic   containerd://2.3.5
 ```
 
 ## Delete cluster

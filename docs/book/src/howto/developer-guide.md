@@ -25,7 +25,7 @@ chmod +x ./clusterctl
 sudo mv ./clusterctl /usr/local/bin/clusterctl
 
 # kubectl
-curl -L --remote-name-all "https://dl.k8s.io/release/v1.36.1/bin/linux/amd64/kubectl" -o ./kubectl
+curl -L --remote-name-all "https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl" -o ./kubectl
 chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 ```
@@ -125,7 +125,7 @@ On a separate window, generate a cluster manifest and deploy:
 ```bash
 export LOAD_BALANCER="lxc: {}"
 export LXC_SECRET_NAME="lxc-secret"
-export KUBERNETES_VERSION="v1.36.1"
+export KUBERNETES_VERSION="v1.37.0"
 export CONTROL_PLANE_MACHINE_COUNT=1
 export WORKER_MACHINE_COUNT=1
 

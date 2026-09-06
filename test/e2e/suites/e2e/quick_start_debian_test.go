@@ -18,7 +18,7 @@ var _ = Describe("QuickStart", func() {
 	Context("Debian", func() {
 		BeforeEach(func(ctx context.Context) {
 			e2eCtx.OverrideVariables(map[string]string{
-				"KUBERNETES_VERSION": "v1.33.3", // Kubernetes version without pre-built images
+				"KUBERNETES_VERSION": e2eCtx.E2EConfig.MustGetVariable(shared.KubernetesVersionInstallKubeadm),
 				"LXC_IMAGE_NAME":     shared.DebianImage,
 				"INSTALL_KUBEADM":    "true",
 			})
